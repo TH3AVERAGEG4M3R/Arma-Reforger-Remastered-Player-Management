@@ -1,0 +1,187 @@
+FrameWidgetClass {
+ Name "TeamManagementMenu"
+ {
+  ImageWidgetClass {
+   Name "Background"
+   Slot FrameWidgetSlot "{5DB4939BB546EB5A}" {
+    PositionX 0
+    PositionY 0
+    SizeX 600
+    SizeY 400
+    Alignment 0.5 0.5
+   }
+   Color 0.051 0.051 0.051 0.85
+  }
+  TextWidgetClass {
+   Name "Title"
+   Slot FrameWidgetSlot "{5DB4939BB546EB5C}" {
+    PositionX 0
+    PositionY 10
+    SizeX 600
+    SizeY 30
+    Alignment 0.5 0
+   }
+   Text "TEAM MANAGEMENT"
+   "Font Size" 24
+   "Min Font Size" 24
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+  }
+  ButtonWidgetClass {
+   Name "CloseButton"
+   Slot FrameWidgetSlot "{5DB4939BB546EB5E}" {
+    PositionX 570
+    PositionY 10
+    SizeX 20
+    SizeY 20
+   }
+   Text "X"
+  }
+  OverlayWidgetClass {
+   Name "Content"
+   Slot FrameWidgetSlot "{5DB4939BB546EB60}" {
+    PositionX 0
+    PositionY 50
+    SizeX 600
+    SizeY 340
+    Alignment 0.5 0
+   }
+   {
+    FrameWidgetClass {
+     Name "NoTeamFrame"
+     Slot OverlayWidgetSlot "{5DB4939BB546EB62}" {
+     }
+     {
+      VerticalLayoutWidgetClass {
+       Name "NoTeamLayout"
+       Slot FrameWidgetSlot "{5DB4939BB546EB64}" {
+        PositionX 0
+        PositionY 0
+        SizeX 600
+        SizeY 340
+        Alignment 0.5 0.5
+       }
+       {
+        TextWidgetClass {
+         Name "NoTeamText"
+         Slot LayoutSlot "{5DB4939BB546EB66}" {
+          SizeMode Fill
+          FillWeight 1
+         }
+         Text "You are not currently in a team."
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Center
+         "Vertical Alignment" Center
+        }
+        ButtonWidgetClass {
+         Name "CreateTeamButton"
+         Slot LayoutSlot "{5DB4939BB546EB68}" {
+          SizeX 200
+          SizeY 40
+          Alignment 0.5 0
+         }
+         Text "CREATE TEAM"
+        }
+        ButtonWidgetClass {
+         Name "JoinTeamButton"
+         Slot LayoutSlot "{5DB4939BB546EB6A}" {
+          SizeX 200
+          SizeY 40
+          Alignment 0.5 0
+          Padding 0 10 0 0
+         }
+         Text "JOIN TEAM"
+        }
+       }
+      }
+     }
+    }
+    FrameWidgetClass {
+     Name "TeamFrame"
+     Slot OverlayWidgetSlot "{5DB4939BB546EB6C}" {
+     }
+     {
+      VerticalLayoutWidgetClass {
+       Name "TeamLayout"
+       Slot FrameWidgetSlot "{5DB4939BB546EB6E}" {
+        PositionX 0
+        PositionY 0
+        SizeX 600
+        SizeY 340
+        Alignment 0.5 0.5
+       }
+       {
+        TextWidgetClass {
+         Name "TeamTitle"
+         Slot LayoutSlot "{5DB4939BB546EB70}" {
+          SizeY 30
+         }
+         Text "YOUR TEAM (ID: 0)"
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Center
+         "Vertical Alignment" Center
+        }
+        FrameWidgetClass {
+         Name "MembersFrame"
+         Slot LayoutSlot "{5DB4939BB546EB72}" {
+          SizeMode Fill
+          FillWeight 1
+         }
+         {
+          ScrollLayoutWidgetClass {
+           Name "MembersScrollLayout"
+           Slot FrameWidgetSlot "{5DB4939BB546EB74}" {
+            PositionX 0
+            PositionY 0
+            SizeX 600
+            SizeY 270
+            Alignment 0.5 0.5
+           }
+           {
+            VerticalLayoutWidgetClass {
+             Name "MembersVerticalLayout"
+             Slot LayoutSlot "{5DB4939BB546EB76}" {
+             }
+            }
+           }
+          }
+         }
+        }
+        HorizontalLayoutWidgetClass {
+         Name "TeamActionsLayout"
+         Slot LayoutSlot "{5DB4939BB546EB78}" {
+          SizeY 40
+         }
+         {
+          ButtonWidgetClass {
+           Name "InvitePlayerButton"
+           Slot LayoutSlot "{5DB4939BB546EB7A}" {
+            SizeMode Fill
+            FillWeight 1
+            Alignment 0.5 0.5
+            Padding 10 0 5 0
+           }
+           Text "INVITE PLAYER"
+          }
+          ButtonWidgetClass {
+           Name "LeaveTeamButton"
+           Slot LayoutSlot "{5DB4939BB546EB7C}" {
+            SizeMode Fill
+            FillWeight 1
+            Alignment 0.5 0.5
+            Padding 5 0 10 0
+           }
+           Text "LEAVE TEAM"
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}
