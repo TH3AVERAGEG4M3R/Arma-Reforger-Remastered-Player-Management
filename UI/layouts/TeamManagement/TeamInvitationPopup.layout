@@ -1,0 +1,82 @@
+FrameWidgetClass {
+ Name "TeamInvitationPopup"
+ {
+  ImageWidgetClass {
+   Name "Background"
+   Slot FrameWidgetSlot "{5DB4939BB546EB7E}" {
+    PositionX 0
+    PositionY 0
+    SizeX 400
+    SizeY 200
+    Alignment 0.5 0.5
+   }
+   Color 0.051 0.051 0.051 0.9
+  }
+  VerticalLayoutWidgetClass {
+   Name "ContentLayout"
+   Slot FrameWidgetSlot "{5DB4939BB546EB80}" {
+    PositionX 0
+    PositionY 0
+    SizeX 400
+    SizeY 200
+    Alignment 0.5 0.5
+   }
+   {
+    TextWidgetClass {
+     Name "InvitationTitle"
+     Slot LayoutSlot "{5DB4939BB546EB82}" {
+      SizeY 40
+      Padding 0 10 0 0
+     }
+     Text "TEAM INVITATION"
+     "Font Size" 20
+     "Min Font Size" 20
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+    }
+    TextWidgetClass {
+     Name "InvitationText"
+     Slot LayoutSlot "{5DB4939BB546EB84}" {
+      SizeMode Fill
+      FillWeight 1
+      Padding 20 0 20 0
+     }
+     Text "PlayerName has invited you to join their team."
+     "Font Size" 16
+     "Min Font Size" 16
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+    }
+    HorizontalLayoutWidgetClass {
+     Name "ButtonsLayout"
+     Slot LayoutSlot "{5DB4939BB546EB86}" {
+      SizeY 50
+      Padding 0 0 0 10
+     }
+     {
+      ButtonWidgetClass {
+       Name "AcceptButton"
+       Slot LayoutSlot "{5DB4939BB546EB88}" {
+        SizeMode Fill
+        FillWeight 1
+        Alignment 0.5 0.5
+        Padding 20 0 10 0
+       }
+       Text "ACCEPT"
+      }
+      ButtonWidgetClass {
+       Name "DeclineButton"
+       Slot LayoutSlot "{5DB4939BB546EB8A}" {
+        SizeMode Fill
+        FillWeight 1
+        Alignment 0.5 0.5
+        Padding 10 0 20 0
+       }
+       Text "DECLINE"
+      }
+     }
+    }
+   }
+  }
+ }
+}
