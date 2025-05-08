@@ -9,7 +9,7 @@ class TeamPlayerComponent : GenericComponent
     /**
      * @brief Initialize component
      */
-    override void OnPostInit(IEntity owner)
+    void OnPostInit(IEntity owner)
     {
         super.OnPostInit(owner);
         
@@ -23,7 +23,7 @@ class TeamPlayerComponent : GenericComponent
     /**
      * @brief Handle component shutdown
      */
-    override void OnDelete(IEntity owner)
+    void OnDelete(IEntity owner)
     {
         // If player is in a team, leave it when they disconnect
         if (m_IsInitialized && m_TeamManager)

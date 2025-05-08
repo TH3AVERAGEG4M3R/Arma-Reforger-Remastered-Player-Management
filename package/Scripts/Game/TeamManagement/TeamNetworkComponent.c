@@ -65,7 +65,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                RPCParams rpc = new ScriptRPC();
+                RPC rpc = new ScriptRPC();
                 rpc.Write(player);
                 rpl.SendRpc(RPC_CREATE_TEAM, rpc, true, null);
             }
@@ -82,7 +82,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
                 if (rpl)
                 {
-                    RPCParams rpc = new ScriptRPC();
+                    RPC rpc = new ScriptRPC();
                     rpc.Write(player);
                     rpc.Write(teamID);
                     rpl.BroadcastRpc(RPC_CREATE_TEAM, rpc, true, null);
@@ -107,7 +107,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                RPCParams rpc = new ScriptRPC();
+                RPC rpc = new ScriptRPC();
                 rpc.Write(teamID);
                 rpc.Write(player);
                 rpl.SendRpc(RPC_JOIN_TEAM, rpc, true, null);
@@ -125,7 +125,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
                 if (rpl)
                 {
-                    RPCParams rpc = new ScriptRPC();
+                    RPC rpc = new ScriptRPC();
                     rpc.Write(teamID);
                     rpc.Write(player);
                     rpc.Write(success);
@@ -150,7 +150,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                RPCParams rpc = new ScriptRPC();
+                RPC rpc = new ScriptRPC();
                 rpc.Write(player);
                 rpl.SendRpc(RPC_LEAVE_TEAM, rpc, true, null);
             }
@@ -171,7 +171,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
                 if (rpl)
                 {
-                    RPCParams rpc = new ScriptRPC();
+                    RPC rpc = new ScriptRPC();
                     rpc.Write(player);
                     rpc.Write(teamID);
                     rpc.Write(success);
@@ -197,7 +197,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                RPCParams rpc = new ScriptRPC();
+                RPC rpc = new ScriptRPC();
                 rpc.Write(sender);
                 rpc.Write(receiverID);
                 rpl.SendRpc(RPC_SEND_INVITATION, rpc, true, null);
@@ -215,7 +215,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
                 if (rpl)
                 {
-                    RPCParams rpc = new ScriptRPC();
+                    RPC rpc = new ScriptRPC();
                     rpc.Write(sender);
                     rpc.Write(receiverID);
                     rpc.Write(success);
@@ -255,7 +255,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                RPCParams rpc = new ScriptRPC();
+                RPC rpc = new ScriptRPC();
                 rpc.Write(invitationID);
                 rpc.Write(player);
                 rpl.SendRpc(RPC_ACCEPT_INVITATION, rpc, true, null);
@@ -284,7 +284,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
                 if (rpl)
                 {
-                    RPCParams rpc = new ScriptRPC();
+                    RPC rpc = new ScriptRPC();
                     rpc.Write(invitationID);
                     rpc.Write(player);
                     rpc.Write(teamID);
@@ -327,7 +327,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                RPCParams rpc = new ScriptRPC();
+                RPC rpc = new ScriptRPC();
                 rpc.Write(invitationID);
                 rpc.Write(player);
                 rpl.SendRpc(RPC_DECLINE_INVITATION, rpc, true, null);
@@ -352,7 +352,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
                 if (rpl)
                 {
-                    RPCParams rpc = new ScriptRPC();
+                    RPC rpc = new ScriptRPC();
                     rpc.Write(invitationID);
                     rpc.Write(player);
                     rpc.Write(success);
@@ -400,7 +400,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
         if (rpl)
         {
-            RPCParams rpc = new ScriptRPC();
+            RPC rpc = new ScriptRPC();
             rpc.Write(teamID);
             rpc.Write(teamMembers.Count());
             
@@ -421,7 +421,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param ctx RPC context
      * @param rpc RPC data
      */
-    void OnRPC_CreateTeam(RplComponent rpl, RPCParams rpc)
+    void OnRPC_CreateTeam(RplComponent rpl, RPC rpc)
     {
         IEntity player = rpc.Read();
         
@@ -447,7 +447,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param ctx RPC context
      * @param rpc RPC data
      */
-    void OnRPC_JoinTeam(RplComponent rpl, RPCParams rpc)
+    void OnRPC_JoinTeam(RplComponent rpl, RPC rpc)
     {
         int teamID = rpc.Read();
         IEntity player = rpc.Read();
@@ -474,7 +474,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param ctx RPC context
      * @param rpc RPC data
      */
-    void OnRPC_LeaveTeam(RplComponent rpl, RPCParams rpc)
+    void OnRPC_LeaveTeam(RplComponent rpl, RPC rpc)
     {
         IEntity player = rpc.Read();
         
@@ -501,7 +501,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param ctx RPC context
      * @param rpc RPC data
      */
-    void OnRPC_SendInvitation(RplComponent rpl, RPCParams rpc)
+    void OnRPC_SendInvitation(RplComponent rpl, RPC rpc)
     {
         IEntity sender = rpc.Read();
         string receiverID = rpc.Read();
@@ -534,7 +534,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param ctx RPC context
      * @param rpc RPC data
      */
-    void OnRPC_AcceptInvitation(RplComponent rpl, RPCParams rpc)
+    void OnRPC_AcceptInvitation(RplComponent rpl, RPC rpc)
     {
         string invitationID = rpc.Read();
         IEntity player = rpc.Read();
@@ -563,7 +563,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param ctx RPC context
      * @param rpc RPC data
      */
-    void OnRPC_DeclineInvitation(RplComponent rpl, RPCParams rpc)
+    void OnRPC_DeclineInvitation(RplComponent rpl, RPC rpc)
     {
         string invitationID = rpc.Read();
         IEntity player = rpc.Read();
@@ -589,7 +589,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param ctx RPC context
      * @param rpc RPC data
      */
-    void OnRPC_SyncTeamData(RplComponent rpl, RPCParams rpc)
+    void OnRPC_SyncTeamData(RplComponent rpl, RPC rpc)
     {
         if (GetGame().IsServer())
         {
