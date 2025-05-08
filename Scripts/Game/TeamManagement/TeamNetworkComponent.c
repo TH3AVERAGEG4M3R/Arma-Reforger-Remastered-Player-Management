@@ -418,8 +418,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     
     /**
      * @brief RPC handler for creating a team
-     * @param ctx RPC context
-     * @param rpc RPC data
+     * @param rpl Replication component
+     * @param ctx Script call context for RPC
      */
     void OnRPC_CreateTeam(RplComponent rpl, ScriptCallContext ctx)
     {
@@ -444,8 +444,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     
     /**
      * @brief RPC handler for joining a team
-     * @param ctx RPC context
-     * @param rpc RPC data
+     * @param rpl Replication component
+     * @param ctx Script call context for RPC
      */
     void OnRPC_JoinTeam(RplComponent rpl, ScriptCallContext ctx)
     {
@@ -471,8 +471,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     
     /**
      * @brief RPC handler for leaving a team
-     * @param ctx RPC context
-     * @param rpc RPC data
+     * @param rpl Replication component
+     * @param ctx Script call context for RPC
      */
     void OnRPC_LeaveTeam(RplComponent rpl, ScriptCallContext ctx)
     {
@@ -498,8 +498,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     
     /**
      * @brief RPC handler for sending an invitation
-     * @param ctx RPC context
-     * @param rpc RPC data
+     * @param rpl Replication component
+     * @param ctx Script call context for RPC
      */
     void OnRPC_SendInvitation(RplComponent rpl, ScriptCallContext ctx)
     {
@@ -531,8 +531,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     
     /**
      * @brief RPC handler for accepting an invitation
-     * @param ctx RPC context
-     * @param rpc RPC data
+     * @param rpl Replication component
+     * @param ctx Script call context for RPC
      */
     void OnRPC_AcceptInvitation(RplComponent rpl, ScriptCallContext ctx)
     {
@@ -560,8 +560,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     
     /**
      * @brief RPC handler for declining an invitation
-     * @param ctx RPC context
-     * @param rpc RPC data
+     * @param rpl Replication component
+     * @param ctx Script call context for RPC
      */
     void OnRPC_DeclineInvitation(RplComponent rpl, ScriptCallContext ctx)
     {
@@ -586,10 +586,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     
     /**
      * @brief RPC handler for team data synchronization
-     * @param ctx RPC context
-     * @param rpc RPC data
+     * @param rpl Replication component
+     * @param ctx Script call context for RPC
      */
-    void OnRPC_SyncTeamData(RplComponent rpl, RPC rpc)
+    void OnRPC_SyncTeamData(RplComponent rpl, ScriptCallContext ctx)
     {
         if (GetGame().IsServer())
         {
@@ -598,8 +598,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         
         // Read team data
-        int teamID = rpc.Read();
-        int memberCount = rpc.Read();
+        int teamID = ctx.Read();
+        int memberCount = ctx.Read();
         
         // Create team on client if it doesn't exist
         if (!m_TeamManager.TeamExists(teamID))
@@ -613,9 +613,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         
         for (int i = 0; i < memberCount; i++)
         {
-            string playerID = rpc.Read();
-            string playerName = rpc.Read();
-            bool isLeader = rpc.Read();
+            string playerID = ctx.Read();
+            string playerName = ctx.Read();
+            bool isLeader = ctx.Read();
             
             m_TeamManager.AddTeamMember(teamID, playerID, playerName, isLeader);
         }
