@@ -167,7 +167,7 @@ class SCR_TeamInvitationButtonHandler : ScriptedWidgetEventHandler
      * @param x Cursor X position
      * @param y Cursor Y position
      */
-    override bool OnMouseDown(Widget w, int x, int y, int button)
+    bool OnMouseDown(Widget w, int x, int y, int button)
     {
         if (button == MouseButton.LEFT)
         {

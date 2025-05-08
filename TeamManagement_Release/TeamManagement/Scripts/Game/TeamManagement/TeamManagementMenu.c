@@ -91,7 +91,7 @@ class SCR_TeamManagementMenu : ScriptedWidgetComponent
      * @brief Frame update
      * @param timeslice Time since last frame
      */
-    override void Update(float timeslice)
+    void Update(float timeslice)
     {
         super.Update(timeslice);
         
@@ -427,7 +427,7 @@ class SCR_TeamManagementButtonHandler : ScriptedWidgetEventHandler
      * @param x Cursor X position
      * @param y Cursor Y position
      */
-    override bool OnMouseDown(Widget w, int x, int y, int button)
+    bool OnMouseDown(Widget w, int x, int y, int button)
     {
         if (button == MouseButton.LEFT)
         {

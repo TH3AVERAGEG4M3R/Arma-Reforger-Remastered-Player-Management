@@ -1,7 +1,7 @@
 /**
  * @brief Component that attaches to player entities to handle team functionality
  */
-class TeamPlayerComponent : ScriptedPlayerComponent
+class TeamPlayerComponent : GenericComponent
 {
     protected ref TeamManager m_TeamManager;
     protected bool m_IsInitialized;
