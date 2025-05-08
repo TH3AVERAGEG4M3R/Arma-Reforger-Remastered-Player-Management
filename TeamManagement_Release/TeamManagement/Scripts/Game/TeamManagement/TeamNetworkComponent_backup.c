@@ -175,7 +175,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                     ctx.Write(player);
                     ctx.Write(teamID);
                     ctx.Write(success);
-                    rpl.BroadcastRpc(RPC_LEAVE_TEAM, ctx, true, null);
+                    rpl.BroadcastRpc(RPC_rpl.BroadcastRpc(RPC_LEAVE_TEAM, rpc, ctx, true, null);
                 }
             }
             
@@ -200,7 +200,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 ScriptCallContext ctx = new ScriptCallContext();
                 ctx.Write(sender);
                 ctx.Write(receiverID);
-                rpl.SendRpc(RPC_SEND_INVITATION, ctx, true, null);
+                rpl.SendRpc(RPC_rpl.SendRpc(RPC_SEND_INVITATION, rpc, ctx, true, null);
             }
             
             return false; // Actual result will be set by server response
@@ -232,7 +232,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                     
                     foreach (IEntity target : targets)
                     {
-                        rpl.SendRpc(RPC_SEND_INVITATION, ctx, true, target);
+                        rpl.SendRpc(RPC_rpl.SendRpc(RPC_SEND_INVITATION, rpc, ctx, true, target);
                     }
                 }
             }
@@ -258,7 +258,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 ScriptCallContext ctx = new ScriptCallContext();
                 ctx.Write(invitationID);
                 ctx.Write(player);
-                rpl.SendRpc(RPC_ACCEPT_INVITATION, ctx, true, null);
+                rpl.SendRpc(RPC_rpl.SendRpc(RPC_ACCEPT_INVITATION, rpc, ctx, true, null);
             }
             
             return false; // Actual result will be set by server response
@@ -298,14 +298,14 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                         {
                             IEntity memberEntity = GetPlayerByIdentity(member.GetPlayerID());
                             if (memberEntity)
-                                rpl.SendRpc(RPC_ACCEPT_INVITATION, ctx, true, memberEntity);
+                                rpl.SendRpc(RPC_rpl.SendRpc(RPC_ACCEPT_INVITATION, rpc, ctx, true, memberEntity);
                         }
                     }
                     
                     // Also send to sender if they're not in the team anymore
                     IEntity sender = GetPlayerByIdentity(senderID);
                     if (sender)
-                        rpl.SendRpc(RPC_ACCEPT_INVITATION, ctx, true, sender);
+                        rpl.SendRpc(RPC_rpl.SendRpc(RPC_ACCEPT_INVITATION, rpc, ctx, true, sender);
                 }
             }
             
@@ -330,7 +330,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 ScriptCallContext ctx = new ScriptCallContext();
                 ctx.Write(invitationID);
                 ctx.Write(player);
-                rpl.SendRpc(RPC_DECLINE_INVITATION, ctx, true, null);
+                rpl.SendRpc(RPC_rpl.SendRpc(RPC_DECLINE_INVITATION, rpc, ctx, true, null);
             }
             
             return false; // Actual result will be set by server response
@@ -367,7 +367,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                     
                     foreach (IEntity target : targets)
                     {
-                        rpl.SendRpc(RPC_DECLINE_INVITATION, ctx, true, target);
+                        rpl.SendRpc(RPC_rpl.SendRpc(RPC_DECLINE_INVITATION, rpc, ctx, true, target);
                     }
                 }
             }
@@ -412,7 +412,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             }
             
             // Send to player
-            rpl.SendRpc(RPC_SYNC_TEAM_DATA, ctx, true, player);
+            rpl.SendRpc(RPC_rpl.SendRpc(RPC_SYNC_TEAM_DATA, rpc, ctx, true, player);
         }
     }
     

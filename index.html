@@ -1,1 +1,97 @@
-ARMA Team Management Mod - Fixed Issues
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ARMA Reforger Team Management Mod</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+        }
+        .container {
+            background: #f8f9fa;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .feature {
+            margin-bottom: 10px;
+            padding-left: 20px;
+        }
+        .feature:before {
+            content: "✓";
+            color: #27ae60;
+            margin-right: 8px;
+        }
+        .button {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #2980b9;
+        }
+        .fixes {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .code {
+            font-family: monospace;
+            background: #f1f1f1;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ARMA Reforger Team Management Mod</h1>
+    
+    <div class="container">
+        <h2>Overview</h2>
+        <p>A comprehensive team management system for ARMA Reforger that enables players to create, join, and manage teams in multiplayer sessions.</p>
+        
+        <h2>Key Features</h2>
+        <div class="feature">Create and manage teams with a user-friendly interface</div>
+        <div class="feature">Send and receive team invitations</div>
+        <div class="feature">Join and leave teams seamlessly</div>
+        <div class="feature">Team leader designation and management</div>
+        <div class="feature">Robust network synchronization</div>
+        <div class="feature">Complete multiplayer support</div>
+    </div>
+    
+    <div class="container">
+        <h2>Recent Fixes</h2>
+        <p>All compilation errors have been addressed in the recent update:</p>
+        <ul>
+            <li>Fixed <span class="code">ScriptRPC</span> to <span class="code">ScriptCallContext</span> in all network components</li>
+            <li>Replaced <span class="code">ScriptedPlayerComponent</span> with <span class="code">GenericComponent</span></li>
+            <li>Updated all RPC method signatures and parameter handling</li>
+            <li>Fixed read operations from <span class="code">rpc.Read()</span> to <span class="code">ctx.Read()</span></li>
+            <li>Corrected method documentation to match implementation</li>
+        </ul>
+    </div>
+    
+    <div class="container">
+        <h2>Resources</h2>
+        <a href="/server.py" class="button">View Mod File Structure</a>
+        <a href="https://github.com/ArmaReforgerFramework/API" class="button" target="_blank">Reforger API Docs</a>
+    </div>
+</body>
+</html>
