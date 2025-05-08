@@ -421,7 +421,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param ctx RPC context
      * @param rpc RPC data
      */
-    void OnRPC_CreateTeam(RplComponent rpl, ScriptRPC rpc)
+    void OnRPC_CreateTeam(RplComponent rpl, RPCParams rpc)
     {
         IEntity player = rpc.Read();
         
@@ -447,7 +447,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param ctx RPC context
      * @param rpc RPC data
      */
-    void OnRPC_JoinTeam(RplComponent rpl, ScriptRPC rpc)
+    void OnRPC_JoinTeam(RplComponent rpl, RPCParams rpc)
     {
         int teamID = rpc.Read();
         IEntity player = rpc.Read();
@@ -474,7 +474,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param ctx RPC context
      * @param rpc RPC data
      */
-    void OnRPC_LeaveTeam(RplComponent rpl, ScriptRPC rpc)
+    void OnRPC_LeaveTeam(RplComponent rpl, RPCParams rpc)
     {
         IEntity player = rpc.Read();
         
@@ -501,7 +501,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param ctx RPC context
      * @param rpc RPC data
      */
-    void OnRPC_SendInvitation(RplComponent rpl, ScriptRPC rpc)
+    void OnRPC_SendInvitation(RplComponent rpl, RPCParams rpc)
     {
         IEntity sender = rpc.Read();
         string receiverID = rpc.Read();
@@ -534,7 +534,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param ctx RPC context
      * @param rpc RPC data
      */
-    void OnRPC_AcceptInvitation(RplComponent rpl, ScriptRPC rpc)
+    void OnRPC_AcceptInvitation(RplComponent rpl, RPCParams rpc)
     {
         string invitationID = rpc.Read();
         IEntity player = rpc.Read();
@@ -563,7 +563,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param ctx RPC context
      * @param rpc RPC data
      */
-    void OnRPC_DeclineInvitation(RplComponent rpl, ScriptRPC rpc)
+    void OnRPC_DeclineInvitation(RplComponent rpl, RPCParams rpc)
     {
         string invitationID = rpc.Read();
         IEntity player = rpc.Read();
