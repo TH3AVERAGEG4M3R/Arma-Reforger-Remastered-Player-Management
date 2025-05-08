@@ -91,7 +91,7 @@ class SCR_TeamManagementMenu : ScriptedWidgetComponent
      * @brief Frame update
      * @param timeslice Time since last frame
      */
-    override void Update(float timeslice)
+    void Update(float timeslice)
     {
         super.Update(timeslice);
         

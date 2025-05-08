@@ -589,7 +589,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param ctx RPC context
      * @param rpc RPC data
      */
-    void OnRPC_SyncTeamData(RplComponent rpl, ScriptRPC rpc)
+    void OnRPC_SyncTeamData(RplComponent rpl, RPCParams rpc)
     {
         if (GetGame().IsServer())
         {
