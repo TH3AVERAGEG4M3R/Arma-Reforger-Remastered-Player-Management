@@ -27,6 +27,9 @@ class TeamManager
     // Network component for multiplayer support
     protected ref TeamNetworkComponent m_NetworkComponent;
     
+    // Event invoker for team changes (playerEntityID, oldTeamID, newTeamID)
+    protected ref ScriptInvoker m_OnTeamChanged = new ScriptInvoker();
+    
     /**
      * @brief Get the singleton instance of TeamManager
      * @return TeamManager instance
@@ -677,5 +680,32 @@ class TeamManager
             if (player)
                 NotifyPlayer(player, message);
         }
+    }
+    
+    /**
+     * @brief Get the OnTeamChanged event invoker
+     * @return The ScriptInvoker for team change events
+     */
+    ScriptInvoker GetOnTeamChanged()
+    {
+        return m_OnTeamChanged;
+    }
+    
+    /**
+     * @brief Trigger the OnTeamChanged event
+     * @param player The player entity
+     * @param oldTeamID The previous team ID
+     * @param newTeamID The new team ID
+     */
+    void TriggerTeamChanged(IEntity player, int oldTeamID, int newTeamID)
+    {
+        if (!player)
+            return;
+            
+        // Get the entity ID for the player
+        int entityID = player.GetID();
+        
+        // Trigger the event
+        m_OnTeamChanged.Invoke(entityID, oldTeamID, newTeamID);
     }
 }
