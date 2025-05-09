@@ -15,7 +15,7 @@ class CfgPatches
             "Network"
         };
         author = "ARMA Team Management";
-        version = "1.0.0";
+        version = "1.2.0";
     };
 };
 
@@ -53,11 +53,17 @@ class CfgVehicles
         componentNames[] = {};
     };
     
+    // Team chat component for player
+    class TeamChatComponent: ScriptedPlayerComponent
+    {
+        componentNames[] = {};
+    };
+    
     // Default player entity
     class BasePlayer;
     class PlayerBase: BasePlayer
     {
-        components[] += {"TeamPlayerComponent"};
+        components[] += {"TeamPlayerComponent", "TeamChatComponent"};
     };
     
     // Respawn flagpole entity
@@ -173,6 +179,17 @@ class CfgWorlds
             {
                 files[] = {"TeamManagement/Scripts/Game/TeamManagement/TeamRespawnMenu.c"};
             };
+            
+            // Team chat components
+            class TeamChatComponentClass
+            {
+                files[] = {"TeamManagement/Scripts/Game/TeamManagement/TeamChatComponent.c"};
+            };
+            
+            class TeamChatMessageClass
+            {
+                files[] = {"TeamManagement/Scripts/Game/TeamManagement/TeamChatMessage.c"};
+            };
         };
     };
 };
@@ -228,6 +245,11 @@ class CfgKeyBinding
             description = "Open the team management interface to create, join, or manage teams";
         };
         
-
+        class OpenTeamChat
+        {
+            displayName = "Open Team Chat";
+            defaultKey = "KeyY";
+            description = "Open team chat to communicate with your team members";
+        };
     };
 };

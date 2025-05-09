@@ -1,5 +1,25 @@
 # Changelog
 
+## Version 1.2.0 (2025-05-09)
+
+### Added
+- Team chat functionality with dedicated UI
+- Team-only messaging system with player name display
+- Network synchronization for chat messages
+- Keyboard shortcut (Y) to open team chat
+- Chat message history with scrollable display
+- Message length limitations for network efficiency
+- Automatic team message filtering based on membership
+
+### Technical Implementation
+- TeamChatComponent for handling team chat functionality
+- TeamChatMessage class for message encapsulation
+- Custom TeamChatWidget layout for chat interface
+- Network RPC handlers for secure message transmission
+- Team-based message filtering system
+- Event-based chat update system
+- Integration with team membership events
+
 ## Version 1.1.0 (2025-05-09)
 
 ### Added
