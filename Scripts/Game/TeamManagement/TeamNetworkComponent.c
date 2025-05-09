@@ -73,7 +73,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                ScriptRPC rpc = new ScriptRPC();
+                ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(player);
                 rpl.SendRpc(RPC_CREATE_TEAM, rpc, true, null);
             }
@@ -90,7 +90,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
                 if (rpl)
                 {
-                    ScriptRPC rpc = new ScriptRPC();
+                    ScriptCallContext rpc = new ScriptCallContext();
                     rpc.Write(player);
                     rpc.Write(teamID);
                     rpl.BroadcastRpc(RPC_CREATE_TEAM, rpc, true, null);
