@@ -18,6 +18,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     protected const string RPC_ACCEPT_INVITATION = "RPC_AcceptInvitation";
     protected const string RPC_DECLINE_INVITATION = "RPC_DeclineInvitation";
     protected const string RPC_SYNC_TEAM_DATA = "RPC_SyncTeamData";
+    protected const string RPC_LOCK_VEHICLE = "RPC_LockVehicle";
+    protected const string RPC_UNLOCK_VEHICLE = "RPC_UnlockVehicle";
     
     /**
      * @brief Get the singleton instance
@@ -49,6 +51,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             rpl.RegisterHandler(RPC_ACCEPT_INVITATION, this, "OnRPC_AcceptInvitation");
             rpl.RegisterHandler(RPC_DECLINE_INVITATION, this, "OnRPC_DeclineInvitation");
             rpl.RegisterHandler(RPC_SYNC_TEAM_DATA, this, "OnRPC_SyncTeamData");
+            rpl.RegisterHandler(RPC_LOCK_VEHICLE, this, "OnRPC_LockVehicle");
+            rpl.RegisterHandler(RPC_UNLOCK_VEHICLE, this, "OnRPC_UnlockVehicle");
         }
     }
     
