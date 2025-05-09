@@ -155,6 +155,21 @@ class FileExplorerHandler(http.server.SimpleHTTPRequestHandler):
 PORT = 5000
 Handler = FileExplorerHandler
 
-with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    print(f"Serving at port {PORT}")
-    httpd.serve_forever()
+# Allow socket reuse to prevent "address already in use" errors
+socketserver.TCPServer.allow_reuse_address = True
+
+try:
+    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        print(f"Serving at port {PORT}")
+        httpd.serve_forever()
+except OSError as e:
+    if e.errno == 98:  # Address already in use
+        print("Port already in use. Trying alternate port.")
+        # Try alternate port
+        PORT = 5001
+        with socketserver.TCPServer(("", PORT), Handler) as httpd:
+            print(f"Serving at alternate port {PORT}")
+            httpd.serve_forever()
+    else:
+        # Re-raise other errors
+        raise

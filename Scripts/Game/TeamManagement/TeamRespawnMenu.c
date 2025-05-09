@@ -156,7 +156,8 @@ class TeamRespawnMenu: SCR_ScriptedWidgetComponent
                     // Format cooldown time
                     int minutes = Math.Floor(remainingCooldown / 60);
                     int seconds = Math.Floor(remainingCooldown) % 60;
-                    string cooldownText = minutes.ToString() + ":" + (seconds < 10 ? "0" + seconds.ToString() : seconds.ToString());
+                    string secondsStr = seconds < 10 ? "0" + seconds.ToString() : seconds.ToString();
+                    string cooldownText = minutes.ToString() + ":" + secondsStr;
 
                     // Disable button and show cooldown time
                     selectButton.SetEnabled(false);
