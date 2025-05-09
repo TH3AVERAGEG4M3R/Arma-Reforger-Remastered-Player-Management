@@ -269,7 +269,7 @@ class TeamButtonHandler : ScriptedWidgetEventHandler
     {
         if (button == MouseButton.LEFT && m_Menu)
         {
-            GetGame().GetCallQueue().CallLater(m_Menu[m_CallbackName], 0);
+            GetGame().GetCallQueue().CallLater(m_Menu.m_CallbackName, 0, m_Menu);
             return true;
         }
         return false;
