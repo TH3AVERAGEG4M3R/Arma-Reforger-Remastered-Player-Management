@@ -173,9 +173,10 @@ class TeamRespawnMenu : SCR_ScriptedWidgetComponent
                 }
             }
         }
+    }
 
-        // Update status text
-        if (m_wStatusText)
+    // Update status text
+    if (m_wStatusText)
         {
             if (m_AvailableRespawnPoints.Count() > 0)
             {

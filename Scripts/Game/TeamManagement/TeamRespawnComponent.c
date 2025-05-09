@@ -313,4 +313,3 @@ class TeamRespawnComponent : GenericComponent
         return true;
     }
     }
-}
