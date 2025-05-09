@@ -1,0 +1,4 @@
+// EDDS texture format placeholder
+// In a real implementation, this would be a properly formatted binary image file
+// For this prototype, we're using a placeholder file that the game engine would replace
+// with actual texture data during packaging
