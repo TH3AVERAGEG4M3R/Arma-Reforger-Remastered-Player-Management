@@ -5,7 +5,7 @@
 */
 class TeamFlagpole : GenericEntity
 {
-    protected TeamRespawnComponent m_RespawnComponent;
+    protected int m_RespawnComponentID;
     protected RplComponent m_RplComponent;
     
     //------------------------------------------------------------------------------------------------
@@ -21,10 +21,16 @@ class TeamFlagpole : GenericEntity
         super.EOnInit(owner);
         
         // Add respawn component
-        m_RespawnComponent = TeamRespawnComponent.Cast(FindComponent(TeamRespawnComponent));
-        if (!m_RespawnComponent)
+        TeamRespawnComponent respComp = TeamRespawnComponent.Cast(FindComponent(TeamRespawnComponent));
+        if (!respComp)
         {
-            m_RespawnComponent = TeamRespawnComponent.Cast(AddComponent(TeamRespawnComponent));
+            respComp = TeamRespawnComponent.Cast(AddComponent(TeamRespawnComponent));
+        }
+        
+        // Store the component ID instead of a direct reference
+        if (respComp)
+        {
+            m_RespawnComponentID = respComp.GetComponentID();
         }
         
         // Get RplComponent
@@ -127,9 +133,10 @@ class TeamFlagpole : GenericEntity
             }
                 
             // Assign the team to this respawn point
-            if (m_RespawnComponent)
+            TeamRespawnComponent respComp = GetRespawnComponent();
+            if (respComp)
             {
-                m_RespawnComponent.AssignTeam(teamID, playerID, customName);
+                respComp.AssignTeam(teamID, playerID, customName);
                 
                 // Register flagpole with the team manager
                 teamManager.RegisterFlagpole(teamID, this);
@@ -155,10 +162,11 @@ class TeamFlagpole : GenericEntity
     */
     bool IsOwned()
     {
-        if (!m_RespawnComponent)
+        TeamRespawnComponent respComp = GetRespawnComponent();
+        if (!respComp)
             return false;
             
-        return m_RespawnComponent.GetTeamID() != -1;
+        return respComp.GetTeamID() != -1;
     }
     
     //------------------------------------------------------------------------------------------------
@@ -168,6 +176,6 @@ class TeamFlagpole : GenericEntity
     */
     TeamRespawnComponent GetRespawnComponent()
     {
-        return m_RespawnComponent;
+        return TeamRespawnComponent.Cast(FindComponentByID(m_RespawnComponentID));
     }
 }
