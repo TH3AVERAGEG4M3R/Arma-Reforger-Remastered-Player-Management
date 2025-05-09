@@ -455,10 +455,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param rpl Replication component
      * @param ctx Script call context for RPC
      */
-    void OnRPC_JoinTeam(RplComponent rpl, ScriptRPC rpc)
+    void OnRPC_JoinTeam(RplComponent rpl, ScriptCallContext ctx)
     {
-        int teamID = rpc.Read();
-        IEntity player = rpc.Read();
+        int teamID = ctx.Read();
+        IEntity player = ctx.Read();
         
         if (GetGame().IsServer())
         {
@@ -467,7 +467,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         
         // Client side handling (from server broadcast)
-        bool success = rpc.Read();
+        bool success = ctx.Read();
         
         if (success)
         {
@@ -482,9 +482,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param rpl Replication component
      * @param ctx Script call context for RPC
      */
-    void OnRPC_LeaveTeam(RplComponent rpl, ScriptRPC rpc)
+    void OnRPC_LeaveTeam(RplComponent rpl, ScriptCallContext ctx)
     {
-        IEntity player = rpc.Read();
+        IEntity player = ctx.Read();
         
         if (GetGame().IsServer())
         {
@@ -493,8 +493,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         
         // Client side handling (from server broadcast)
-        int teamID = rpc.Read();
-        bool success = rpc.Read();
+        int teamID = ctx.Read();
+        bool success = ctx.Read();
         
         if (success)
         {
@@ -509,10 +509,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param rpl Replication component
      * @param ctx Script call context for RPC
      */
-    void OnRPC_SendInvitation(RplComponent rpl, ScriptRPC rpc)
+    void OnRPC_SendInvitation(RplComponent rpl, ScriptCallContext ctx)
     {
-        IEntity sender = rpc.Read();
-        string receiverID = rpc.Read();
+        IEntity sender = ctx.Read();
+        string receiverID = ctx.Read();
         
         if (GetGame().IsServer())
         {
@@ -521,7 +521,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         
         // Client side handling
-        bool success = rpc.Read();
+        bool success = ctx.Read();
         
         if (success)
         {
@@ -542,10 +542,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param rpl Replication component
      * @param ctx Script call context for RPC
      */
-    void OnRPC_AcceptInvitation(RplComponent rpl, ScriptRPC rpc)
+    void OnRPC_AcceptInvitation(RplComponent rpl, ScriptCallContext ctx)
     {
-        string invitationID = rpc.Read();
-        IEntity player = rpc.Read();
+        string invitationID = ctx.Read();
+        IEntity player = ctx.Read();
         
         if (GetGame().IsServer())
         {
@@ -554,8 +554,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         
         // Client side handling
-        int teamID = rpc.Read();
-        bool success = rpc.Read();
+        int teamID = ctx.Read();
+        bool success = ctx.Read();
         
         if (success)
         {
@@ -571,10 +571,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param rpl Replication component
      * @param ctx Script call context for RPC
      */
-    void OnRPC_DeclineInvitation(RplComponent rpl, ScriptRPC rpc)
+    void OnRPC_DeclineInvitation(RplComponent rpl, ScriptCallContext ctx)
     {
-        string invitationID = rpc.Read();
-        IEntity player = rpc.Read();
+        string invitationID = ctx.Read();
+        IEntity player = ctx.Read();
         
         if (GetGame().IsServer())
         {
@@ -583,7 +583,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         
         // Client side handling
-        bool success = rpc.Read();
+        bool success = ctx.Read();
         
         if (success)
         {
@@ -597,7 +597,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param rpl Replication component
      * @param ctx Script call context for RPC
      */
-    void OnRPC_SyncTeamData(RplComponent rpl, ScriptRPC rpc)
+    void OnRPC_SyncTeamData(RplComponent rpl, ScriptCallContext ctx)
     {
         if (GetGame().IsServer())
         {
@@ -606,8 +606,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         
         // Read team data
-        int teamID = rpc.Read();
-        int memberCount = rpc.Read();
+        int teamID = ctx.Read();
+        int memberCount = ctx.Read();
         
         // Create team on client if it doesn't exist
         if (!m_TeamManager.TeamExists(teamID))
