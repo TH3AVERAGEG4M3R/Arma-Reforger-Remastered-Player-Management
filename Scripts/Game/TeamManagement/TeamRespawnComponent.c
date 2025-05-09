@@ -205,7 +205,8 @@ class TeamRespawnComponent : GenericComponent
             {
                 int minutes = Math.Floor(remainingCooldown / 60);
                 int seconds = Math.Floor(remainingCooldown) % 60;
-                string cooldownText = minutes.ToString() + ":" + (seconds < 10 ? "0" + seconds.ToString() : seconds.ToString());
+                string secondsStr = seconds < 10 ? "0" + seconds.ToString() : seconds.ToString();
+                string cooldownText = minutes.ToString() + ":" + secondsStr;
                 SCR_NotificationSystem.SendNotification(pc, "You must wait " + cooldownText + " before respawning again.");
             }
             return false;

@@ -188,7 +188,7 @@ class TeamRespawnMenu: SCR_ScriptedWidgetComponent
             }
         }
     }
-
+    
     //------------------------------------------------------------------------------------------------
     /*!
         Find all respawn points available for the player's team
