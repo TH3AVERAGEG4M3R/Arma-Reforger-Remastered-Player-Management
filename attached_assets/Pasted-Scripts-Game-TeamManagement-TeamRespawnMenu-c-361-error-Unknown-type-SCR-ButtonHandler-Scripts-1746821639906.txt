@@ -1,0 +1,50 @@
+Scripts/Game/TeamManagement/TeamRespawnMenu.c(361): error: Unknown type 'SCR_ButtonHandler'
+Scripts/Game/TeamManagement/TeamRespawnMenu.c(381): error: Unknown type 'SCR_ButtonHandler'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(430): error: Unknown type 'ScriptCallContext'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(430): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(456): error: Unknown type 'ScriptCallContext'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(456): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(483): error: Unknown type 'ScriptCallContext'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(483): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(510): error: Unknown type 'ScriptCallContext'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(510): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(543): error: Unknown type 'ScriptCallContext'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(543): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(572): error: Unknown type 'ScriptCallContext'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(572): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(598): error: Unknown type 'ScriptCallContext'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(598): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(805): error: Unknown type 'ScriptCallContext'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(805): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(851): error: Unknown type 'ScriptCallContext'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(851): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(964): error: Unknown type 'ScriptCallContext'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(964): error: Error in parameters
+Scripts/Game/TeamManagement/TeamChatComponent.c(186): error: Unknown type 'ActionContext'
+Scripts/Game/TeamManagement/TeamChatComponent.c(186): error: Error in parameters
+Scripts/Game/TeamManagement/TeamChatComponent.c(212): error: Unknown type 'ActionContext'
+Scripts/Game/TeamManagement/TeamChatComponent.c(212): error: Error in parameters
+Scripts/Game/TeamManagement/TeamManagementMenu.c(268): error: Function 'OnMouseDown' is marked as override, but there is no function with this name in the base class
+Scripts/Game/TeamManagement/TeamPlayerComponent.c(128): error: Unknown type 'ActionContext'
+Scripts/Game/TeamManagement/TeamPlayerComponent.c(128): error: Error in parameters
+Scripts/Game/TeamManagement/TeamPlayerComponent.c(157): error: Unknown type 'ActionContext'
+Scripts/Game/TeamManagement/TeamPlayerComponent.c(157): error: Error in parameters
+Scripts/Game/TeamManagement/TeamManager.c(25): error: Strong ref to 'IEntity' class is not allowed
+Scripts/Game/TeamManagement/TeamManager.c(25): error: Unknown type 'array'
+Scripts/Game/TeamManagement/TeamManager.c(469): error: Strong ref to 'IEntity' class is not allowed
+Scripts/Game/TeamManagement/TeamFlagpole.c(49): error: Unknown type 'ScriptCallContext'
+Scripts/Game/TeamManagement/TeamFlagpole.c(49): error: Error in parameters
+Scripts/Game/TeamManagement/SCR_MapEntity.c(98): error: Unknown type 'ActionContext'
+Scripts/Game/TeamManagement/SCR_MapEntity.c(98): error: Error in parameters
+Scripts/Game/TeamManagement/SCR_MapEntity.c(110): error: Unknown type 'ActionContext'
+Scripts/Game/TeamManagement/SCR_MapEntity.c(110): error: Error in parameters
+Scripts/Game/TeamManagement/SCR_HUDManagerComponent.c(59): error: Unknown type 'ActionContext'
+Scripts/Game/TeamManagement/SCR_HUDManagerComponent.c(59): error: Error in parameters
+Scripts/Game/TeamManagement/TeamRespawnComponent.c(43): error: Function 'OnPostInit' is marked as override, but there is no function with this name in the base class
+Scripts/Game/TeamManagement/TeamRespawnComponent.c(65): error: Function 'RplSave' is marked as override, but there is no function with this name in the base class
+Scripts/Game/TeamManagement/TeamRespawnComponent.c(74): error: Function 'RplLoad' is marked as override, but there is no function with this name in the base class
+Scripts/Game/TeamManagement/TeamRespawnComponent.c(114): error: Unknown type 'ScriptCallContext'
+Scripts/Game/TeamManagement/TeamRespawnComponent.c(114): error: Error in parameters
+Scripts/Game/TeamManagement/TeamRespawnComponent.c(247): error: Unknown type 'ScriptCallContext'
+Scripts/Game/TeamManagement/TeamRespawnComponent.c(247): error: Error in parameters
+Scripts/Game/TeamManagement/TeamFlagpole.c(8): error: Strong ref to 'TeamRespawnComponent' class is not allowed

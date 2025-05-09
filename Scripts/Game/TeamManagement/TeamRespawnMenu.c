@@ -358,7 +358,7 @@ class TeamRespawnMenu
 }
 
 //------------------------------------------------------------------------------------------------
-class PurchaseFlagpoleButtonHandler : SCR_ButtonHandler
+class PurchaseFlagpoleButtonHandler : ScriptedWidgetEventHandler
 {
     protected TeamRespawnMenu m_Menu;
     
@@ -367,18 +367,19 @@ class PurchaseFlagpoleButtonHandler : SCR_ButtonHandler
         m_Menu = menu;
     }
     
-    override bool OnClick(Widget w)
+    override bool OnMouseDown(Widget w, int x, int y, int button)
     {
-        if (m_Menu)
+        if (button == MouseButton.LEFT && m_Menu)
         {
             m_Menu.OnPurchaseFlagpole();
+            return true;
         }
-        return true;
+        return false;
     }
 }
 
 //------------------------------------------------------------------------------------------------
-class SelectRespawnButtonHandler : SCR_ButtonHandler
+class SelectRespawnButtonHandler : ScriptedWidgetEventHandler
 {
     protected TeamRespawnMenu m_Menu;
     protected int m_RespawnEntityID;
@@ -389,12 +390,13 @@ class SelectRespawnButtonHandler : SCR_ButtonHandler
         m_RespawnEntityID = respawnEntityID;
     }
     
-    override bool OnClick(Widget w)
+    override bool OnMouseDown(Widget w, int x, int y, int button)
     {
-        if (m_Menu)
+        if (button == MouseButton.LEFT && m_Menu)
         {
             m_Menu.OnSelectRespawnPoint(m_RespawnEntityID);
+            return true;
         }
-        return true;
+        return false;
     }
 }
