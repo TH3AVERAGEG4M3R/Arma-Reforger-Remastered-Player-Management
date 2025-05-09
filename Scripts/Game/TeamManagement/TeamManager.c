@@ -18,6 +18,12 @@ class TeamManager
     // Maximum number of players allowed in a team
     static const int MAX_TEAM_SIZE = 8;
     
+    // Maximum number of flagpoles allowed per team
+    static const int MAX_FLAGPOLES_PER_TEAM = 1;
+    
+    // Map of teams to their flagpoles
+    protected ref map<int, ref array<ref IEntity>> m_TeamFlagpoles = new map<int, ref array<ref IEntity>>();
+    
     // Network component for multiplayer support
     protected ref TeamNetworkComponent m_NetworkComponent;
     
@@ -398,6 +404,62 @@ class TeamManager
     array<ref TeamMember> GetTeamMembers(int teamID)
     {
         return m_Teams.Get(teamID);
+    }
+    
+    /**
+     * @brief Register a flagpole for a team
+     * @param teamID The ID of the team
+     * @param flagpole The flagpole entity
+     * @return True if successful, false if team already has max number of flagpoles
+     */
+    bool RegisterFlagpole(int teamID, IEntity flagpole)
+    {
+        // Check if the team exists
+        if (!m_Teams.Contains(teamID))
+            return false;
+            
+        // Create the array if it doesn't exist
+        if (!m_TeamFlagpoles.Contains(teamID))
+        {
+            m_TeamFlagpoles.Insert(teamID, new array<ref IEntity>());
+        }
+        
+        ref array<ref IEntity> flagpoles = m_TeamFlagpoles.Get(teamID);
+        
+        // Check if team has reached the maximum number of flagpoles
+        if (flagpoles.Count() >= MAX_FLAGPOLES_PER_TEAM)
+            return false;
+            
+        // Add the flagpole to the team
+        flagpoles.Insert(flagpole);
+        
+        return true;
+    }
+    
+    /**
+     * @brief Get the number of flagpoles a team has
+     * @param teamID The ID of the team
+     * @return The number of flagpoles
+     */
+    int GetTeamFlagpoleCount(int teamID)
+    {
+        if (!m_TeamFlagpoles.Contains(teamID))
+            return 0;
+            
+        return m_TeamFlagpoles.Get(teamID).Count();
+    }
+    
+    /**
+     * @brief Get all flagpoles for a team
+     * @param teamID The ID of the team
+     * @return Array of flagpole entities, or empty array if none
+     */
+    array<ref IEntity> GetTeamFlagpoles(int teamID)
+    {
+        if (!m_TeamFlagpoles.Contains(teamID))
+            return new array<ref IEntity>();
+            
+        return m_TeamFlagpoles.Get(teamID);
     }
     
     /**

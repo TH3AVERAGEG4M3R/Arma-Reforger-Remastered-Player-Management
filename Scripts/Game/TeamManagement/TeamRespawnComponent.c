@@ -21,8 +21,11 @@ class TeamRespawnComponent : GenericComponent
     // Position of the respawn point
     protected vector m_Position;
     
-    // Cost to purchase this respawn point
-    static const int PURCHASE_COST = 500;
+    // Cost to purchase this respawn point - placeholder for now
+    static const int PURCHASE_COST = 9999; // "notYetDefined" - will be set by server admin
+    
+    // Minimum distance between flagpoles in meters
+    static const float MIN_FLAGPOLE_DISTANCE = 100.0;
     
     //------------------------------------------------------------------------------------------------
     void TeamRespawnComponent(IEntityComponentSource src, IEntity ent, IEntity parent)
@@ -219,5 +222,31 @@ class TeamRespawnComponent : GenericComponent
     vector GetRespawnPosition()
     {
         return m_Position;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        Check if a flagpole can be placed at a given position based on proximity to other flagpoles
+        \param position The position to check
+        \return True if the position is valid, false otherwise
+    */
+    static bool CanPlaceFlagpoleAt(vector position)
+    {
+        // Find all existing flagpoles in the world
+        array<IEntity> existingFlagpoles = new array<IEntity>();
+        GetGame().GetWorld().FindEntitiesByType(TeamFlagpole, existingFlagpoles);
+        
+        // Check distance to each existing flagpole
+        foreach (IEntity entity : existingFlagpoles)
+        {
+            vector flagpolePos = entity.GetOrigin();
+            float distance = vector.Distance(position, flagpolePos);
+            
+            // If too close to another flagpole, return false
+            if (distance < MIN_FLAGPOLE_DISTANCE)
+                return false;
+        }
+        
+        return true;
     }
 }

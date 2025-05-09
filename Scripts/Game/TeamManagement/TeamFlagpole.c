@@ -55,33 +55,10 @@ class TeamFlagpole : GenericEntity
         ctx.Read(playerID);
         ctx.Read(customName);
         
-        // Validate the player and check if they are a team leader
-        IEntity playerEntity = GetGame().GetWorld().FindEntityByID(playerID);
-        if (!playerEntity)
-            return;
-            
-        // Get the TeamManager
-        TeamManager teamManager = TeamManager.GetInstance();
-        if (!teamManager)
-            return;
-            
-        // Check if the player is a team leader
-        TeamMember playerMember = teamManager.GetTeamMemberByEntityID(playerID);
-        if (!playerMember || !playerMember.IsLeader())
-            return;
-            
-        // Check if player has enough resources to purchase the flagpole
-        // This depends on the game's economy system, so there should be an additional check here.
-        // For now, we assume the player has enough resources.
+        // Call the purchase method directly
+        bool success = PurchaseFlagpole(playerID, customName);
         
-        // Assign the team to this respawn point
-        if (m_RespawnComponent)
-        {
-            m_RespawnComponent.AssignTeam(playerMember.GetTeamID(), playerID, customName);
-        }
-        
-        // Notify the player that purchase was successful
-        // This could send a UI notification to the player
+        // Note: Notifications are handled in the PurchaseFlagpole method
     }
     
     //------------------------------------------------------------------------------------------------
@@ -89,8 +66,9 @@ class TeamFlagpole : GenericEntity
         Method for a player to purchase this flagpole
         \param playerID Entity ID of the player making the purchase
         \param customName Optional custom name for the respawn point
+        \return True if purchase was successful, false otherwise
     */
-    void PurchaseFlagpole(int playerID, string customName = "")
+    bool PurchaseFlagpole(int playerID, string customName = "")
     {
         if (GetGame().GetNetMode() == ENetMode.NM_Client)
         {
@@ -101,30 +79,72 @@ class TeamFlagpole : GenericEntity
                 rpc.Write(playerID);
                 rpc.Write(customName);
                 m_RplComponent.SendRPC("RPC_PurchaseFlagpole", rpc);
+                return true; // Client doesn't know the result yet
             }
+            return false;
         }
         else
         {
             // Direct call on the server
             IEntity playerEntity = GetGame().GetWorld().FindEntityByID(playerID);
             if (!playerEntity)
-                return;
+                return false;
                 
             // Get the TeamManager
             TeamManager teamManager = TeamManager.GetInstance();
             if (!teamManager)
-                return;
+                return false;
                 
             // Check if the player is a team leader
             TeamMember playerMember = teamManager.GetTeamMemberByEntityID(playerID);
             if (!playerMember || !playerMember.IsLeader())
-                return;
+                return false;
+            
+            int teamID = playerMember.GetTeamID();
+            
+            // Check if team already has maximum number of flagpoles
+            if (teamManager.GetTeamFlagpoleCount(teamID) >= TeamManager.MAX_FLAGPOLES_PER_TEAM)
+            {
+                // Notify player
+                PlayerController pc = PlayerController.Cast(playerEntity.GetController());
+                if (pc)
+                {
+                    SCR_NotificationSystem.SendNotification(pc, "Your team already has the maximum number of respawn points.");
+                }
+                return false;
+            }
+            
+            // Check if this location is valid (not too close to other flagpoles)
+            if (!TeamRespawnComponent.CanPlaceFlagpoleAt(GetOrigin()))
+            {
+                // Notify player
+                PlayerController pc = PlayerController.Cast(playerEntity.GetController());
+                if (pc)
+                {
+                    SCR_NotificationSystem.SendNotification(pc, "Cannot place respawn point here. Too close to another respawn point.");
+                }
+                return false;
+            }
                 
             // Assign the team to this respawn point
             if (m_RespawnComponent)
             {
-                m_RespawnComponent.AssignTeam(playerMember.GetTeamID(), playerID, customName);
+                m_RespawnComponent.AssignTeam(teamID, playerID, customName);
+                
+                // Register flagpole with the team manager
+                teamManager.RegisterFlagpole(teamID, this);
+                
+                // Notify player
+                PlayerController pc = PlayerController.Cast(playerEntity.GetController());
+                if (pc)
+                {
+                    SCR_NotificationSystem.SendNotification(pc, "Team respawn point purchased successfully!");
+                }
+                
+                return true;
             }
+            
+            return false;
         }
     }
     
