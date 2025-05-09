@@ -156,7 +156,11 @@ class TeamRespawnMenu: SCR_ScriptedWidgetComponent
                     // Format cooldown time
                     int minutes = Math.Floor(remainingCooldown / 60);
                     int seconds = Math.Floor(remainingCooldown) % 60;
-                    string secondsStr = seconds < 10 ? "0" + seconds.ToString() : seconds.ToString();
+                    string secondsStr;
+                    if (seconds < 10)
+                        secondsStr = "0" + seconds.ToString();
+                    else
+                        secondsStr = seconds.ToString();
                     string cooldownText = minutes.ToString() + ":" + secondsStr;
 
                     // Disable button and show cooldown time
@@ -178,15 +182,14 @@ class TeamRespawnMenu: SCR_ScriptedWidgetComponent
 
     // Update status text
     if (m_wStatusText)
+    {
+        if (m_AvailableRespawnPoints.Count() > 0)
         {
-            if (m_AvailableRespawnPoints.Count() > 0)
-            {
-                m_wStatusText.SetText("Select a respawn point to spawn at that location.");
-            }
-            else
-            {
-                m_wStatusText.SetText("No team respawn points available. Team leaders can purchase respawn points.");
-            }
+            m_wStatusText.SetText("Select a respawn point to spawn at that location.");
+        }
+        else
+        {
+            m_wStatusText.SetText("No team respawn points available. Team leaders can purchase respawn points.");
         }
     }
     
