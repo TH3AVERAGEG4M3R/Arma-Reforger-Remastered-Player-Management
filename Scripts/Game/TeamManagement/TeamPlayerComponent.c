@@ -33,6 +33,9 @@ class TeamPlayerComponent : GenericComponent
         
         // Register for player death events
         RegisterForPlayerDeath(owner);
+        
+        // Add visuals component for team indicators if it doesn't exist
+        AddVisualsComponent(owner);
     }
     
     //------------------------------------------------------------------------------------------------
@@ -518,5 +521,29 @@ class TeamPlayerComponent : GenericComponent
         // Use game's notification system if available
         // For now, just print to the console
         Print("NOTIFICATION: " + message);
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Add the TeamVisualsComponent for team HUD/map indicators
+     * @param owner The entity to add the component to
+     */
+    protected void AddVisualsComponent(IEntity owner)
+    {
+        // Check if component already exists
+        TeamVisualsComponent visualsComponent = TeamVisualsComponent.Cast(owner.FindComponent(TeamVisualsComponent));
+        if (visualsComponent)
+            return; // Already has the component
+        
+        // Create and add the component
+        visualsComponent = new TeamVisualsComponent();
+        if (owner.AddComponent(visualsComponent))
+        {
+            Print("Added TeamVisualsComponent to player: " + GetPlayerName());
+        }
+        else
+        {
+            Print("Failed to add TeamVisualsComponent to player: " + GetPlayerName());
+        }
     }
 }

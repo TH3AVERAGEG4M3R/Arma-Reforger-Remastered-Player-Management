@@ -1,0 +1,40 @@
+FrameWidgetClass {
+ Name "TeamChatWidget"
+ "Ignore input" 0
+ {
+  OverlayWidgetClass {
+   Name "ChatOverlay"
+   Position 20 20
+   Size 400 300
+   "Z Order" 10
+   {
+    FrameWidgetClass {
+     Name "ChatFrame"
+     "Ignore input" 0
+     {
+      TextListboxWidgetClass {
+       Name "ChatDisplay"
+       Position 0 0
+       Size 400 270
+       "Font Size" 16
+       "Line spacing" 0.1
+       "Highlight row" 0
+       Lines 20
+       "Strip leading spaces" 0
+       "No edit menu" 1
+       style blank
+      }
+      EditBoxWidgetClass {
+       Name "InputBox"
+       Position 0 270
+       Size 400 30
+       "Font Size" 16
+       "Max Characters" 128
+       style default
+      }
+     }
+    }
+   }
+  }
+ }
+}

@@ -20,6 +20,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     protected const string RPC_SYNC_TEAM_DATA = "RPC_SyncTeamData";
     protected const string RPC_LOCK_VEHICLE = "RPC_LockVehicle";
     protected const string RPC_UNLOCK_VEHICLE = "RPC_UnlockVehicle";
+    protected const string RPC_TEAM_CHAT_MESSAGE = "RPC_TeamChatMessage";
     
     /**
      * @brief Get the singleton instance
@@ -53,6 +54,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             rpl.RegisterHandler(RPC_SYNC_TEAM_DATA, this, "OnRPC_SyncTeamData");
             rpl.RegisterHandler(RPC_LOCK_VEHICLE, this, "OnRPC_LockVehicle");
             rpl.RegisterHandler(RPC_UNLOCK_VEHICLE, this, "OnRPC_UnlockVehicle");
+            rpl.RegisterHandler(RPC_TEAM_CHAT_MESSAGE, this, "OnRPC_TeamChatMessage");
         }
     }
     
@@ -877,5 +879,152 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 Print("Vehicle unlocked");
             }
         }
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Network-safe method to send a team chat message
+     * @param sender The player sending the message
+     * @param messageText The text of the message
+     * @return True if message sent successfully, false otherwise
+     */
+    bool SendTeamChatMessage(IEntity sender, string messageText)
+    {
+        if (!sender || messageText.Length() == 0)
+            return false;
+            
+        string senderID = GetPlayerIdentity(sender);
+        string senderName = GetPlayerName(sender);
+        
+        if (senderID.Length() == 0)
+            return false;
+            
+        // Get the player's team
+        int teamID = m_TeamManager.GetPlayerTeam(senderID);
+        if (teamID <= 0)
+            return false; // Player is not in a team
+            
+        if (!GetGame().IsServer())
+        {
+            // Client side - send RPC to server
+            RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
+            if (rpl)
+            {
+                ScriptCallContext ctx = new ScriptCallContext();
+                ctx.Write(sender);
+                ctx.Write(messageText);
+                rpl.SendRpc(RPC_TEAM_CHAT_MESSAGE, ctx, true, null);
+            }
+            
+            return false; // Actual result will be set by server response
+        }
+        else
+        {
+            // Server side - distribute message to all team members
+            
+            // Create message
+            ref TeamChatMessage message = new TeamChatMessage(teamID, senderID, senderName, messageText);
+            
+            // Get all team members
+            array<ref TeamMember> teamMembers = m_TeamManager.GetTeamMembers(teamID);
+            if (!teamMembers || teamMembers.Count() == 0)
+                return false;
+                
+            // Send message to all team members
+            RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
+            if (rpl)
+            {
+                ScriptCallContext ctx = new ScriptCallContext();
+                ctx.Write(teamID);
+                ctx.Write(senderID);
+                ctx.Write(senderName);
+                ctx.Write(messageText);
+                
+                foreach (ref TeamMember member : teamMembers)
+                {
+                    // Get player entity
+                    IEntity memberEntity = GetPlayerByIdentity(member.GetPlayerID());
+                    if (memberEntity)
+                    {
+                        // Send message to this team member
+                        rpl.SendRpc(RPC_TEAM_CHAT_MESSAGE, ctx, true, memberEntity);
+                    }
+                }
+            }
+            
+            return true;
+        }
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief RPC handler for team chat messages
+     * @param ctx The script call context
+     */
+    void OnRPC_TeamChatMessage(ScriptCallContext ctx)
+    {
+        if (!ctx)
+            return;
+            
+        if (GetGame().IsServer())
+        {
+            // Server side - process the message
+            IEntity sender = ctx.Read();
+            string messageText = ctx.Read();
+            
+            if (!sender || messageText.Length() == 0)
+                return;
+                
+            // Forward the message to all team members
+            SendTeamChatMessage(sender, messageText);
+        }
+        else
+        {
+            // Client side - display the message
+            int teamID = ctx.Read();
+            string senderID = ctx.Read();
+            string senderName = ctx.Read();
+            string messageText = ctx.Read();
+            
+            // Create message object
+            ref TeamChatMessage message = new TeamChatMessage(teamID, senderID, senderName, messageText);
+            
+            // Find all player entities with team chat components
+            array<IEntity> players = GetGame().GetPlayerManager().GetPlayers();
+            if (players)
+            {
+                foreach (IEntity player : players)
+                {
+                    if (player.IsLocal())
+                    {
+                        // Get chat component
+                        TeamChatComponent chatComponent = TeamChatComponent.Cast(player.FindComponent(TeamChatComponent));
+                        if (chatComponent)
+                        {
+                            // Deliver the message
+                            chatComponent.ReceiveTeamChatMessage(message);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Get player name
+     * @param player The player entity
+     * @return The player name
+     */
+    protected string GetPlayerName(IEntity player)
+    {
+        if (!player)
+            return "Unknown";
+            
+        PlayerController pc = PlayerController.Cast(player.GetController());
+        if (!pc)
+            return "Unknown";
+            
+        return pc.GetPlayerName();
     }
 }
