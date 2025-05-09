@@ -433,10 +433,10 @@ class TeamManager
         // Create the array if it doesn't exist
         if (!m_TeamFlagpoles.Contains(teamID))
         {
-            m_TeamFlagpoles.Insert(teamID, new array<ref IEntity>());
+            m_TeamFlagpoles.Insert(teamID, new array<EntityID>());
         }
         
-        ref array<ref IEntity> flagpoles = m_TeamFlagpoles.Get(teamID);
+        ref array<EntityID> flagpoles = m_TeamFlagpoles.Get(teamID);
         
         // Check if team has reached the maximum number of flagpoles
         if (flagpoles.Count() >= MAX_FLAGPOLES_PER_TEAM)
