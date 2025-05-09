@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<FrameWidgetClass name="VehicleLockDialogRoot" inherits="DialogBaseWidget">
+    <Property name="Size" value="500 300" />
+    <Property name="Header" value="Vehicle Lock Controls" />
+    
+    <Widget name="ContentPanel" layout="VerticalLayoutGroup">
+        <Property name="Margin" value="20 40 20 20" />
+        <Property name="Gap" value="10" />
+        
+        <TextWidgetClass name="VehicleNameText">
+            <Property name="Text" value="Vehicle: Unknown" />
+            <Property name="FontSize" value="20" />
+            <Property name="TextHAlign" value="Center" />
+        </TextWidgetClass>
+        
+        <TextWidgetClass name="LockStatusText">
+            <Property name="Text" value="Status: Unlocked" />
+            <Property name="FontSize" value="16" />
+            <Property name="TextHAlign" value="Center" />
+            <Property name="Margin" value="0 20 0 20" />
+        </TextWidgetClass>
+        
+        <Widget name="TeamInfoPanel" layout="VerticalLayoutGroup">
+            <Property name="Gap" value="5" />
+            
+            <TextWidgetClass name="TeamInfoText">
+                <Property name="Text" value="Your Team:" />
+                <Property name="FontSize" value="14" />
+                <Property name="TextHAlign" value="Center" />
+            </TextWidgetClass>
+            
+            <TextWidgetClass name="TeamMembersText">
+                <Property name="Text" value="No team members" />
+                <Property name="FontSize" value="12" />
+                <Property name="TextHAlign" value="Center" />
+                <Property name="Margin" value="0 0 0 20" />
+            </TextWidgetClass>
+        </Widget>
+        
+        <Widget name="ButtonPanel" layout="HorizontalLayoutGroup">
+            <Property name="Gap" value="20" />
+            <Property name="Align" value="Center" />
+            
+            <ButtonWidgetClass name="LockButton">
+                <Property name="Text" value="Lock for Team" />
+                <Property name="Size" value="150 40" />
+            </ButtonWidgetClass>
+            
+            <ButtonWidgetClass name="UnlockButton">
+                <Property name="Text" value="Unlock" />
+                <Property name="Size" value="150 40" />
+            </ButtonWidgetClass>
+        </Widget>
+    </Widget>
+</FrameWidgetClass>

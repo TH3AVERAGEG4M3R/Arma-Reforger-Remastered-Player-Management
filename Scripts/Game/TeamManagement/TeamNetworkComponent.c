@@ -662,4 +662,220 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         
         return null;
     }
+    
+    //=====================================================
+    // Vehicle Management Methods
+    //=====================================================
+    
+    /**
+     * @brief Network-safe method to lock a vehicle for team access
+     * @param player The player locking the vehicle
+     * @param vehicle The vehicle entity to lock
+     * @return True if successful, false otherwise
+     */
+    bool LockVehicle(IEntity player, IEntity vehicle)
+    {
+        if (!GetGame().IsServer())
+        {
+            // Client side - send RPC to server
+            RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
+            if (rpl)
+            {
+                ScriptCallContext ctx = new ScriptCallContext();
+                ctx.Write(player);
+                ctx.Write(vehicle);
+                rpl.SendRpc(RPC_LOCK_VEHICLE, ctx, true, null);
+            }
+            
+            return false; // Actual result will be set by server response
+        }
+        else
+        {
+            // Get the player's team ID
+            string playerID = GetPlayerIdentity(player);
+            int teamID = m_TeamManager.GetPlayerTeam(playerID);
+            
+            // Player must be in a team to lock a vehicle
+            if (teamID <= 0)
+                return false;
+            
+            // Get or create vehicle component
+            TeamVehicleComponent vehicleComp = TeamVehicleComponent.Cast(vehicle.FindComponent(TeamVehicleComponent));
+            if (!vehicleComp)
+            {
+                vehicleComp = new TeamVehicleComponent();
+                vehicle.AddComponent(vehicleComp);
+            }
+            
+            // Lock the vehicle
+            bool success = vehicleComp.LockVehicle(player);
+            
+            if (success)
+            {
+                // Broadcast to all team members
+                RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
+                if (rpl)
+                {
+                    ScriptCallContext ctx = new ScriptCallContext();
+                    ctx.Write(player);
+                    ctx.Write(vehicle);
+                    ctx.Write(teamID);
+                    ctx.Write(success);
+                    
+                    // Broadcast to all players in the team
+                    array<ref TeamMember> teamMembers = m_TeamManager.GetTeamMembers(teamID);
+                    if (teamMembers)
+                    {
+                        foreach (ref TeamMember member : teamMembers)
+                        {
+                            IEntity memberEntity = GetPlayerByIdentity(member.GetPlayerID());
+                            if (memberEntity)
+                                rpl.SendRpc(RPC_LOCK_VEHICLE, ctx, true, memberEntity);
+                        }
+                    }
+                }
+            }
+            
+            return success;
+        }
+    }
+    
+    /**
+     * @brief Network-safe method to unlock a vehicle
+     * @param player The player unlocking the vehicle
+     * @param vehicle The vehicle entity to unlock
+     * @return True if successful, false otherwise
+     */
+    bool UnlockVehicle(IEntity player, IEntity vehicle)
+    {
+        if (!GetGame().IsServer())
+        {
+            // Client side - send RPC to server
+            RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
+            if (rpl)
+            {
+                ScriptCallContext ctx = new ScriptCallContext();
+                ctx.Write(player);
+                ctx.Write(vehicle);
+                rpl.SendRpc(RPC_UNLOCK_VEHICLE, ctx, true, null);
+            }
+            
+            return false; // Actual result will be set by server response
+        }
+        else
+        {
+            // Get vehicle component
+            TeamVehicleComponent vehicleComp = TeamVehicleComponent.Cast(vehicle.FindComponent(TeamVehicleComponent));
+            if (!vehicleComp)
+                return false;
+            
+            // Get player's team ID
+            string playerID = GetPlayerIdentity(player);
+            int teamID = m_TeamManager.GetPlayerTeam(playerID);
+            
+            // Unlock the vehicle
+            bool success = vehicleComp.UnlockVehicle(player);
+            
+            if (success)
+            {
+                // Broadcast to all players
+                RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
+                if (rpl)
+                {
+                    ScriptCallContext ctx = new ScriptCallContext();
+                    ctx.Write(player);
+                    ctx.Write(vehicle);
+                    ctx.Write(success);
+                    
+                    // Broadcast to everyone since the vehicle is now publicly accessible
+                    rpl.BroadcastRpc(RPC_UNLOCK_VEHICLE, ctx, true, null);
+                }
+            }
+            
+            return success;
+        }
+    }
+    
+    /**
+     * @brief RPC handler for locking a vehicle
+     * @param ctx The script call context
+     */
+    void OnRPC_LockVehicle(ScriptCallContext ctx)
+    {
+        if (!ctx)
+            return;
+        
+        IEntity player = null;
+        IEntity vehicle = null;
+        
+        // Read parameters
+        player = ctx.Read();
+        vehicle = ctx.Read();
+        
+        if (!player || !vehicle)
+            return;
+            
+        if (GetGame().IsServer())
+        {
+            // Server side - handle the lock request
+            LockVehicle(player, vehicle);
+        }
+        else
+        {
+            // Client side - update UI or show notification
+            int teamID = ctx.Read();
+            bool success = ctx.Read();
+            
+            if (success)
+            {
+                // Update local vehicle state
+                TeamVehicleComponent vehicleComp = TeamVehicleComponent.Cast(vehicle.FindComponent(TeamVehicleComponent));
+                if (!vehicleComp)
+                {
+                    vehicleComp = new TeamVehicleComponent();
+                    vehicle.AddComponent(vehicleComp);
+                }
+                
+                // Show notification
+                Print("Vehicle locked for team " + teamID);
+            }
+        }
+    }
+    
+    /**
+     * @brief RPC handler for unlocking a vehicle
+     * @param ctx The script call context
+     */
+    void OnRPC_UnlockVehicle(ScriptCallContext ctx)
+    {
+        if (!ctx)
+            return;
+        
+        IEntity player = null;
+        IEntity vehicle = null;
+        
+        // Read parameters
+        player = ctx.Read();
+        vehicle = ctx.Read();
+        
+        if (!player || !vehicle)
+            return;
+            
+        if (GetGame().IsServer())
+        {
+            // Server side - handle the unlock request
+            UnlockVehicle(player, vehicle);
+        }
+        else
+        {
+            // Client side - update UI or show notification
+            bool success = ctx.Read();
+            
+            if (success)
+            {
+                // Show notification
+                Print("Vehicle unlocked");
+            }
+        }
+    }
 }

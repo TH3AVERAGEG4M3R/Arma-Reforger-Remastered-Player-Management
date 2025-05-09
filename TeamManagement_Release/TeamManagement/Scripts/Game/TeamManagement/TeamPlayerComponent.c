@@ -18,6 +18,9 @@ class TeamPlayerComponent : GenericComponent
         m_IsInitialized = true;
         
         Print("TeamPlayerComponent initialized for player: " + GetPlayerName());
+        
+        // Register for vehicle interaction callbacks if supported
+        RegisterForVehicleInteractions();
     }
     
     /**
@@ -37,6 +40,16 @@ class TeamPlayerComponent : GenericComponent
         }
         
         super.OnDelete(owner);
+    }
+    
+    /**
+     * @brief Register for vehicle interaction callbacks
+     */
+    protected void RegisterForVehicleInteractions()
+    {
+        // Register for vehicle-related events
+        // This will be implementation-specific depending on the game's vehicle system
+        Print("Player registered for vehicle interactions");
     }
     
     /**
@@ -217,5 +230,142 @@ class TeamPlayerComponent : GenericComponent
             return "Unknown";
         
         return pc.GetPlayerName();
+    }
+    
+    //=====================================================
+    // Vehicle Management Methods
+    //=====================================================
+    
+    /**
+     * @brief Lock a vehicle and restrict access to team members
+     * @param vehicle The vehicle entity to lock
+     * @return True if successful, false otherwise
+     */
+    bool LockVehicleForTeam(IEntity vehicle)
+    {
+        if (!m_IsInitialized || !vehicle)
+            return false;
+        
+        int teamID = GetCurrentTeam();
+        if (teamID <= 0)
+        {
+            // Player not in a team
+            NotifyPlayer("You must be in a team to lock a vehicle for team access");
+            return false;
+        }
+        
+        // Get or create the vehicle team component
+        TeamVehicleComponent vehicleComp = GetOrCreateVehicleComponent(vehicle);
+        if (!vehicleComp)
+            return false;
+        
+        // Get player entity
+        IEntity owner = GetOwner();
+        if (!owner)
+            return false;
+            
+        return vehicleComp.LockVehicle(owner);
+    }
+    
+    /**
+     * @brief Unlock a previously locked vehicle
+     * @param vehicle The vehicle entity to unlock
+     * @return True if successful, false otherwise
+     */
+    bool UnlockVehicle(IEntity vehicle)
+    {
+        if (!m_IsInitialized || !vehicle)
+            return false;
+        
+        // Get vehicle team component
+        TeamVehicleComponent vehicleComp = TeamVehicleComponent.Cast(vehicle.FindComponent(TeamVehicleComponent));
+        if (!vehicleComp)
+            return false;
+        
+        // Get player entity
+        IEntity owner = GetOwner();
+        if (!owner)
+            return false;
+            
+        return vehicleComp.UnlockVehicle(owner);
+    }
+    
+    /**
+     * @brief Check if player can access a vehicle based on team membership
+     * @param vehicle The vehicle to check
+     * @return True if access is allowed, false otherwise
+     */
+    bool CanAccessVehicle(IEntity vehicle)
+    {
+        if (!m_IsInitialized || !vehicle)
+            return true; // Default to allowing access
+        
+        // Get vehicle team component
+        TeamVehicleComponent vehicleComp = TeamVehicleComponent.Cast(vehicle.FindComponent(TeamVehicleComponent));
+        if (!vehicleComp)
+            return true; // No team component, allow access
+        
+        // Get player entity
+        IEntity owner = GetOwner();
+        if (!owner)
+            return false;
+            
+        return vehicleComp.CanAccessVehicle(owner);
+    }
+    
+    /**
+     * @brief Event handler for vehicle access attempts
+     * Called by the game when a player tries to enter a vehicle
+     * @param vehicle The vehicle being accessed
+     * @return True to allow access, false to deny
+     */
+    bool OnVehicleAccessAttempt(IEntity vehicle)
+    {
+        if (!m_IsInitialized || !vehicle)
+            return true; // Default to allowing access
+            
+        bool canAccess = CanAccessVehicle(vehicle);
+        
+        if (!canAccess)
+        {
+            // Notify player they can't access this vehicle
+            NotifyPlayer("You cannot access this vehicle as it is locked by another team");
+        }
+        
+        return canAccess;
+    }
+    
+    /**
+     * @brief Get or create a TeamVehicleComponent for the specified vehicle
+     * @param vehicle The vehicle entity
+     * @return The TeamVehicleComponent, or null if failed
+     */
+    private TeamVehicleComponent GetOrCreateVehicleComponent(IEntity vehicle)
+    {
+        if (!vehicle)
+            return null;
+            
+        // Try to find existing component
+        TeamVehicleComponent vehicleComp = TeamVehicleComponent.Cast(vehicle.FindComponent(TeamVehicleComponent));
+        
+        // If not found, create a new one
+        if (!vehicleComp)
+        {
+            vehicleComp = new TeamVehicleComponent();
+            vehicle.AddComponent(vehicleComp);
+        }
+        
+        return vehicleComp;
+    }
+    
+    /**
+     * @brief Send a notification to the player
+     * @param message The message to send
+     */
+    private void NotifyPlayer(string message)
+    {
+        // Use game's notification system if available
+        // For now, just print to the console
+        Print("NOTIFICATION: " + message);
     }
 }
