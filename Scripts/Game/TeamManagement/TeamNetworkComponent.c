@@ -408,7 +408,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
         if (rpl)
         {
-            ScriptRPC rpc = new ScriptRPC();
+            ScriptCallContext rpc = new ScriptCallContext();
             rpc.Write(teamID);
             rpc.Write(teamMembers.Count());
             
@@ -685,7 +685,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                ScriptRPC rpc = new ScriptRPC();
+                ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(player);
                 rpc.Write(vehicle);
                 rpl.SendRpc(RPC_LOCK_VEHICLE, rpc, true, null);
@@ -720,7 +720,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
                 if (rpl)
                 {
-                    ScriptRPC rpc = new ScriptRPC();
+                    ScriptCallContext rpc = new ScriptCallContext();
                     rpc.Write(player);
                     rpc.Write(vehicle);
                     rpc.Write(teamID);
@@ -758,7 +758,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                ScriptRPC rpc = new ScriptRPC();
+                ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(player);
                 rpc.Write(vehicle);
                 rpl.SendRpc(RPC_UNLOCK_VEHICLE, rpc, true, null);
@@ -786,7 +786,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
                 if (rpl)
                 {
-                    ScriptRPC rpc = new ScriptRPC();
+                    ScriptCallContext rpc = new ScriptCallContext();
                     rpc.Write(player);
                     rpc.Write(vehicle);
                     rpc.Write(success);
@@ -913,7 +913,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                ScriptRPC rpc = new ScriptRPC();
+                ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(sender);
                 rpc.Write(messageText);
                 rpl.SendRpc(RPC_TEAM_CHAT_MESSAGE, rpc, true, null);
@@ -937,7 +937,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                ScriptRPC rpc = new ScriptRPC();
+                ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(teamID);
                 rpc.Write(senderID);
                 rpc.Write(senderName);
