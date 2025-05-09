@@ -66,6 +66,7 @@ class TeamManager
         int teamID = m_TeamIDCounter++;
         
         ref TeamMember leaderMember = new TeamMember(playerID, playerName, true);
+        leaderMember.SetTeamID(teamID);
         ref array<ref TeamMember> newTeam = new array<ref TeamMember>();
         newTeam.Insert(leaderMember);
         
@@ -109,6 +110,7 @@ class TeamManager
         
         // Add player to team
         ref TeamMember newMember = new TeamMember(playerID, playerName, false);
+        newMember.SetTeamID(teamID);
         team.Insert(newMember);
         
         // Notify all team members about the new player

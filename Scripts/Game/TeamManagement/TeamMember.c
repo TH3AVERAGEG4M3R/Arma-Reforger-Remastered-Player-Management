@@ -15,6 +15,9 @@ class TeamMember
     // The timestamp when the player joined the team
     protected float m_JoinTimestamp;
     
+    // The ID of the team this member belongs to
+    protected int m_TeamID = -1;
+    
     /**
      * @brief Constructor
      * @param playerID The ID of the player
@@ -81,5 +84,23 @@ class TeamMember
     float GetJoinTimestamp()
     {
         return m_JoinTimestamp;
+    }
+    
+    /**
+     * @brief Get the team ID this member belongs to
+     * @return The team ID
+     */
+    int GetTeamID()
+    {
+        return m_TeamID;
+    }
+    
+    /**
+     * @brief Set the team ID this member belongs to
+     * @param teamID The team ID
+     */
+    void SetTeamID(int teamID)
+    {
+        m_TeamID = teamID;
     }
 }

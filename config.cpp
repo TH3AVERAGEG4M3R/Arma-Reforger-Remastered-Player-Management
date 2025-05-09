@@ -59,6 +59,43 @@ class CfgVehicles
     {
         components[] += {"TeamPlayerComponent"};
     };
+    
+    // Respawn flagpole entity
+    class GenericEntity;
+    class TeamFlagpole: GenericEntity
+    {
+        displayName = "Team Respawn Flagpole";
+        descriptionShort = "Allows team members to respawn at this location";
+        model = "TeamManagement/Models/Flagpole.emat";
+        hiddenSelectionsTextures[] = {};
+        physicsCategory = "item";
+        
+        class Hierarchy
+        {
+            components[] = {
+                "RplComponent",
+                "TeamRespawnComponent"
+            };
+        };
+        
+        class BaseComponentTypes
+        {
+            TeamRespawnComponentClass TeamRespawnComponent;
+        };
+    };
+    
+    // Vehicle component for team-based locking
+    class GenericComponent;
+    class TeamVehicleComponent: GenericComponent
+    {
+        componentNames[] = {};
+    };
+    
+    // Respawn component for flagpole
+    class TeamRespawnComponent: GenericComponent
+    {
+        componentNames[] = {};
+    };
 };
 
 class CfgWorlds
@@ -114,6 +151,28 @@ class CfgWorlds
             {
                 files[] = {"TeamManagement/Scripts/Game/TeamManagement/TeamInvitationPopup.c"};
             };
+            
+            // Vehicle components
+            class TeamVehicleComponentClass
+            {
+                files[] = {"TeamManagement/Scripts/Game/TeamManagement/TeamVehicleComponent.c"};
+            };
+            
+            // Respawn components
+            class TeamRespawnComponentClass
+            {
+                files[] = {"TeamManagement/Scripts/Game/TeamManagement/TeamRespawnComponent.c"};
+            };
+            
+            class TeamFlagpoleClass
+            {
+                files[] = {"TeamManagement/Scripts/Game/TeamManagement/TeamFlagpole.c"};
+            };
+            
+            class TeamRespawnMenuClass
+            {
+                files[] = {"TeamManagement/Scripts/Game/TeamManagement/TeamRespawnMenu.c"};
+            };
         };
     };
 };
@@ -125,6 +184,30 @@ class CfgWrapperUI
         class TeamManagement
         {
             layoutPath = "TeamManagement/UI/layouts/TeamManagement";
+        };
+    };
+    
+    class WidgetClasses
+    {
+        // TeamManagementMenu
+        class TeamManagementMenu
+        {
+            scriptClass = "TeamManagementMenu";
+            scriptFile = "TeamManagement/Scripts/Game/TeamManagement/TeamManagementMenu.c";
+        };
+        
+        // TeamInvitationPopup
+        class TeamInvitationPopup
+        {
+            scriptClass = "TeamInvitationPopup";
+            scriptFile = "TeamManagement/Scripts/Game/TeamManagement/TeamInvitationPopup.c";
+        };
+        
+        // TeamRespawnMenu
+        class TeamRespawnMenu
+        {
+            scriptClass = "TeamRespawnMenu";
+            scriptFile = "TeamManagement/Scripts/Game/TeamManagement/TeamRespawnMenu.c";
         };
     };
 };
@@ -143,6 +226,13 @@ class CfgKeyBinding
             displayName = "Open Team Menu";
             defaultKey = "KeyT";
             description = "Open the team management interface to create, join, or manage teams";
+        };
+        
+        class OpenRespawnMenu
+        {
+            displayName = "Open Respawn Menu";
+            defaultKey = "KeyR";
+            description = "Open the respawn menu to purchase or select team respawn points";
         };
     };
 };
