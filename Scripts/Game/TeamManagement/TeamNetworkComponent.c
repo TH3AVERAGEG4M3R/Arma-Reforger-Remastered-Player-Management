@@ -621,9 +621,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         
         for (int i = 0; i < memberCount; i++)
         {
-            string playerID = rpc.Read();
-            string playerName = rpc.Read();
-            bool isLeader = rpc.Read();
+            string playerID = ctx.Read();
+            string playerName = ctx.Read();
+            bool isLeader = ctx.Read();
             
             m_TeamManager.AddTeamMember(teamID, playerID, playerName, isLeader);
         }
@@ -804,7 +804,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @brief RPC handler for locking a vehicle
      * @param ctx The script call context
      */
-    void OnRPC_LockVehicle(ScriptRPC rpc)
+    void OnRPC_LockVehicle(RplComponent rpl, ScriptCallContext ctx)
     {
         if (!ctx)
             return;
@@ -813,8 +813,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         IEntity vehicle = null;
         
         // Read parameters
-        player = rpc.Read();
-        vehicle = rpc.Read();
+        player = ctx.Read();
+        vehicle = ctx.Read();
         
         if (!player || !vehicle)
             return;
@@ -827,8 +827,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         else
         {
             // Client side - update UI or show notification
-            int teamID = rpc.Read();
-            bool success = rpc.Read();
+            int teamID = ctx.Read();
+            bool success = ctx.Read();
             
             if (success)
             {
@@ -848,9 +848,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     
     /**
      * @brief RPC handler for unlocking a vehicle
-     * @param ctx The script call context
+     * @param rpl Replication component
+     * @param ctx Script call context for RPC
      */
-    void OnRPC_UnlockVehicle(ScriptRPC rpc)
+    void OnRPC_UnlockVehicle(RplComponent rpl, ScriptCallContext ctx)
     {
         if (!ctx)
             return;
@@ -859,8 +860,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         IEntity vehicle = null;
         
         // Read parameters
-        player = rpc.Read();
-        vehicle = rpc.Read();
+        player = ctx.Read();
+        vehicle = ctx.Read();
         
         if (!player || !vehicle)
             return;
@@ -873,7 +874,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         else
         {
             // Client side - update UI or show notification
-            bool success = rpc.Read();
+            bool success = ctx.Read();
             
             if (success)
             {
@@ -961,9 +962,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     //------------------------------------------------------------------------------------------------
     /**
      * @brief RPC handler for team chat messages
-     * @param ctx The script call context
+     * @param rpl Replication component
+     * @param ctx Script call context for RPC
      */
-    void OnRPC_TeamChatMessage(ScriptRPC rpc)
+    void OnRPC_TeamChatMessage(RplComponent rpl, ScriptCallContext ctx)
     {
         if (!ctx)
             return;
@@ -971,8 +973,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         if (GetGame().IsServer())
         {
             // Server side - process the message
-            IEntity sender = rpc.Read();
-            string messageText = rpc.Read();
+            IEntity sender = ctx.Read();
+            string messageText = ctx.Read();
             
             if (!sender || messageText.Length() == 0)
                 return;
@@ -983,10 +985,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         else
         {
             // Client side - display the message
-            int teamID = rpc.Read();
-            string senderID = rpc.Read();
-            string senderName = rpc.Read();
-            string messageText = rpc.Read();
+            int teamID = ctx.Read();
+            string senderID = ctx.Read();
+            string senderName = ctx.Read();
+            string messageText = ctx.Read();
             
             // Create message object
             ref TeamChatMessage message = new TeamChatMessage(teamID, senderID, senderName, messageText);
