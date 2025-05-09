@@ -399,6 +399,31 @@ class TeamManager
     }
     
     /**
+     * @brief Get a team member by entity ID (not player identity)
+     * @param entityID The entity ID of the player
+     * @return The team member, or null if not found
+     */
+    TeamMember GetTeamMemberByEntityID(int entityID)
+    {
+        IEntity playerEntity = GetGame().GetWorld().FindEntityByID(entityID);
+        if (!playerEntity)
+            return null;
+            
+        string playerID = GetPlayerIdentity(playerEntity);
+        
+        foreach (int teamID, ref array<ref TeamMember> team : m_Teams)
+        {
+            foreach (ref TeamMember member : team)
+            {
+                if (member.GetPlayerID() == playerID)
+                    return member;
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
      * @brief Get all pending invitations for a player
      * @param playerID The identity of the player
      * @return Array of pending invitations

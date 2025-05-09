@@ -1,0 +1,61 @@
+FrameWidgetClass {
+ Name "RespawnPointItem"
+ {
+  OverlayWidgetClass "{5FEAA556AB88F33E}" {
+   Name "Overlay"
+   Slot FrameWidgetSlot "{5FEAA556AB88F33F}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+   }
+   {
+    PanelWidgetClass "{5FEAA556AB88F33C}" {
+     Name "Background"
+     Slot OverlayWidgetSlot "{5FEAA556AB88F33D}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.141 0.167 0.18 1
+    }
+    GridLayoutWidgetClass "{5FEAA556AB88F336}" {
+     Name "GridLayout"
+     Slot OverlayWidgetSlot "{5FEAA556AB88F337}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Columns 2
+     Rows 1
+     {
+      TextWidgetClass "{5FEAA556AB88F334}" {
+       Name "RespawnPointName"
+       Slot GridLayoutWidgetSlot "{5FEAA556AB88F335}" {
+        HorizontalAlign 0
+        VerticalAlign 1
+        Padding 5 5 5 5
+       }
+       Text "Respawn Point"
+       "Font Size" 20
+       "Min Font Size" 20
+      }
+      ButtonWidgetClass "{5FEAA556AB88F333}" {
+       Name "SelectRespawnButton"
+       Slot GridLayoutWidgetSlot "{5FEAA556AB88F330}" {
+        HorizontalAlign 2
+        VerticalAlign 1
+        Padding 5 5 5 5
+       }
+       Color 0.208 0.44 0.573 1
+       Text "SELECT"
+      }
+     }
+    }
+   }
+  }
+ }
+}

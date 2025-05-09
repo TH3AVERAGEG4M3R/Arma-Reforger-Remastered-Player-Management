@@ -1,0 +1,119 @@
+FrameWidgetClass {
+ Name "TeamRespawnMenu"
+ {
+  OverlayWidgetClass "{5FEAA556B7654321}" {
+   Name "Overlay"
+   Slot FrameWidgetSlot "{5FEAA556B7654322}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+   }
+   {
+    PanelWidgetClass "{5FEAA556B7654323}" {
+     Name "Background"
+     Slot OverlayWidgetSlot "{5FEAA556B7654324}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.05 0.05 0.05 0.9
+    }
+    VerticalLayoutWidgetClass "{5FEAA556B7654325}" {
+     Name "VerticalLayout"
+     Slot OverlayWidgetSlot "{5FEAA556B7654326}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 20 20 20 20
+     }
+     {
+      TextWidgetClass "{5FEAA556B7654327}" {
+       Name "TitleText"
+       Slot LayoutSlot "{5FEAA556B7654328}" {}
+       Text "TEAM RESPAWN POINTS"
+       "Font Size" 24
+       "Min Font Size" 24
+      }
+      PanelWidgetClass "{5FEAA556B7654329}" {
+       Name "Separator"
+       Slot LayoutSlot "{5FEAA556B7654330}" {
+        SizeMode Fill
+        FillWeight 0.01
+        Padding 0 10 0 10
+       }
+       Color 0.5 0.5 0.5 1
+      }
+      TextWidgetClass "{5FEAA556B7654331}" {
+       Name "StatusText"
+       Slot LayoutSlot "{5FEAA556B7654332}" {}
+       Text "No team respawn points available. Team leaders can purchase respawn points."
+       "Font Size" 16
+       "Min Font Size" 16
+      }
+      ScrollLayoutWidgetClass "{5FEAA556B7654333}" {
+       Name "ScrollLayout"
+       Slot LayoutSlot "{5FEAA556B7654334}" {
+        SizeMode Fill
+        FillWeight 1
+        Padding 0 10 0 10
+       }
+       {
+        VerticalLayoutWidgetClass "{5FEAA556B7654335}" {
+         Name "RespawnPointsList"
+         Slot LayoutSlot "{5FEAA556B7654336}" {}
+         "Item Spacing" 5
+        }
+       }
+      }
+      HorizontalLayoutWidgetClass "{5FEAA556B7654337}" {
+       Name "HorizontalLayout"
+       Slot LayoutSlot "{5FEAA556B7654338}" {
+        Padding 0 10 0 0
+       }
+       {
+        EditBoxWidgetClass "{5FEAA556B7654339}" {
+         Name "RespawnNameInput"
+         Slot LayoutSlot "{5FEAA556B7654340}" {
+          SizeMode Fill
+          FillWeight 1
+         }
+         "Is Enabled" 1
+         "Is Visible" 1
+         Placeholder "Enter respawn point name..."
+        }
+        ButtonWidgetClass "{5FEAA556B7654341}" {
+         Name "BuyFlagpoleButton"
+         Slot LayoutSlot "{5FEAA556B7654342}" {
+          Padding 5 0 0 0
+         }
+         Color 0.208 0.44 0.573 1
+         Text "PURCHASE FLAGPOLE"
+        }
+       }
+      }
+      TextWidgetClass "{5FEAA556B7654343}" {
+       Name "CostText"
+       Slot LayoutSlot "{5FEAA556B7654344}" {}
+       Text "Cost: 500 resources"
+       "Font Size" 14
+       "Min Font Size" 14
+      }
+      ButtonWidgetClass "{5FEAA556B7654345}" {
+       Name "CloseButton"
+       Slot LayoutSlot "{5FEAA556B7654346}" {
+        Padding 0 10 0 0
+       }
+       Color 0.573 0.208 0.208 1
+       Text "CLOSE"
+      }
+     }
+    }
+   }
+  }
+ }
+ "Scripted Widget" TeamRespawnMenu
+}

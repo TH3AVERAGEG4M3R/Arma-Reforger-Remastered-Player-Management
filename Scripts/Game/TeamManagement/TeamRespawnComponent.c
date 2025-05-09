@@ -1,0 +1,223 @@
+class TeamRespawnComponentClass: GenericComponentClass
+{
+}
+
+//------------------------------------------------------------------------------------------------
+/*!
+    Component that handles team respawn mechanics.
+    Attaches to flagpole entities to provide team respawn functionality.
+*/
+class TeamRespawnComponent : GenericComponent
+{
+    // Reference to the owning team
+    protected int m_TeamID = -1;
+    
+    // Reference to the entity ID of the team leader who purchased this respawn point
+    protected int m_LeaderEntityID = -1;
+    
+    // Display name for this respawn point
+    protected string m_RespawnName = "Team Respawn Point";
+    
+    // Position of the respawn point
+    protected vector m_Position;
+    
+    // Cost to purchase this respawn point
+    static const int PURCHASE_COST = 500;
+    
+    //------------------------------------------------------------------------------------------------
+    void TeamRespawnComponent(IEntityComponentSource src, IEntity ent, IEntity parent)
+    {
+        m_Position = ent.GetOrigin();
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    override void OnPostInit(IEntity owner)
+    {
+        super.OnPostInit(owner);
+        
+        SetEventMask(owner, EntityEvent.INIT);
+        
+        // Register to server RPCs
+        if (GetGame().GetNetMode() == ENetMode.NM_Host || GetGame().IsMultiplayerHost())
+        {
+            RplComponent rpl = RplComponent.Cast(owner.FindComponent(RplComponent));
+            if (rpl)
+            {
+                // Register for RPC method to handle respawn requests
+                rpl.RegisterScriptRPC("RPC_RequestRespawn", "RPC_RequestRespawn", EScriptRPCFlags.kIsReliable);
+                
+                // Register for RPC method to assign team ownership
+                rpl.RegisterScriptRPC("RPC_AssignTeam", "RPC_AssignTeam", EScriptRPCFlags.kIsReliable);
+            }
+        }
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    override bool RplSave(ScriptBitWriter writer)
+    {
+        writer.WriteInt(m_TeamID);
+        writer.WriteInt(m_LeaderEntityID);
+        writer.WriteString(m_RespawnName);
+        return true;
+    }
+
+    //------------------------------------------------------------------------------------------------
+    override bool RplLoad(ScriptBitReader reader)
+    {
+        reader.ReadInt(m_TeamID);
+        reader.ReadInt(m_LeaderEntityID);
+        reader.ReadString(m_RespawnName);
+        return true;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        Assign a team ownership to this respawn point
+        \param teamID The ID of the team that owns this respawn point
+        \param leaderEntityID The entity ID of the team leader
+        \param name Optional custom name for this respawn point
+    */
+    void AssignTeam(int teamID, int leaderEntityID, string name = "")
+    {
+        m_TeamID = teamID;
+        m_LeaderEntityID = leaderEntityID;
+        
+        if (name != "")
+            m_RespawnName = name;
+        
+        // Notify all clients about the team assignment
+        RplComponent rpl = RplComponent.Cast(GetOwner().FindComponent(RplComponent));
+        if (rpl)
+        {
+            ScriptRPC rpc = new ScriptRPC();
+            rpc.Write(teamID);
+            rpc.Write(leaderEntityID);
+            rpc.Write(m_RespawnName);
+            rpl.SendRPC("RPC_AssignTeam", rpc);
+        }
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        RPC handler for assigning team ownership
+        \param ctx Context for the RPC call
+    */
+    private void RPC_AssignTeam(ScriptCallContext ctx)
+    {
+        int teamID;
+        int leaderEntityID;
+        string name;
+        
+        ctx.Read(teamID);
+        ctx.Read(leaderEntityID);
+        ctx.Read(name);
+        
+        m_TeamID = teamID;
+        m_LeaderEntityID = leaderEntityID;
+        m_RespawnName = name;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        Check if a player can use this respawn point
+        \param playerID The entity ID of the player
+        \return True if the player can use this respawn point, false otherwise
+    */
+    bool CanPlayerUseRespawn(int playerID)
+    {
+        if (m_TeamID == -1)
+            return false;
+            
+        // Get the TeamManager
+        TeamManager teamManager = TeamManager.GetInstance();
+        if (!teamManager)
+            return false;
+            
+        // Check if the player is in the same team
+        TeamMember playerMember = teamManager.GetTeamMemberByEntityID(playerID);
+        if (!playerMember)
+            return false;
+            
+        return playerMember.GetTeamID() == m_TeamID;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        Handle a respawn request from a player
+        \param playerID The entity ID of the player requesting respawn
+        \return True if the request was successful, false otherwise
+    */
+    bool HandleRespawnRequest(int playerID)
+    {
+        if (!CanPlayerUseRespawn(playerID))
+            return false;
+            
+        // Get the player entity
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerID);
+        if (!player)
+            return false;
+            
+        // Teleport to the respawn position with a slight offset to prevent players spawning on top of each other
+        float randomOffsetX = Math.RandomFloat(-2, 2);
+        float randomOffsetZ = Math.RandomFloat(-2, 2);
+        vector respawnPos = m_Position + Vector(randomOffsetX, 0, randomOffsetZ);
+        
+        // Set player position
+        player.SetOrigin(respawnPos);
+        
+        return true;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        RPC handler for respawn requests
+        \param ctx Context for the RPC call
+    */
+    private void RPC_RequestRespawn(ScriptCallContext ctx)
+    {
+        int playerID;
+        ctx.Read(playerID);
+        
+        HandleRespawnRequest(playerID);
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        Get the name of this respawn point
+        \return The name of the respawn point
+    */
+    string GetRespawnName()
+    {
+        return m_RespawnName;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        Get the team ID that owns this respawn point
+        \return The team ID
+    */
+    int GetTeamID()
+    {
+        return m_TeamID;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        Get the leader entity ID who purchased this respawn point
+        \return The leader entity ID
+    */
+    int GetLeaderEntityID()
+    {
+        return m_LeaderEntityID;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        Get the position of this respawn point
+        \return The position vector
+    */
+    vector GetRespawnPosition()
+    {
+        return m_Position;
+    }
+}
