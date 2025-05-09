@@ -115,7 +115,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                ScriptRPC rpc = new ScriptRPC();
+                ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(teamID);
                 rpc.Write(player);
                 rpl.SendRpc(RPC_JOIN_TEAM, rpc, true, null);
@@ -133,7 +133,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
                 if (rpl)
                 {
-                    ScriptRPC rpc = new ScriptRPC();
+                    ScriptCallContext rpc = new ScriptCallContext();
                     rpc.Write(teamID);
                     rpc.Write(player);
                     rpc.Write(success);
@@ -158,7 +158,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                ScriptRPC rpc = new ScriptRPC();
+                ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(player);
                 rpl.SendRpc(RPC_LEAVE_TEAM, rpc, true, null);
             }
@@ -179,7 +179,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
                 if (rpl)
                 {
-                    ScriptRPC rpc = new ScriptRPC();
+                    ScriptCallContext rpc = new ScriptCallContext();
                     rpc.Write(player);
                     rpc.Write(teamID);
                     rpc.Write(success);
@@ -205,7 +205,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                ScriptRPC rpc = new ScriptRPC();
+                ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(sender);
                 rpc.Write(receiverID);
                 rpl.SendRpc(RPC_SEND_INVITATION, rpc, true, null);
@@ -223,7 +223,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
                 if (rpl)
                 {
-                    ScriptRPC rpc = new ScriptRPC();
+                    ScriptCallContext rpc = new ScriptCallContext();
                     rpc.Write(sender);
                     rpc.Write(receiverID);
                     rpc.Write(success);
@@ -263,7 +263,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                ScriptRPC rpc = new ScriptRPC();
+                ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(invitationID);
                 rpc.Write(player);
                 rpl.SendRpc(RPC_ACCEPT_INVITATION, rpc, true, null);
@@ -292,7 +292,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
                 if (rpl)
                 {
-                    ScriptRPC rpc = new ScriptRPC();
+                    ScriptCallContext rpc = new ScriptCallContext();
                     rpc.Write(invitationID);
                     rpc.Write(player);
                     rpc.Write(teamID);
@@ -335,7 +335,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
             if (rpl)
             {
-                ScriptRPC rpc = new ScriptRPC();
+                ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(invitationID);
                 rpc.Write(player);
                 rpl.SendRpc(RPC_DECLINE_INVITATION, rpc, true, null);
@@ -360,7 +360,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
                 if (rpl)
                 {
-                    ScriptRPC rpc = new ScriptRPC();
+                    ScriptCallContext rpc = new ScriptCallContext();
                     rpc.Write(invitationID);
                     rpc.Write(player);
                     rpc.Write(success);
