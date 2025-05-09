@@ -125,7 +125,7 @@ class TeamPlayerComponent : GenericComponent
         \param action The action context
         \return True if handled, false otherwise
     */
-    protected bool OpenTeamMenu(ActionContext action)
+    protected bool OpenTeamMenu(Class action)
     {
         // Only continue for local player
         IEntity owner = GetOwner();
@@ -154,7 +154,7 @@ class TeamPlayerComponent : GenericComponent
         \param action The action context
         \return True if handled, false otherwise
     */
-    protected bool OpenRespawnMenu(ActionContext action)
+    protected bool OpenRespawnMenu(Class action)
     {
         // Only continue for local player
         IEntity owner = GetOwner();

@@ -95,7 +95,7 @@ class TeamMapEntity : ScriptComponent
      * @param action The action context
      * @return True if handled
      */
-    protected bool OnMapOpen(ActionContext action)
+    protected bool OnMapOpen(Class action)
     {
         m_MapVisible = true;
         return true;
@@ -107,7 +107,7 @@ class TeamMapEntity : ScriptComponent
      * @param action The action context
      * @return True if handled
      */
-    protected bool OnMapClose(ActionContext action)
+    protected bool OnMapClose(Class action)
     {
         m_MapVisible = false;
         return true;

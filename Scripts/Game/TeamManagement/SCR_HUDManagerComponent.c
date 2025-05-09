@@ -56,7 +56,7 @@ class TeamHUDManagerComponent : ScriptComponent
         return false;
     }
 
-    protected bool ToggleHUD(ActionContext action)
+    protected bool ToggleHUD(Class action)
     {
         m_HudVisible = !m_HudVisible;
         return true;

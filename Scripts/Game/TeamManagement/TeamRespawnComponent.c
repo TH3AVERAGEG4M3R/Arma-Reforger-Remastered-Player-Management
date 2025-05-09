@@ -111,7 +111,7 @@ class TeamRespawnComponent : GenericComponent
         RPC handler for assigning team ownership
         \param ctx Context for the RPC call
     */
-    private void RPC_AssignTeam(ScriptCallContext ctx)
+    private void RPC_AssignTeam(Class ctx)
     {
         int teamID;
         int leaderEntityID;
@@ -244,7 +244,7 @@ class TeamRespawnComponent : GenericComponent
         RPC handler for respawn requests
         \param ctx Context for the RPC call
     */
-    private void RPC_RequestRespawn(ScriptCallContext ctx)
+    private void RPC_RequestRespawn(Class ctx)
     {
         int playerID;
         ctx.Read(playerID);

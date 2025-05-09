@@ -46,7 +46,7 @@ class TeamFlagpole : GenericEntity
         RPC handler for purchasing the flagpole
         \param ctx Context for the RPC call
     */
-    private void RPC_PurchaseFlagpole(ScriptCallContext ctx)
+    private void RPC_PurchaseFlagpole(Class ctx)
     {
         // Read parameters from the RPC call
         int playerID;
