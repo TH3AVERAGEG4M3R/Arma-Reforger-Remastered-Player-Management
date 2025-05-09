@@ -228,11 +228,6 @@ class CfgKeyBinding
             description = "Open the team management interface to create, join, or manage teams";
         };
         
-        class OpenRespawnMenu
-        {
-            displayName = "Open Respawn Menu";
-            defaultKey = "KeyR";
-            description = "Open the respawn menu to purchase or select team respawn points";
-        };
+
     };
 };

@@ -30,6 +30,67 @@ class TeamPlayerComponent : GenericComponent
         
         // Register for input events
         RegisterInputs(owner);
+        
+        // Register for player death events
+        RegisterForPlayerDeath(owner);
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        Register for player death events
+        \param owner The entity that owns this component
+    */
+    protected void RegisterForPlayerDeath(IEntity owner)
+    {
+        // Only register for the local player
+        PlayerController playerController = PlayerController.Cast(owner.GetController());
+        if (!playerController || !playerController.IsLocalPlayer())
+            return;
+            
+        // Get or add an SCR_CharacterDamageManagerComponent to handle death events
+        SCR_CharacterDamageManagerComponent damageManager = SCR_CharacterDamageManagerComponent.Cast(owner.FindComponent(SCR_CharacterDamageManagerComponent));
+        if (damageManager)
+        {
+            // Register for the OnDeath event
+            damageManager.GetOnDeath().Insert(OnPlayerDeath);
+            Print("Registered for player death events: " + GetPlayerName());
+        }
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        Callback for when the player dies
+        \param character The character entity that died
+        \param damageInfo Information about the damage that caused death
+    */
+    protected void OnPlayerDeath(IEntity character, EDamageType damageType, float damage)
+    {
+        // Only continue if this is the local player
+        PlayerController playerController = PlayerController.Cast(character.GetController());
+        if (!playerController || !playerController.IsLocalPlayer())
+            return;
+            
+        Print("Player died, showing respawn menu: " + GetPlayerName());
+        
+        // Show the team respawn menu
+        ShowRespawnMenu();
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        Show the team respawn menu
+    */
+    void ShowRespawnMenu()
+    {
+        // Create or show the respawn menu
+        if (!m_RespawnMenu)
+        {
+            m_RespawnMenu = new TeamRespawnMenu();
+            m_RespawnMenu.Init();
+        }
+        
+        // Show the menu
+        m_RespawnMenu.Show();
     }
     
     //------------------------------------------------------------------------------------------------
@@ -51,9 +112,6 @@ class TeamPlayerComponent : GenericComponent
             
         // Register for the Team Menu key binding (T)
         inputManager.AddActionListener("TeamManagement.OpenTeamMenu", EActionTrigger.DOWN, OpenTeamMenu);
-        
-        // Register for the Respawn Menu key binding (R)
-        inputManager.AddActionListener("TeamManagement.OpenRespawnMenu", EActionTrigger.DOWN, OpenRespawnMenu);
         
         Print("Team Management key bindings registered for player: " + GetPlayerName());
     }

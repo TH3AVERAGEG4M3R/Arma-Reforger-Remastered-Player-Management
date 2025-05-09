@@ -26,6 +26,27 @@ class TeamRespawnMenu : SCR_ScriptedWidgetComponent
     protected ref array<IEntity> m_AvailableRespawnPoints = new array<IEntity>();
     
     //------------------------------------------------------------------------------------------------
+    /*!
+        Initialize the respawn menu
+    */
+    void Init()
+    {
+        // Create the menu widget from layout
+        m_wRoot = GetGame().GetWorkspace().CreateWidgets("UI/layouts/TeamManagement/TeamRespawnMenu.layout");
+        if (!m_wRoot)
+        {
+            Print("Failed to create TeamRespawnMenu layout");
+            return;
+        }
+        
+        // Add this handler to the widget
+        m_wRoot.AddHandler(this);
+        
+        // Hide by default
+        m_wRoot.SetVisible(false);
+    }
+    
+    //------------------------------------------------------------------------------------------------
     override void HandlerAttached(Widget w)
     {
         super.HandlerAttached(w);
@@ -280,6 +301,20 @@ class TeamRespawnMenu : SCR_ScriptedWidgetComponent
             }
             
             // Update the UI to show the new respawn point
+            UpdateUI();
+        }
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        Show the respawn menu (used when player dies)
+    */
+    void Show()
+    {
+        if (m_wRoot)
+        {
+            // Always show and update when called after death
+            m_wRoot.SetVisible(true);
             UpdateUI();
         }
     }
