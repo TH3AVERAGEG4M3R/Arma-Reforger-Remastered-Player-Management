@@ -1,5 +1,4 @@
-// Include the necessary headers
-#include "string empty"
+// ScriptRPC type is provided by the game engine
 
 class TeamRespawnComponentClass: GenericComponentClass
 {

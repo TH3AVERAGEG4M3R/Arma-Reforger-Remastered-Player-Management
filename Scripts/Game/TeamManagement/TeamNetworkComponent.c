@@ -3,8 +3,7 @@
  * Handles RPC calls and data synchronization across the network
  */
  
-// Include the necessary headers
-#include "string empty"
+// ScriptRPC type is provided by the game engine
 class TeamNetworkComponent : ScriptedWidgetComponent
 {
     // Singleton instance

@@ -1,10 +1,6 @@
 /**
  * @brief Team Chat Component for handling team-specific messaging
  */
- 
-// Include the necessary headers
-#include "string empty"
-#include "string empty"
 class TeamChatComponentClass : ScriptComponentClass
 {
 }
