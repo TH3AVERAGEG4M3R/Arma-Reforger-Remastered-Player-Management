@@ -254,23 +254,24 @@ class TeamManagementMenu
 /**
  * @brief Button handler for team management menu
  */
-class TeamButtonHandler : SCR_ButtonHandler
+class TeamButtonHandler : ScriptedWidgetEventHandler
 {
     protected TeamManagementMenu m_Menu;
-    protected func m_Callback;
+    protected string m_CallbackName;
     
-    void TeamButtonHandler(TeamManagementMenu menu, func callback)
+    void TeamButtonHandler(TeamManagementMenu menu, string callbackName)
     {
         m_Menu = menu;
-        m_Callback = callback;
+        m_CallbackName = callbackName;
     }
     
-    override bool OnClick(Widget w)
+    override bool OnMouseDown(Widget w, int x, int y, int button)
     {
-        if (m_Callback && m_Menu)
+        if (button == MouseButton.LEFT && m_Menu)
         {
-            m_Callback.Invoke(m_Menu);
+            GetGame().GetCallQueue().CallLater(m_Menu[m_CallbackName], 0);
+            return true;
         }
-        return true;
+        return false;
     }
 }
