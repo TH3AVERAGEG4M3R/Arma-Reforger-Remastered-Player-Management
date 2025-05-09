@@ -3,6 +3,9 @@
     This entity can be placed in the world and purchased by team leaders,
     allowing team members to respawn at its location.
 */
+
+// Include the necessary headers
+#include "$scripts:Game/RPCs/ScriptRPC.c"
 class TeamFlagpole : GenericEntity
 {
     protected int m_RespawnComponentID;
@@ -50,7 +53,7 @@ class TeamFlagpole : GenericEntity
     //------------------------------------------------------------------------------------------------
     /*! 
         RPC handler for purchasing the flagpole
-        \param ctx Context for the RPC call
+        \param rpc The RPC object containing the call data
     */
     private void RPC_PurchaseFlagpole(ScriptRPC rpc)
     {

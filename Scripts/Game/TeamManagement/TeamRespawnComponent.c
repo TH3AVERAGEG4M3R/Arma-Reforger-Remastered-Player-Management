@@ -1,3 +1,6 @@
+// Include the necessary headers
+#include "$scripts:Game/RPCs/ScriptRPC.c"
+
 class TeamRespawnComponentClass: GenericComponentClass
 {
 }
@@ -109,7 +112,7 @@ class TeamRespawnComponent : GenericComponent
     //------------------------------------------------------------------------------------------------
     /*!
         RPC handler for assigning team ownership
-        \param ctx Context for the RPC call
+        \param rpc The RPC object containing the call data
     */
     private void RPC_AssignTeam(ScriptRPC rpc)
     {
@@ -242,7 +245,7 @@ class TeamRespawnComponent : GenericComponent
     //------------------------------------------------------------------------------------------------
     /*!
         RPC handler for respawn requests
-        \param ctx Context for the RPC call
+        \param rpc The RPC object containing the call data
     */
     private void RPC_RequestRespawn(ScriptRPC rpc)
     {
