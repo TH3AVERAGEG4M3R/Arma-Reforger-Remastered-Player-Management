@@ -1,7 +1,7 @@
 /**
  * @brief Map Entity for managing map markers and displays
  */
-class SCR_MapEntityClass : ScriptComponentClass
+class TeamMapEntityClass : ScriptComponentClass
 {
 }
 
@@ -9,10 +9,10 @@ class SCR_MapEntityClass : ScriptComponentClass
 /*!
     Entity for managing map displays including team indicators
 */
-class SCR_MapEntity : ScriptComponent
+class TeamMapEntity : ScriptComponent
 {
     // Singleton instance
-    protected static SCR_MapEntity s_Instance;
+    protected static TeamMapEntity s_Instance;
     
     // Array of active map markers
     protected ref array<ref MapMarkerComponent> m_MapMarkers = new array<ref MapMarkerComponent>();
@@ -21,13 +21,13 @@ class SCR_MapEntity : ScriptComponent
     protected bool m_MapVisible = false;
     
     //------------------------------------------------------------------------------------------------
-    void SCR_MapEntity(IEntityComponentSource src, IEntity ent, IEntity parent)
+    void TeamMapEntity(IEntityComponentSource src, IEntity ent, IEntity parent)
     {
         s_Instance = this;
     }
     
     //------------------------------------------------------------------------------------------------
-    void ~SCR_MapEntity()
+    void ~TeamMapEntity()
     {
         if (s_Instance == this)
             s_Instance = null;
@@ -38,7 +38,7 @@ class SCR_MapEntity : ScriptComponent
      * @brief Get the singleton instance
      * @return The map entity instance
      */
-    static SCR_MapEntity GetMapInstance()
+    static TeamMapEntity GetMapInstance()
     {
         return s_Instance;
     }

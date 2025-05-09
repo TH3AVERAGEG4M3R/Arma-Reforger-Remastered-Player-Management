@@ -5,22 +5,22 @@ class HudIcon
 {
     // The entity this icon is attached to
     protected IEntity m_Entity;
-    
+
     // Icon resource
     protected ResourceName m_IconResource;
-    
+
     // Icon color
     protected ref Color m_Color;
-    
+
     // Whether the icon is visible
     protected bool m_Visible = true;
-    
+
     // Display name
     protected string m_DisplayName;
-    
+
     // Icon size
     protected float m_Size = 16.0;
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Constructor
@@ -31,7 +31,7 @@ class HudIcon
         m_Entity = entity;
         m_Color = Color.White();
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Set the icon resource
@@ -41,7 +41,7 @@ class HudIcon
     {
         m_IconResource = resourcePath;
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Set the icon color
@@ -51,7 +51,7 @@ class HudIcon
     {
         m_Color = color;
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Set whether the icon is visible
@@ -61,7 +61,7 @@ class HudIcon
     {
         m_Visible = visible;
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Set the display name
@@ -71,7 +71,7 @@ class HudIcon
     {
         m_DisplayName = name;
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Set the icon size
@@ -81,7 +81,7 @@ class HudIcon
     {
         m_Size = size;
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Get the target entity
@@ -91,7 +91,7 @@ class HudIcon
     {
         return m_Entity;
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Get the icon resource
@@ -101,7 +101,7 @@ class HudIcon
     {
         return m_IconResource;
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Get the icon color
@@ -111,7 +111,7 @@ class HudIcon
     {
         return m_Color;
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Check if the icon is visible
@@ -121,7 +121,7 @@ class HudIcon
     {
         return m_Visible;
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Get the display name
@@ -131,7 +131,7 @@ class HudIcon
     {
         return m_DisplayName;
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Get the icon size
@@ -161,7 +161,7 @@ class TeamVisualsComponent : ScriptComponent
     protected const ResourceName MEMBER_ICON_RESOURCE = "UI/Textures/HUD/Icons/TeamMemberIcon.edds";
     protected const ResourceName MAP_LEADER_ICON_RESOURCE = "UI/Textures/Map/MapIconLeader.edds";
     protected const ResourceName MAP_MEMBER_ICON_RESOURCE = "UI/Textures/Map/MapIconTeamMember.edds";
-    
+
     // Team colors for different teams
     protected const array<ref Color> TEAM_COLORS = {
         Color.Yellow(),  // Team 1
@@ -173,77 +173,76 @@ class TeamVisualsComponent : ScriptComponent
         Color.Orange(),  // Team 7
         Color.Purple()   // Team 8
     };
-    
+
     // Player entity this component is attached to
     protected IEntity m_PlayerEntity;
-    
+
     // Current team ID
     protected int m_CurrentTeamID = 0;
-    
+
     // Map indicator for this player
     protected ref MapMarkerComponent m_MapMarker;
-    
+
     // HUD indicator for this player
     protected ref HudIcon m_HudIcon;
-    
+
     // Team manager reference
     protected ref TeamManager m_TeamManager;
-    
+
     // Is player a leader
     protected bool m_IsLeader = false;
-    
+
     // Reference to HUD manager
-    protected SCR_HUDManagerComponent m_HudManager;
-    
+    protected TeamHUDManagerComponent m_HudManager;
     // Reference to Map entity
-    protected SCR_MapEntity m_MapEntity;
-    
+    protected TeamMapEntity m_MapEntity;
+
     //------------------------------------------------------------------------------------------------
     override void OnPostInit(IEntity owner)
     {
         super.OnPostInit(owner);
-        
+
         // Store reference to player entity
         m_PlayerEntity = owner;
-        
+
         // Get team manager
         m_TeamManager = TeamManager.GetInstance();
         if (!m_TeamManager)
             return;
-            
+
         // Get HUD manager
-        m_HudManager = SCR_HUDManagerComponent.GetInstance();
-        
+        m_HudManager = TeamHUDManagerComponent.GetInstance();
+
         // Get Map entity
-        m_MapEntity = SCR_MapEntity.GetMapInstance();
-        
+        m_MapEntity = TeamMapEntity.GetMapInstance();
+
         // Create map marker
         CreateMapMarker();
-        
+
         // Create HUD icon
         CreateHudIcon();
-        
+
         // Register for team change events
         if (m_TeamManager)
             m_TeamManager.GetOnTeamChanged().Insert(OnTeamChanged);
     }
-    
+
     //------------------------------------------------------------------------------------------------
     void ~TeamVisualsComponent()
     {
         // Unregister from team change events
         if (m_TeamManager)
             m_TeamManager.GetOnTeamChanged().Remove(OnTeamChanged);
-            
+
         // Remove map marker
         if (m_MapEntity && m_MapMarker)
             m_MapEntity.RemoveMarker(m_MapMarker);
-            
+
         // Remove HUD icon
         if (m_HudManager && m_HudIcon)
             m_HudManager.RemoveHudIcon(m_HudIcon);
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Handle team change events
@@ -256,19 +255,19 @@ class TeamVisualsComponent : ScriptComponent
         // Check if this is the player we are attached to
         if (m_PlayerEntity.GetID() != entityID)
             return;
-            
+
         // Update team ID
         m_CurrentTeamID = newTeamID;
-        
+
         // Check if player is a leader
         string playerID = GetPlayerIdentity(m_PlayerEntity);
         m_IsLeader = m_TeamManager.IsTeamLeader(playerID, newTeamID);
-        
+
         // Update visuals
         UpdateMarkerVisuals();
         UpdateHudVisuals();
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Create a map marker for this player
@@ -277,17 +276,17 @@ class TeamVisualsComponent : ScriptComponent
     {
         if (!m_MapEntity)
             return;
-            
+
         m_MapMarker = new MapMarkerComponent();
         m_MapMarker.SetEntityTarget(m_PlayerEntity);
-        
+
         // Set initial properties
         UpdateMarkerVisuals();
-        
+
         // Add to map
         m_MapEntity.AddMarker(m_MapMarker);
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Create a HUD icon for this player
@@ -296,16 +295,16 @@ class TeamVisualsComponent : ScriptComponent
     {
         if (!m_HudManager)
             return;
-            
+
         m_HudIcon = new HudIcon(m_PlayerEntity);
-        
+
         // Set initial properties
         UpdateHudVisuals();
-        
+
         // Add to HUD
         m_HudManager.AddHudIcon(m_HudIcon);
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Update marker visuals based on current properties
@@ -314,31 +313,31 @@ class TeamVisualsComponent : ScriptComponent
     {
         if (!m_MapMarker)
             return;
-            
+
         // If not in a team, hide the marker
         if (m_CurrentTeamID <= 0)
         {
             m_MapMarker.SetVisible(false);
             return;
         }
-        
+
         // Show the marker
         m_MapMarker.SetVisible(true);
-        
+
         // Set appropriate icon
         if (m_IsLeader)
             m_MapMarker.SetIconFromResource(MAP_LEADER_ICON_RESOURCE);
         else
             m_MapMarker.SetIconFromResource(MAP_MEMBER_ICON_RESOURCE);
-            
+
         // Set team color
         int colorIndex = (m_CurrentTeamID - 1) % TEAM_COLORS.Count();
         m_MapMarker.SetBaseColor(TEAM_COLORS[colorIndex]);
-        
+
         // Set display name (player name)
         m_MapMarker.SetDisplayName(GetPlayerName(m_PlayerEntity));
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Update HUD visuals based on current properties
@@ -347,31 +346,31 @@ class TeamVisualsComponent : ScriptComponent
     {
         if (!m_HudIcon)
             return;
-            
+
         // If not in a team, hide the icon
         if (m_CurrentTeamID <= 0)
         {
             m_HudIcon.SetVisible(false);
             return;
         }
-        
+
         // Show the icon
         m_HudIcon.SetVisible(true);
-        
+
         // Set appropriate icon
         if (m_IsLeader)
             m_HudIcon.SetIconResource(LEADER_ICON_RESOURCE);
         else
             m_HudIcon.SetIconResource(MEMBER_ICON_RESOURCE);
-            
+
         // Set team color
         int colorIndex = (m_CurrentTeamID - 1) % TEAM_COLORS.Count();
         m_HudIcon.SetColor(TEAM_COLORS[colorIndex]);
-        
+
         // Set display name (player name)
         m_HudIcon.SetDisplayName(GetPlayerName(m_PlayerEntity));
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Get player identity
@@ -382,14 +381,14 @@ class TeamVisualsComponent : ScriptComponent
     {
         if (!player)
             return "";
-            
+
         PlayerController pc = PlayerController.Cast(player.GetController());
         if (!pc)
             return "";
-            
+
         return pc.GetPlayerId();
     }
-    
+
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Get player name
@@ -400,11 +399,11 @@ class TeamVisualsComponent : ScriptComponent
     {
         if (!player)
             return "Unknown";
-            
+
         PlayerController pc = PlayerController.Cast(player.GetController());
         if (!pc)
             return "Unknown";
-            
+
         return pc.GetPlayerName();
     }
 }
