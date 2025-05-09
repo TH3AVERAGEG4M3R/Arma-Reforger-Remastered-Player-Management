@@ -150,7 +150,7 @@ FrameWidgetClass {
          }
         }
         HorizontalLayoutWidgetClass {
-         Name "TeamActionsLayout"
+         Name "TeamActionsLayout1"
          Slot LayoutSlot "{5DB4939BB546EB78}" {
           SizeY 40
          }
@@ -164,6 +164,16 @@ FrameWidgetClass {
             Padding 10 0 5 0
            }
            Text "INVITE PLAYER"
+          }
+          ButtonWidgetClass {
+           Name "VehicleLockButton"
+           Slot LayoutSlot "{5DB7939BB546EB7A}" {
+            SizeMode Fill
+            FillWeight 1
+            Alignment 0.5 0.5
+            Padding 5 0 5 0
+           }
+           Text "VEHICLE LOCK"
           }
           ButtonWidgetClass {
            Name "LeaveTeamButton"

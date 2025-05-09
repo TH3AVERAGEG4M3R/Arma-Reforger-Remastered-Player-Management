@@ -13,6 +13,7 @@ class SCR_TeamManagementMenu : ScriptedWidgetComponent
     protected ButtonWidget m_wCreateTeamButton;
     protected ButtonWidget m_wJoinTeamButton;
     protected ButtonWidget m_wInvitePlayerButton;
+    protected ButtonWidget m_wVehicleLockButton;
     protected ButtonWidget m_wLeaveTeamButton;
     protected ButtonWidget m_wCloseButton;
     
@@ -71,6 +72,7 @@ class SCR_TeamManagementMenu : ScriptedWidgetComponent
         m_wCreateTeamButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("CreateTeamButton"));
         m_wJoinTeamButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("JoinTeamButton"));
         m_wInvitePlayerButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("InvitePlayerButton"));
+        m_wVehicleLockButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("VehicleLockButton"));
         m_wLeaveTeamButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("LeaveTeamButton"));
         m_wCloseButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("CloseButton"));
         
@@ -78,6 +80,7 @@ class SCR_TeamManagementMenu : ScriptedWidgetComponent
         m_wCreateTeamButton.AddHandler(new SCR_TeamManagementButtonHandler(this, "OnCreateTeamClicked"));
         m_wJoinTeamButton.AddHandler(new SCR_TeamManagementButtonHandler(this, "OnJoinTeamClicked"));
         m_wInvitePlayerButton.AddHandler(new SCR_TeamManagementButtonHandler(this, "OnInvitePlayerClicked"));
+        m_wVehicleLockButton.AddHandler(new SCR_TeamManagementButtonHandler(this, "OnVehicleLockClicked"));
         m_wLeaveTeamButton.AddHandler(new SCR_TeamManagementButtonHandler(this, "OnLeaveTeamClicked"));
         m_wCloseButton.AddHandler(new SCR_TeamManagementButtonHandler(this, "OnCloseClicked"));
         
@@ -131,6 +134,9 @@ class SCR_TeamManagementMenu : ScriptedWidgetComponent
             
             // Update invite button visibility (only leaders can invite)
             m_wInvitePlayerButton.SetVisible(m_IsLeader);
+            
+            // Vehicle lock button is visible to all team members
+            m_wVehicleLockButton.SetVisible(true);
             
             // Clear and rebuild members list
             m_wMembersVerticalLayout.ClearItems();
@@ -338,6 +344,83 @@ class SCR_TeamManagementMenu : ScriptedWidgetComponent
         }
     }
     
+    /**
+     * @brief Handler for the Vehicle Lock button click
+     */
+    void OnVehicleLockClicked()
+    {
+        // Only allow if player is in a team
+        if (m_TeamID <= 0)
+        {
+            SCR_NotificationSystem.SendNotification("You must be in a team to use vehicle locking.");
+            return;
+        }
+        
+        // Check if player is looking at a vehicle
+        IEntity nearestVehicle = FindNearestVehicle();
+        if (!nearestVehicle)
+        {
+            SCR_NotificationSystem.SendNotification("No vehicle detected nearby.");
+            return;
+        }
+        
+        // Create and show vehicle lock dialog
+        OpenVehicleLockDialog(nearestVehicle);
+    }
+    
+    /**
+     * @brief Find the nearest vehicle to the player
+     * @return The nearest vehicle entity, or null if none found
+     */
+    protected IEntity FindNearestVehicle()
+    {
+        if (!m_PlayerEntity)
+            return null;
+            
+        // For the prototype, we'll check for a nearby vehicle in a simple manner
+        // In a real implementation, this would use raycasting or other detection methods
+        
+        // Get all vehicles in the world
+        array<IEntity> vehicles = new array<IEntity>();
+        GetGame().GetWorld().QueryEntitiesByID(Vehicle, vehicles);
+        
+        // Find closest vehicle
+        IEntity closestVehicle = null;
+        float closestDistance = 10.0; // Maximum distance (meters)
+        vector playerPos = m_PlayerEntity.GetOrigin();
+        
+        foreach (IEntity vehicle : vehicles)
+        {
+            vector vehiclePos = vehicle.GetOrigin();
+            float distance = vector.Distance(playerPos, vehiclePos);
+            
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestVehicle = vehicle;
+            }
+        }
+        
+        return closestVehicle;
+    }
+    
+    /**
+     * @brief Open the vehicle lock dialog
+     * @param vehicle The vehicle to control
+     */
+    protected void OpenVehicleLockDialog(IEntity vehicle)
+    {
+        // Create and show dialog
+        Widget root = GetGame().GetWorkspace().CreateWidgets("UI/layouts/TeamManagement/VehicleLockDialog.layout");
+        if (root)
+        {
+            VehicleLockDialog dialog = new VehicleLockDialog();
+            root.AddHandler(dialog);
+            dialog.Init(vehicle);
+            root.SetVisible(true);
+        }
+    }
+
     /**
      * @brief Handler for the Close button click
      */
