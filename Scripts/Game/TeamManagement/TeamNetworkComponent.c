@@ -429,9 +429,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      * @param rpl Replication component
      * @param ctx Script call context for RPC
      */
-    void OnRPC_CreateTeam(RplComponent rpl, ScriptRPC rpc)
+    void OnRPC_CreateTeam(RplComponent rpl, ScriptCallContext ctx)
     {
-        IEntity player = rpc.Read();
+        IEntity player = ctx.Read();
         
         if (GetGame().IsServer())
         {
@@ -440,7 +440,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         
         // Client side handling (from server broadcast)
-        int teamID = rpc.Read();
+        int teamID = ctx.Read();
         
         // Update local team manager with the new team
         if (teamID > 0)
