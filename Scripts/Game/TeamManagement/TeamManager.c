@@ -84,6 +84,9 @@ class TeamManager
         // Notify player they created a team
         NotifyPlayer(player, "You have created a new team (ID: " + teamID + ")");
         
+        // Trigger the team changed event (from no team to new team)
+        TriggerTeamChanged(player, 0, teamID);
+        
         return teamID;
     }
     
@@ -127,6 +130,9 @@ class TeamManager
         
         // Notify player they joined a team
         NotifyPlayer(player, "You have joined team " + teamID);
+        
+        // Trigger the team changed event (from no team to new team)
+        TriggerTeamChanged(player, 0, teamID);
         
         return true;
     }
@@ -195,6 +201,9 @@ class TeamManager
         {
             m_Teams.Remove(teamID);
         }
+        
+        // Trigger the team changed event (from team to no team)
+        TriggerTeamChanged(player, teamID, 0);
         
         return true;
     }

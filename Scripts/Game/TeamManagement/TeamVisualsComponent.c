@@ -1,340 +1,41 @@
 /**
- * @brief Component for handling team member visual indicators on map and HUD
+ * @brief HUD Icon class for displaying team member icons on the HUD
  */
-class TeamVisualsComponent : SCR_BaseGameComponent
-{
-    // Color for team markers and indicators (default to blue)
-    protected Color m_TeamColor = Color.Blue();
-    
-    // Size of markers on the map
-    protected const float MARKER_SIZE = 24.0;
-    
-    // Maximum distance for HUD icon display
-    protected const float MAX_HUD_DISPLAY_DISTANCE = 500.0;
-    
-    // Distance for name display
-    protected const float NAME_DISPLAY_DISTANCE = 50.0;
-    
-    // The player's team
-    protected int m_TeamID;
-    
-    // Team manager reference
-    protected ref TeamManager m_TeamManager;
-    
-    // Map displays
-    protected ref array<ref MapMarkerComponent> m_TeamMarkers = new array<ref MapMarkerComponent>();
-    
-    // HUD displays
-    protected ref array<ref HudIcon> m_TeamIcons = new array<ref HudIcon>();
-    
-    // Is visuals system initialized
-    protected bool m_Initialized = false;
-    
-    // Last update timestamp
-    protected float m_LastUpdateTime = 0;
-    
-    // Update interval (seconds)
-    protected const float UPDATE_INTERVAL = 1.0;
-    
-    //------------------------------------------------------------------------------------------------
-    override void OnPostInit(IEntity owner)
-    {
-        super.OnPostInit(owner);
-        
-        // Get team manager
-        m_TeamManager = TeamManager.GetInstance();
-        if (!m_TeamManager)
-        {
-            Print("TeamVisualsComponent: Failed to get TeamManager instance");
-            return;
-        }
-        
-        // Register for team changes
-        RegisterForTeamChanges();
-        
-        // Only proceed for local player
-        PlayerController playerController = PlayerController.Cast(owner.GetController());
-        if (!playerController || !playerController.IsLocalPlayer())
-            return;
-        
-        // Set up update event
-        GetGame().GetCallqueue().CallLater(UpdateTeamVisuals, 1000, true);
-        
-        m_Initialized = true;
-        Print("TeamVisualsComponent initialized");
-    }
-    
-    //------------------------------------------------------------------------------------------------
-    override void OnDelete(IEntity owner)
-    {
-        // Clean up resources
-        ClearAllTeamMarkers();
-        ClearAllTeamIcons();
-        
-        // Remove update callback
-        GetGame().GetCallqueue().Remove(UpdateTeamVisuals);
-        
-        super.OnDelete(owner);
-    }
-    
-    //------------------------------------------------------------------------------------------------
-    /**
-     * @brief Register for team change events
-     */
-    protected void RegisterForTeamChanges()
-    {
-        if (!m_TeamManager)
-            return;
-            
-        // Find player's team component
-        IEntity owner = GetOwner();
-        if (!owner)
-            return;
-            
-        TeamPlayerComponent playerTeamComp = TeamPlayerComponent.Cast(owner.FindComponent(TeamPlayerComponent));
-        if (!playerTeamComp)
-            return;
-            
-        // Get current team
-        m_TeamID = playerTeamComp.GetCurrentTeam();
-        
-        // Listen for team changes through script events
-        ScriptInvokerBase<func void> teamChangedInvoker = m_TeamManager.GetOnTeamChangedInvoker();
-        if (teamChangedInvoker)
-        {
-            teamChangedInvoker.Insert(OnTeamChanged);
-        }
-    }
-    
-    //------------------------------------------------------------------------------------------------
-    /**
-     * @brief Handle team change event
-     */
-    protected void OnTeamChanged(int playerEntityID, int oldTeamID, int newTeamID)
-    {
-        // Check if it's this player's team change
-        IEntity owner = GetOwner();
-        if (!owner || owner.GetID() != playerEntityID)
-            return;
-            
-        // Update team ID
-        m_TeamID = newTeamID;
-        
-        // Update visual indicators
-        UpdateTeamVisuals();
-    }
-    
-    //------------------------------------------------------------------------------------------------
-    /**
-     * @brief Update all team visual indicators
-     */
-    protected void UpdateTeamVisuals()
-    {
-        if (!m_Initialized || !m_TeamManager)
-            return;
-            
-        // Skip if not enough time has passed
-        float currentTime = GetGame().GetWorld().GetWorldTime();
-        if (currentTime - m_LastUpdateTime < UPDATE_INTERVAL)
-            return;
-            
-        m_LastUpdateTime = currentTime;
-        
-        // Clear old indicators
-        ClearAllTeamMarkers();
-        ClearAllTeamIcons();
-        
-        // If not in a team, nothing to display
-        if (m_TeamID <= 0)
-            return;
-            
-        // Get team members
-        array<ref TeamMember> teamMembers = m_TeamManager.GetTeamMembers(m_TeamID);
-        if (!teamMembers || teamMembers.Count() == 0)
-            return;
-            
-        // Get local player's entity
-        IEntity localPlayer = GetOwner();
-        if (!localPlayer)
-            return;
-            
-        int localPlayerID = localPlayer.GetID();
-        
-        // Create visual indicators for each team member
-        foreach (TeamMember member : teamMembers)
-        {
-            // Skip self
-            int memberEntityID = member.GetEntityID();
-            if (memberEntityID == localPlayerID)
-                continue;
-                
-            // Find team member entity
-            IEntity memberEntity = GetGame().GetWorld().FindEntityByID(memberEntityID);
-            if (!memberEntity)
-                continue;
-                
-            // Create map marker
-            CreateMapMarker(memberEntity, member.GetPlayerName(), member.IsLeader());
-            
-            // Create HUD icon
-            CreateHudIcon(memberEntity, member.GetPlayerName(), member.IsLeader());
-        }
-    }
-    
-    //------------------------------------------------------------------------------------------------
-    /**
-     * @brief Create a map marker for a team member
-     * @param entity The entity to mark
-     * @param playerName The player's name
-     * @param isLeader Whether this player is the team leader
-     */
-    protected void CreateMapMarker(IEntity entity, string playerName, bool isLeader)
-    {
-        if (!entity)
-            return;
-            
-        // Get map display interface
-        SCR_MapEntity mapEntity = SCR_MapEntity.GetMapInstance();
-        if (!mapEntity)
-            return;
-            
-        // Create marker
-        MapMarkerComponent marker = new MapMarkerComponent();
-        
-        // Set marker properties
-        marker.SetEntityTarget(entity);
-        
-        // Set different icon for leader vs regular member
-        if (isLeader)
-            marker.SetIconFromResource("{FEF31452F8FB99EB}UI/Textures/Map/MapIconLeader.edds");
-        else
-            marker.SetIconFromResource("{34A26F4542321B7D}UI/Textures/Map/MapIconTeamMember.edds");
-            
-        marker.SetBaseColor(m_TeamColor);
-        marker.SetDisplayRadius(MARKER_SIZE);
-        marker.SetDisplayName(playerName);
-        
-        // Add marker to map and store reference
-        mapEntity.AddMarker(marker);
-        m_TeamMarkers.Insert(marker);
-    }
-    
-    //------------------------------------------------------------------------------------------------
-    /**
-     * @brief Create a HUD icon for a team member
-     * @param entity The entity to mark
-     * @param playerName The player's name
-     * @param isLeader Whether this player is the team leader
-     */
-    protected void CreateHudIcon(IEntity entity, string playerName, bool isLeader)
-    {
-        if (!entity)
-            return;
-            
-        // Get HUD manager
-        SCR_HUDManagerComponent hudManager = SCR_HUDManagerComponent.GetInstance();
-        if (!hudManager)
-            return;
-            
-        // Create new HUD icon
-        HudIcon icon = new HudIcon();
-        
-        // Set icon properties
-        icon.SetTargetEntity(entity);
-        
-        // Set different icon for leader vs regular member
-        if (isLeader)
-            icon.SetIconResource("{A26C465055DBD649}UI/Textures/HUD/Icons/LeaderIcon.edds");
-        else
-            icon.SetIconResource("{D8CB338D0BF6837E}UI/Textures/HUD/Icons/TeamMemberIcon.edds");
-            
-        icon.SetColor(m_TeamColor);
-        icon.SetDisplayRadius(16.0);
-        icon.SetMaxDisplayDistance(MAX_HUD_DISPLAY_DISTANCE);
-        icon.SetPlayerName(playerName, NAME_DISPLAY_DISTANCE);
-        
-        // Add icon to HUD and store reference
-        hudManager.AddHudIcon(icon);
-        m_TeamIcons.Insert(icon);
-    }
-    
-    //------------------------------------------------------------------------------------------------
-    /**
-     * @brief Clear all team map markers
-     */
-    protected void ClearAllTeamMarkers()
-    {
-        // Get map display interface
-        SCR_MapEntity mapEntity = SCR_MapEntity.GetMapInstance();
-        if (!mapEntity)
-            return;
-            
-        // Remove all markers
-        foreach (MapMarkerComponent marker : m_TeamMarkers)
-        {
-            mapEntity.RemoveMarker(marker);
-        }
-        
-        m_TeamMarkers.Clear();
-    }
-    
-    //------------------------------------------------------------------------------------------------
-    /**
-     * @brief Clear all team HUD icons
-     */
-    protected void ClearAllTeamIcons()
-    {
-        // Get HUD manager
-        SCR_HUDManagerComponent hudManager = SCR_HUDManagerComponent.GetInstance();
-        if (!hudManager)
-            return;
-            
-        // Remove all icons
-        foreach (HudIcon icon : m_TeamIcons)
-        {
-            hudManager.RemoveHudIcon(icon);
-        }
-        
-        m_TeamIcons.Clear();
-    }
-    
-    //------------------------------------------------------------------------------------------------
-    /**
-     * @brief Set the team color
-     * @param color The color to use for team visual indicators
-     */
-    void SetTeamColor(Color color)
-    {
-        m_TeamColor = color;
-        UpdateTeamVisuals();
-    }
-}
-
-// Hud Icon implementation for team members
 class HudIcon
 {
-    protected IEntity m_TargetEntity;
+    // The entity this icon is attached to
+    protected IEntity m_Entity;
+    
+    // Icon resource
     protected ResourceName m_IconResource;
-    protected Color m_Color = Color.Blue();
-    protected float m_DisplayRadius = 16.0;
-    protected float m_MaxDisplayDistance = 500.0;
-    protected string m_PlayerName;
-    protected float m_NameDisplayDistance = 50.0;
+    
+    // Icon color
+    protected ref Color m_Color;
+    
+    // Whether the icon is visible
+    protected bool m_Visible = true;
+    
+    // Display name
+    protected string m_DisplayName;
+    
+    // Icon size
+    protected float m_Size = 16.0;
     
     //------------------------------------------------------------------------------------------------
     /**
-     * @brief Set the target entity for this icon
-     * @param entity The entity to track
+     * @brief Constructor
+     * @param entity The entity this icon is attached to
      */
-    void SetTargetEntity(IEntity entity)
+    void HudIcon(IEntity entity)
     {
-        m_TargetEntity = entity;
+        m_Entity = entity;
+        m_Color = Color.White();
     }
     
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Set the icon resource
-     * @param resourcePath Path to the icon texture
+     * @param resourcePath Path to the icon resource
      */
     void SetIconResource(ResourceName resourcePath)
     {
@@ -353,50 +54,48 @@ class HudIcon
     
     //------------------------------------------------------------------------------------------------
     /**
-     * @brief Set the display radius
-     * @param radius The radius in pixels
+     * @brief Set whether the icon is visible
+     * @param visible True to show, false to hide
      */
-    void SetDisplayRadius(float radius)
+    void SetVisible(bool visible)
     {
-        m_DisplayRadius = radius;
+        m_Visible = visible;
     }
     
     //------------------------------------------------------------------------------------------------
     /**
-     * @brief Set the maximum display distance
-     * @param distance The maximum distance in meters
+     * @brief Set the display name
+     * @param name The name to display
      */
-    void SetMaxDisplayDistance(float distance)
+    void SetDisplayName(string name)
     {
-        m_MaxDisplayDistance = distance;
+        m_DisplayName = name;
     }
     
     //------------------------------------------------------------------------------------------------
     /**
-     * @brief Set the player name for display
-     * @param name The player name
-     * @param displayDistance Distance at which to display the name
+     * @brief Set the icon size
+     * @param size Size in pixels
      */
-    void SetPlayerName(string name, float displayDistance)
+    void SetSize(float size)
     {
-        m_PlayerName = name;
-        m_NameDisplayDistance = displayDistance;
+        m_Size = size;
     }
     
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Get the target entity
-     * @return The target entity
+     * @return The entity
      */
-    IEntity GetTargetEntity()
+    IEntity GetEntity()
     {
-        return m_TargetEntity;
+        return m_Entity;
     }
     
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Get the icon resource
-     * @return The icon resource path
+     * @return The resource path
      */
     ResourceName GetIconResource()
     {
@@ -406,7 +105,7 @@ class HudIcon
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Get the icon color
-     * @return The icon color
+     * @return The color
      */
     Color GetColor()
     {
@@ -415,41 +114,297 @@ class HudIcon
     
     //------------------------------------------------------------------------------------------------
     /**
-     * @brief Get the display radius
-     * @return The display radius in pixels
+     * @brief Check if the icon is visible
+     * @return True if visible
      */
-    float GetDisplayRadius()
+    bool IsVisible()
     {
-        return m_DisplayRadius;
+        return m_Visible;
     }
     
     //------------------------------------------------------------------------------------------------
     /**
-     * @brief Get the maximum display distance
-     * @return The maximum display distance in meters
+     * @brief Get the display name
+     * @return The display name
      */
-    float GetMaxDisplayDistance()
+    string GetDisplayName()
     {
-        return m_MaxDisplayDistance;
+        return m_DisplayName;
     }
     
     //------------------------------------------------------------------------------------------------
     /**
-     * @brief Get the player name
+     * @brief Get the icon size
+     * @return Size in pixels
+     */
+    float GetSize()
+    {
+        return m_Size;
+    }
+}
+
+/**
+ * @brief Team Visuals Component for displaying team indicators
+ */
+class TeamVisualsComponentClass : ScriptComponentClass
+{
+}
+
+//------------------------------------------------------------------------------------------------
+/*!
+    Component for handling visual indicators for team members
+*/
+class TeamVisualsComponent : ScriptComponent
+{
+    // Resources for team member indicators
+    protected const ResourceName LEADER_ICON_RESOURCE = "UI/Textures/HUD/Icons/LeaderIcon.edds";
+    protected const ResourceName MEMBER_ICON_RESOURCE = "UI/Textures/HUD/Icons/TeamMemberIcon.edds";
+    protected const ResourceName MAP_LEADER_ICON_RESOURCE = "UI/Textures/Map/MapIconLeader.edds";
+    protected const ResourceName MAP_MEMBER_ICON_RESOURCE = "UI/Textures/Map/MapIconTeamMember.edds";
+    
+    // Team colors for different teams
+    protected const array<ref Color> TEAM_COLORS = {
+        Color.Yellow(),  // Team 1
+        Color.Blue(),    // Team 2
+        Color.Red(),     // Team 3
+        Color.Green(),   // Team 4
+        Color.Magenta(), // Team 5
+        Color.Cyan(),    // Team 6
+        Color.Orange(),  // Team 7
+        Color.Purple()   // Team 8
+    };
+    
+    // Player entity this component is attached to
+    protected IEntity m_PlayerEntity;
+    
+    // Current team ID
+    protected int m_CurrentTeamID = 0;
+    
+    // Map indicator for this player
+    protected ref MapMarkerComponent m_MapMarker;
+    
+    // HUD indicator for this player
+    protected ref HudIcon m_HudIcon;
+    
+    // Team manager reference
+    protected ref TeamManager m_TeamManager;
+    
+    // Is player a leader
+    protected bool m_IsLeader = false;
+    
+    // Reference to HUD manager
+    protected SCR_HUDManagerComponent m_HudManager;
+    
+    // Reference to Map entity
+    protected SCR_MapEntity m_MapEntity;
+    
+    //------------------------------------------------------------------------------------------------
+    override void OnPostInit(IEntity owner)
+    {
+        super.OnPostInit(owner);
+        
+        // Store reference to player entity
+        m_PlayerEntity = owner;
+        
+        // Get team manager
+        m_TeamManager = TeamManager.GetInstance();
+        if (!m_TeamManager)
+            return;
+            
+        // Get HUD manager
+        m_HudManager = SCR_HUDManagerComponent.GetInstance();
+        
+        // Get Map entity
+        m_MapEntity = SCR_MapEntity.GetMapInstance();
+        
+        // Create map marker
+        CreateMapMarker();
+        
+        // Create HUD icon
+        CreateHudIcon();
+        
+        // Register for team change events
+        if (m_TeamManager)
+            m_TeamManager.GetOnTeamChanged().Insert(OnTeamChanged);
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    void ~TeamVisualsComponent()
+    {
+        // Unregister from team change events
+        if (m_TeamManager)
+            m_TeamManager.GetOnTeamChanged().Remove(OnTeamChanged);
+            
+        // Remove map marker
+        if (m_MapEntity && m_MapMarker)
+            m_MapEntity.RemoveMarker(m_MapMarker);
+            
+        // Remove HUD icon
+        if (m_HudManager && m_HudIcon)
+            m_HudManager.RemoveHudIcon(m_HudIcon);
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Handle team change events
+     * @param entityID The entity ID of the player
+     * @param oldTeamID The previous team ID
+     * @param newTeamID The new team ID
+     */
+    void OnTeamChanged(int entityID, int oldTeamID, int newTeamID)
+    {
+        // Check if this is the player we are attached to
+        if (m_PlayerEntity.GetID() != entityID)
+            return;
+            
+        // Update team ID
+        m_CurrentTeamID = newTeamID;
+        
+        // Check if player is a leader
+        string playerID = GetPlayerIdentity(m_PlayerEntity);
+        m_IsLeader = m_TeamManager.IsTeamLeader(playerID, newTeamID);
+        
+        // Update visuals
+        UpdateMarkerVisuals();
+        UpdateHudVisuals();
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Create a map marker for this player
+     */
+    protected void CreateMapMarker()
+    {
+        if (!m_MapEntity)
+            return;
+            
+        m_MapMarker = new MapMarkerComponent();
+        m_MapMarker.SetEntityTarget(m_PlayerEntity);
+        
+        // Set initial properties
+        UpdateMarkerVisuals();
+        
+        // Add to map
+        m_MapEntity.AddMarker(m_MapMarker);
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Create a HUD icon for this player
+     */
+    protected void CreateHudIcon()
+    {
+        if (!m_HudManager)
+            return;
+            
+        m_HudIcon = new HudIcon(m_PlayerEntity);
+        
+        // Set initial properties
+        UpdateHudVisuals();
+        
+        // Add to HUD
+        m_HudManager.AddHudIcon(m_HudIcon);
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Update marker visuals based on current properties
+     */
+    protected void UpdateMarkerVisuals()
+    {
+        if (!m_MapMarker)
+            return;
+            
+        // If not in a team, hide the marker
+        if (m_CurrentTeamID <= 0)
+        {
+            m_MapMarker.SetVisible(false);
+            return;
+        }
+        
+        // Show the marker
+        m_MapMarker.SetVisible(true);
+        
+        // Set appropriate icon
+        if (m_IsLeader)
+            m_MapMarker.SetIconFromResource(MAP_LEADER_ICON_RESOURCE);
+        else
+            m_MapMarker.SetIconFromResource(MAP_MEMBER_ICON_RESOURCE);
+            
+        // Set team color
+        int colorIndex = (m_CurrentTeamID - 1) % TEAM_COLORS.Count();
+        m_MapMarker.SetBaseColor(TEAM_COLORS[colorIndex]);
+        
+        // Set display name (player name)
+        m_MapMarker.SetDisplayName(GetPlayerName(m_PlayerEntity));
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Update HUD visuals based on current properties
+     */
+    protected void UpdateHudVisuals()
+    {
+        if (!m_HudIcon)
+            return;
+            
+        // If not in a team, hide the icon
+        if (m_CurrentTeamID <= 0)
+        {
+            m_HudIcon.SetVisible(false);
+            return;
+        }
+        
+        // Show the icon
+        m_HudIcon.SetVisible(true);
+        
+        // Set appropriate icon
+        if (m_IsLeader)
+            m_HudIcon.SetIconResource(LEADER_ICON_RESOURCE);
+        else
+            m_HudIcon.SetIconResource(MEMBER_ICON_RESOURCE);
+            
+        // Set team color
+        int colorIndex = (m_CurrentTeamID - 1) % TEAM_COLORS.Count();
+        m_HudIcon.SetColor(TEAM_COLORS[colorIndex]);
+        
+        // Set display name (player name)
+        m_HudIcon.SetDisplayName(GetPlayerName(m_PlayerEntity));
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Get player identity
+     * @param player The player entity
+     * @return The player identity string
+     */
+    protected string GetPlayerIdentity(IEntity player)
+    {
+        if (!player)
+            return "";
+            
+        PlayerController pc = PlayerController.Cast(player.GetController());
+        if (!pc)
+            return "";
+            
+        return pc.GetPlayerId();
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Get player name
+     * @param player The player entity
      * @return The player name
      */
-    string GetPlayerName()
+    protected string GetPlayerName(IEntity player)
     {
-        return m_PlayerName;
-    }
-    
-    //------------------------------------------------------------------------------------------------
-    /**
-     * @brief Get the name display distance
-     * @return The distance at which to display the name
-     */
-    float GetNameDisplayDistance()
-    {
-        return m_NameDisplayDistance;
+        if (!player)
+            return "Unknown";
+            
+        PlayerController pc = PlayerController.Cast(player.GetController());
+        if (!pc)
+            return "Unknown";
+            
+        return pc.GetPlayerName();
     }
 }
