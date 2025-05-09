@@ -37,7 +37,7 @@ class FileExplorerHandler(http.server.SimpleHTTPRequestHandler):
                 
                 <h2>Description</h2>
                 <p>A comprehensive team management system for ARMA Reforger that includes team creation, joining, leaving, 
-                invitation management, and network synchronization for multiplayer environments.</p>
+                invitation management, vehicle locking for team access, and network synchronization for multiplayer environments.</p>
                 
                 <h2>Fixed Compilation Issues</h2>
                 <ul>
@@ -46,6 +46,15 @@ class FileExplorerHandler(http.server.SimpleHTTPRequestHandler):
                     <li class="fixed-issue">✅ Fixed method parameter handling for all RPC functions</li>
                     <li class="fixed-issue">✅ Fixed <code>rpc.Read()</code> to <code>ctx.Read()</code> in all handlers</li>
                     <li class="fixed-issue">✅ Fixed all RPC method documentation</li>
+                </ul>
+                
+                <h2>Vehicle Locking Feature</h2>
+                <ul>
+                    <li class="fixed-issue">✅ Team-based vehicle locking system implemented</li>
+                    <li class="fixed-issue">✅ Team members can access locked vehicles without unlocking</li>
+                    <li class="fixed-issue">✅ Vehicle lock dialog UI for locking/unlocking vehicles</li>
+                    <li class="fixed-issue">✅ Vehicle lock permissions based on team membership</li>
+                    <li class="fixed-issue">✅ Network synchronization for vehicle lock status</li>
                 </ul>
                 
                 <h2>Mod Installation Instructions</h2>
