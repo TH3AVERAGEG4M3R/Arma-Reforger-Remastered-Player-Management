@@ -1,6 +1,3 @@
-/**
- * @brief UI class for team respawn menu
- */
 class TeamRespawnMenu
 {
     // Widget references
