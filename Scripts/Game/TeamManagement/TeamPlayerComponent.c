@@ -6,6 +6,12 @@ class TeamPlayerComponent : GenericComponent
     protected ref TeamManager m_TeamManager;
     protected bool m_IsInitialized;
     
+    // Reference to the team management menu
+    protected ref TeamManagementMenu m_TeamMenu;
+    
+    // Reference to the team respawn menu
+    protected ref TeamRespawnMenu m_RespawnMenu;
+    
     /**
      * @brief Initialize component
      */
@@ -21,6 +27,93 @@ class TeamPlayerComponent : GenericComponent
         
         // Register for vehicle interaction callbacks if supported
         RegisterForVehicleInteractions();
+        
+        // Register for input events
+        RegisterInputs(owner);
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        Register input handlers for key bindings
+        \param owner The entity that owns this component
+    */
+    protected void RegisterInputs(IEntity owner)
+    {
+        // Only register inputs for the local player
+        PlayerController playerController = PlayerController.Cast(owner.GetController());
+        if (!playerController || !playerController.IsLocalPlayer())
+            return;
+            
+        // Get the input manager
+        InputManager inputManager = GetGame().GetInputManager();
+        if (!inputManager)
+            return;
+            
+        // Register for the Team Menu key binding (T)
+        inputManager.AddActionListener("TeamManagement.OpenTeamMenu", EActionTrigger.DOWN, OpenTeamMenu);
+        
+        // Register for the Respawn Menu key binding (R)
+        inputManager.AddActionListener("TeamManagement.OpenRespawnMenu", EActionTrigger.DOWN, OpenRespawnMenu);
+        
+        Print("Team Management key bindings registered for player: " + GetPlayerName());
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        Handle opening the team management menu (T key)
+        \param action The action context
+        \return True if handled, false otherwise
+    */
+    protected bool OpenTeamMenu(ActionContext action)
+    {
+        // Only continue for local player
+        IEntity owner = GetOwner();
+        PlayerController playerController = PlayerController.Cast(owner.GetController());
+        if (!playerController || !playerController.IsLocalPlayer())
+            return false;
+            
+        Print("Opening Team Management Menu for player: " + GetPlayerName());
+        
+        // Create or show the team management menu
+        if (!m_TeamMenu)
+        {
+            m_TeamMenu = new TeamManagementMenu();
+            m_TeamMenu.Init();
+        }
+        
+        // Toggle the menu visibility
+        m_TeamMenu.Toggle();
+        
+        return true;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
+        Handle opening the respawn menu (R key)
+        \param action The action context
+        \return True if handled, false otherwise
+    */
+    protected bool OpenRespawnMenu(ActionContext action)
+    {
+        // Only continue for local player
+        IEntity owner = GetOwner();
+        PlayerController playerController = PlayerController.Cast(owner.GetController());
+        if (!playerController || !playerController.IsLocalPlayer())
+            return false;
+            
+        Print("Opening Team Respawn Menu for player: " + GetPlayerName());
+        
+        // Create or show the respawn menu
+        if (!m_RespawnMenu)
+        {
+            m_RespawnMenu = new TeamRespawnMenu();
+            m_RespawnMenu.Init();
+        }
+        
+        // Toggle the menu visibility
+        m_RespawnMenu.Toggle();
+        
+        return true;
     }
     
     /**
