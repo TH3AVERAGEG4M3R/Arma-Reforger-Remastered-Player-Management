@@ -54,14 +54,14 @@ class TeamFlagpole : GenericEntity
         RPC handler for purchasing the flagpole
         \param rpc The RPC object containing the call data
     */
-    private void RPC_PurchaseFlagpole(ScriptRPC rpc)
+    private void RPC_PurchaseFlagpole(ScriptCallContext ctx)
     {
         // Read parameters from the RPC call
         int playerID;
         string customName;
         
-        rpc.Read(playerID);
-        rpc.Read(customName);
+        ctx.Read(playerID);
+        ctx.Read(customName);
         
         // Call the purchase method directly
         bool success = PurchaseFlagpole(playerID, customName);
@@ -83,7 +83,7 @@ class TeamFlagpole : GenericEntity
             // Send RPC to server
             if (m_RplComponent)
             {
-                ScriptRPC rpc = new ScriptRPC();
+                ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(playerID);
                 rpc.Write(customName);
                 m_RplComponent.SendRPC("RPC_PurchaseFlagpole", rpc);

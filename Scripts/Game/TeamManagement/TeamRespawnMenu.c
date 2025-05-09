@@ -332,7 +332,7 @@ class TeamRespawnMenu
             RplComponent rpl = RplComponent.Cast(respawnEntity.FindComponent(RplComponent));
             if (rpl)
             {
-                ScriptRPC rpc = new ScriptRPC();
+                ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(playerID);
                 rpl.SendRPC("RPC_RequestRespawn", rpc);
             }
@@ -367,7 +367,7 @@ class PurchaseFlagpoleButtonHandler : ScriptedWidgetEventHandler
         m_Menu = menu;
     }
     
-    override bool OnMouseDown(Widget w, int x, int y, int button)
+    bool OnMouseDown(Widget w, int x, int y, int button)
     {
         if (button == MouseButton.LEFT && m_Menu)
         {
@@ -390,7 +390,7 @@ class SelectRespawnButtonHandler : ScriptedWidgetEventHandler
         m_RespawnEntityID = respawnEntityID;
     }
     
-    override bool OnMouseDown(Widget w, int x, int y, int button)
+    bool OnMouseDown(Widget w, int x, int y, int button)
     {
         if (button == MouseButton.LEFT && m_Menu)
         {

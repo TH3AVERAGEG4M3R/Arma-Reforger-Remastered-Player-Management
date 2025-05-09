@@ -100,7 +100,7 @@ class TeamRespawnComponent : GenericComponent
         RplComponent rpl = RplComponent.Cast(GetOwner().FindComponent(RplComponent));
         if (rpl)
         {
-            ScriptRPC rpc = new ScriptRPC();
+            ScriptCallContext rpc = new ScriptCallContext();
             rpc.Write(teamID);
             rpc.Write(leaderEntityID);
             rpc.Write(m_RespawnName);
@@ -113,15 +113,15 @@ class TeamRespawnComponent : GenericComponent
         RPC handler for assigning team ownership
         \param rpc The RPC object containing the call data
     */
-    private void RPC_AssignTeam(ScriptRPC rpc)
+    private void RPC_AssignTeam(ScriptCallContext ctx)
     {
         int teamID;
         int leaderEntityID;
         string name;
         
-        rpc.Read(teamID);
-        rpc.Read(leaderEntityID);
-        rpc.Read(name);
+        ctx.Read(teamID);
+        ctx.Read(leaderEntityID);
+        ctx.Read(name);
         
         m_TeamID = teamID;
         m_LeaderEntityID = leaderEntityID;
@@ -246,10 +246,10 @@ class TeamRespawnComponent : GenericComponent
         RPC handler for respawn requests
         \param rpc The RPC object containing the call data
     */
-    private void RPC_RequestRespawn(ScriptRPC rpc)
+    private void RPC_RequestRespawn(ScriptCallContext ctx)
     {
         int playerID;
-        rpc.Read(playerID);
+        ctx.Read(playerID);
         
         HandleRespawnRequest(playerID);
     }
