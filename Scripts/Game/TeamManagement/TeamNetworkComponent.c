@@ -2,6 +2,9 @@
  * @brief Network component for team management system
  * Handles RPC calls and data synchronization across the network
  */
+ 
+// Include the necessary headers
+#include "$scripts:Game/RPCs/ScriptRPC.c"
 class TeamNetworkComponent : ScriptedWidgetComponent
 {
     // Singleton instance

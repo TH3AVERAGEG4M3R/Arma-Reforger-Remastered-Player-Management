@@ -1,0 +1,37 @@
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(430): error: Unknown type 'ScriptRPC'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(430): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(456): error: Unknown type 'ScriptRPC'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(456): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(483): error: Unknown type 'ScriptRPC'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(483): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(510): error: Unknown type 'ScriptRPC'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(510): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(543): error: Unknown type 'ScriptRPC'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(543): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(572): error: Unknown type 'ScriptRPC'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(572): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(598): error: Unknown type 'ScriptRPC'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(598): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(805): error: Unknown type 'ScriptRPC'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(805): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(851): error: Unknown type 'ScriptRPC'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(851): error: Error in parameters
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(964): error: Unknown type 'ScriptRPC'
+Scripts/Game/TeamManagement/TeamNetworkComponent.c(964): error: Error in parameters
+Scripts/Game/TeamManagement/TeamChatComponent.c(186): error: Unknown type 'ActionBase'
+Scripts/Game/TeamManagement/TeamChatComponent.c(186): error: Error in parameters
+Scripts/Game/TeamManagement/TeamChatComponent.c(212): error: Unknown type 'ActionBase'
+Scripts/Game/TeamManagement/TeamChatComponent.c(212): error: Error in parameters
+Scripts/Game/TeamManagement/TeamManagementMenu.c(268): error: Function 'OnMouseDown' is marked as override, but there is no function with this name in the base class
+Scripts/Game/TeamManagement/TeamPlayerComponent.c(128): error: Unknown type 'ActionBase'
+Scripts/Game/TeamManagement/TeamPlayerComponent.c(128): error: Error in parameters
+Scripts/Game/TeamManagement/TeamPlayerComponent.c(157): error: Unknown type 'ActionBase'
+Scripts/Game/TeamManagement/TeamPlayerComponent.c(157): error: Error in parameters
+Scripts/Game/TeamManagement/TeamRespawnMenu.c(370): error: Function 'OnMouseDown' is marked as override, but there is no function with this name in the base class
+Scripts/Game/TeamManagement/TeamRespawnMenu.c(393): error: Function 'OnMouseDown' is marked as override, but there is no function with this name in the base class
+Scripts/Game/TeamManagement/TeamFlagpole.c(55): error: Unknown type 'ScriptRPC'
+Scripts/Game/TeamManagement/TeamFlagpole.c(55): error: Error in parameters
+Scripts/Game/TeamManagement/TeamRespawnComponent.c(114): error: Unknown type 'ScriptRPC'
+Scripts/Game/TeamManagement/TeamRespawnComponent.c(114): error: Error in parameters
+Scripts/Game/TeamManagement/TeamRespawnComponent.c(247): error: Unknown type 'ScriptRPC'
+Scripts/Game/TeamManagement/TeamRespawnComponent.c(247): error: Error in parameters
