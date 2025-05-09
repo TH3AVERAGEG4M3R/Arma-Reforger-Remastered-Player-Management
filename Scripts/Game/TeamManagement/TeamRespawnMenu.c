@@ -1,13 +1,13 @@
-class TeamRespawnMenuClass : SCR_ScriptedWidgetComponentClass
+class TeamRespawnMenuClass: SCR_ScriptedWidgetComponentClass
 {
-}
+};
 
 //------------------------------------------------------------------------------------------------
 /*!
     UI component for managing team respawn points.
     Allows team leaders to purchase flagpoles and all team members to select respawn points.
 */
-class TeamRespawnMenu : SCR_ScriptedWidgetComponent
+class TeamRespawnMenu: SCR_ScriptedWidgetComponent
 {
     // Widget references
     protected Widget m_wRoot;
