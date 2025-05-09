@@ -28,7 +28,7 @@ class TeamRespawnComponent : GenericComponent
     static const float MIN_FLAGPOLE_DISTANCE = 100.0;
     
     // Cooldown time in seconds between respawns at flagpole
-    static const float RESPAWN_COOLDOWN_SECONDS = 600.0;
+    static const float RESPAWN_COOLDOWN_SECONDS = 300.0;
     
     // Map to track player respawn cooldowns (playerID -> last respawn time)
     protected ref map<int, float> m_PlayerRespawnTimes = new map<int, float>();
