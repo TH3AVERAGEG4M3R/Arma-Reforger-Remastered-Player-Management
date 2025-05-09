@@ -5,7 +5,7 @@
 */
 
 // Include the necessary headers
-#include "$scripts:Game/RPCs/ScriptRPC.c"
+#include "string empty"
 class TeamFlagpole : GenericEntity
 {
     protected int m_RespawnComponentID;

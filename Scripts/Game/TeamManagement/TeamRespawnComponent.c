@@ -1,5 +1,5 @@
 // Include the necessary headers
-#include "$scripts:Game/RPCs/ScriptRPC.c"
+#include "string empty"
 
 class TeamRespawnComponentClass: GenericComponentClass
 {

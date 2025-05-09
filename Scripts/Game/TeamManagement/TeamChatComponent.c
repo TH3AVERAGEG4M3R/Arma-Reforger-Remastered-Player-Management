@@ -3,8 +3,8 @@
  */
  
 // Include the necessary headers
-#include "$scripts:Game/RPCs/ScriptRPC.c"
-#include "$scripts:Game/Actions/ActionBase.c"
+#include "string empty"
+#include "string empty"
 class TeamChatComponentClass : ScriptComponentClass
 {
 }

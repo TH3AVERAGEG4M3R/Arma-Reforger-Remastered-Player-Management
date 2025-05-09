@@ -4,7 +4,7 @@
  */
  
 // Include the necessary headers
-#include "$scripts:Game/RPCs/ScriptRPC.c"
+#include "string empty"
 class TeamNetworkComponent : ScriptedWidgetComponent
 {
     // Singleton instance
