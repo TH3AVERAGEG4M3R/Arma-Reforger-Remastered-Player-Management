@@ -27,6 +27,12 @@ class TeamRespawnComponent : GenericComponent
     // Minimum distance between flagpoles in meters
     static const float MIN_FLAGPOLE_DISTANCE = 100.0;
     
+    // Cooldown time in seconds between respawns at flagpole
+    static const float RESPAWN_COOLDOWN_SECONDS = 600.0;
+    
+    // Map to track player respawn cooldowns (playerID -> last respawn time)
+    protected ref map<int, float> m_PlayerRespawnTimes = new map<int, float>();
+    
     //------------------------------------------------------------------------------------------------
     void TeamRespawnComponent(IEntityComponentSource src, IEntity ent, IEntity parent)
     {
@@ -146,6 +152,35 @@ class TeamRespawnComponent : GenericComponent
     
     //------------------------------------------------------------------------------------------------
     /*!
+        Check if a player is on cooldown for respawning
+        \param playerID The entity ID of the player
+        \param remainingTime Output parameter to store the remaining cooldown time
+        \return True if player is on cooldown, false otherwise
+    */
+    bool IsPlayerOnCooldown(int playerID, out float remainingTime)
+    {
+        remainingTime = 0;
+        
+        // If player has never respawned, they're not on cooldown
+        if (!m_PlayerRespawnTimes.Contains(playerID))
+            return false;
+            
+        // Get the last respawn time for this player
+        float lastRespawnTime = m_PlayerRespawnTimes.Get(playerID);
+        float currentTime = GetGame().GetWorld().GetWorldTime();
+        float timeSinceLastRespawn = currentTime - lastRespawnTime;
+        
+        // If enough time has passed, player is not on cooldown
+        if (timeSinceLastRespawn >= RESPAWN_COOLDOWN_SECONDS)
+            return false;
+            
+        // Player is on cooldown, calculate remaining time
+        remainingTime = RESPAWN_COOLDOWN_SECONDS - timeSinceLastRespawn;
+        return true;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /*!
         Handle a respawn request from a player
         \param playerID The entity ID of the player requesting respawn
         \return True if the request was successful, false otherwise
@@ -160,6 +195,22 @@ class TeamRespawnComponent : GenericComponent
         if (!player)
             return false;
             
+        // Check if player is on cooldown
+        float remainingCooldown;
+        if (IsPlayerOnCooldown(playerID, remainingCooldown))
+        {
+            // Notify player they are on cooldown
+            PlayerController pc = PlayerController.Cast(player.GetController());
+            if (pc)
+            {
+                int minutes = Math.Floor(remainingCooldown / 60);
+                int seconds = Math.Floor(remainingCooldown) % 60;
+                string cooldownText = minutes.ToString() + ":" + (seconds < 10 ? "0" + seconds.ToString() : seconds.ToString());
+                SCR_NotificationSystem.SendNotification(pc, "You must wait " + cooldownText + " before respawning again.");
+            }
+            return false;
+        }
+            
         // Teleport to the respawn position with a slight offset to prevent players spawning on top of each other
         float randomOffsetX = Math.RandomFloat(-2, 2);
         float randomOffsetZ = Math.RandomFloat(-2, 2);
@@ -167,6 +218,18 @@ class TeamRespawnComponent : GenericComponent
         
         // Set player position
         player.SetOrigin(respawnPos);
+        
+        // Update the player's last respawn time
+        float currentTime = GetGame().GetWorld().GetWorldTime();
+        m_PlayerRespawnTimes.Set(playerID, currentTime);
+        
+        // Notify player of successful respawn and cooldown
+        PlayerController pc = PlayerController.Cast(player.GetController());
+        if (pc)
+        {
+            int cooldownMinutes = Math.Floor(RESPAWN_COOLDOWN_SECONDS / 60);
+            SCR_NotificationSystem.SendNotification(pc, "You have respawned at " + m_RespawnName + ". Cooldown: " + cooldownMinutes + " minutes.");
+        }
         
         return true;
     }

@@ -122,11 +122,34 @@ class TeamRespawnMenu : SCR_ScriptedWidgetComponent
                 nameText.SetText(respawnComponent.GetRespawnName());
             }
             
+            // Check if player is on cooldown for this respawn point
+            float remainingCooldown;
+            bool onCooldown = respawnComponent.IsPlayerOnCooldown(playerID, remainingCooldown);
+            
             // Set button handler for selecting this respawn point
             ButtonWidget selectButton = ButtonWidget.Cast(respawnItem.FindAnyWidget("SelectRespawnButton"));
             if (selectButton)
             {
-                selectButton.AddHandler(new SelectRespawnButtonHandler(this, respawnEntity.GetID()));
+                if (onCooldown)
+                {
+                    // Format cooldown time
+                    int minutes = Math.Floor(remainingCooldown / 60);
+                    int seconds = Math.Floor(remainingCooldown) % 60;
+                    string cooldownText = minutes.ToString() + ":" + (seconds < 10 ? "0" + seconds.ToString() : seconds.ToString());
+                    
+                    // Disable button and show cooldown time
+                    selectButton.SetEnabled(false);
+                    selectButton.SetText("COOLDOWN: " + cooldownText);
+                    selectButton.SetColor(Color.Red());
+                }
+                else
+                {
+                    // Enable button for respawn
+                    selectButton.SetEnabled(true);
+                    selectButton.SetText("SELECT");
+                    selectButton.SetColor(Color.Blue());
+                    selectButton.AddHandler(new SelectRespawnButtonHandler(this, respawnEntity.GetID()));
+                }
             }
         }
         
