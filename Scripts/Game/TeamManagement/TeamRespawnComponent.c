@@ -244,10 +244,10 @@ class TeamRespawnComponent : GenericComponent
         RPC handler for respawn requests
         \param ctx Context for the RPC call
     */
-    private void RPC_RequestRespawn(Class ctx)
+    private void RPC_RequestRespawn(ScriptRPC rpc)
     {
         int playerID;
-        ctx.Read(playerID);
+        rpc.Read(playerID);
         
         HandleRespawnRequest(playerID);
     }

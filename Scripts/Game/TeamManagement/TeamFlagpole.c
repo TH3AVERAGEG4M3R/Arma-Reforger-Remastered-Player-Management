@@ -5,7 +5,7 @@
 */
 class TeamFlagpole : GenericEntity
 {
-    protected ref TeamRespawnComponent m_RespawnComponent;
+    protected TeamRespawnComponent m_RespawnComponent;
     protected RplComponent m_RplComponent;
     
     //------------------------------------------------------------------------------------------------
@@ -46,14 +46,14 @@ class TeamFlagpole : GenericEntity
         RPC handler for purchasing the flagpole
         \param ctx Context for the RPC call
     */
-    private void RPC_PurchaseFlagpole(Class ctx)
+    private void RPC_PurchaseFlagpole(ScriptRPC rpc)
     {
         // Read parameters from the RPC call
         int playerID;
         string customName;
         
-        ctx.Read(playerID);
-        ctx.Read(customName);
+        rpc.Read(playerID);
+        rpc.Read(customName);
         
         // Call the purchase method directly
         bool success = PurchaseFlagpole(playerID, customName);

@@ -22,7 +22,7 @@ class TeamManager
     static const int MAX_FLAGPOLES_PER_TEAM = 1;
     
     // Map of teams to their flagpoles
-    protected ref map<int, ref array<ref IEntity>> m_TeamFlagpoles = new map<int, ref array<ref IEntity>>();
+    protected ref map<int, ref array<EntityID>> m_TeamFlagpoles = new map<int, ref array<EntityID>>();
     
     // Network component for multiplayer support
     protected ref TeamNetworkComponent m_NetworkComponent;
@@ -466,10 +466,10 @@ class TeamManager
      * @param teamID The ID of the team
      * @return Array of flagpole entities, or empty array if none
      */
-    array<ref IEntity> GetTeamFlagpoles(int teamID)
+    array<EntityID> GetTeamFlagpoles(int teamID)
     {
         if (!m_TeamFlagpoles.Contains(teamID))
-            return new array<ref IEntity>();
+            return new array<EntityID>();
             
         return m_TeamFlagpoles.Get(teamID);
     }
