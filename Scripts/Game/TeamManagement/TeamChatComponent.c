@@ -1,6 +1,10 @@
 /**
  * @brief Team Chat Component for handling team-specific messaging
  */
+ 
+// Include the necessary headers
+#include "$scripts:Game/RPCs/ScriptRPC.c"
+#include "$scripts:Game/Actions/ActionBase.c"
 class TeamChatComponentClass : ScriptComponentClass
 {
 }
