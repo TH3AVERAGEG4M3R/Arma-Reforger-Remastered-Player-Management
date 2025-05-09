@@ -40,7 +40,7 @@ class TeamRespawnComponent : GenericComponent
     }
     
     //------------------------------------------------------------------------------------------------
-    override void OnPostInit(IEntity owner)
+    void OnPostInit(IEntity owner)
     {
         super.OnPostInit(owner);
         
@@ -62,7 +62,7 @@ class TeamRespawnComponent : GenericComponent
     }
     
     //------------------------------------------------------------------------------------------------
-    override bool RplSave(ScriptBitWriter writer)
+    bool RplSave(ScriptBitWriter writer)
     {
         writer.WriteInt(m_TeamID);
         writer.WriteInt(m_LeaderEntityID);
@@ -71,7 +71,7 @@ class TeamRespawnComponent : GenericComponent
     }
 
     //------------------------------------------------------------------------------------------------
-    override bool RplLoad(ScriptBitReader reader)
+    bool RplLoad(ScriptBitReader reader)
     {
         reader.ReadInt(m_TeamID);
         reader.ReadInt(m_LeaderEntityID);
@@ -111,15 +111,15 @@ class TeamRespawnComponent : GenericComponent
         RPC handler for assigning team ownership
         \param ctx Context for the RPC call
     */
-    private void RPC_AssignTeam(Class ctx)
+    private void RPC_AssignTeam(ScriptRPC rpc)
     {
         int teamID;
         int leaderEntityID;
         string name;
         
-        ctx.Read(teamID);
-        ctx.Read(leaderEntityID);
-        ctx.Read(name);
+        rpc.Read(teamID);
+        rpc.Read(leaderEntityID);
+        rpc.Read(name);
         
         m_TeamID = teamID;
         m_LeaderEntityID = leaderEntityID;

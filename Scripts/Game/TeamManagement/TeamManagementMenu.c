@@ -265,7 +265,7 @@ class TeamButtonHandler : ScriptedWidgetEventHandler
         m_CallbackName = callbackName;
     }
     
-    override bool OnMouseDown(Widget w, int x, int y, int button)
+    bool OnMouseDown(Widget w, int x, int y, int button)
     {
         if (button == MouseButton.LEFT && m_Menu)
         {
