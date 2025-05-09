@@ -1,13 +1,7 @@
-class TeamRespawnMenuClass: ScriptedWidgetComponentClass
-{
-};
-
-//------------------------------------------------------------------------------------------------
-/*!
-    UI component for managing team respawn points.
-    Allows team leaders to purchase flagpoles and all team members to select respawn points.
-*/
-class TeamRespawnMenu: ScriptedWidgetComponent
+/**
+ * @brief UI class for team respawn menu
+ */
+class TeamRespawnMenu
 {
     // Widget references
     protected Widget m_wRoot;
@@ -39,18 +33,20 @@ class TeamRespawnMenu: ScriptedWidgetComponent
             return;
         }
 
-        // Add this handler to the widget
-        m_wRoot.AddHandler(this);
+        // Setup the UI elements
+        SetupUI(m_wRoot);
 
         // Hide by default
         m_wRoot.SetVisible(false);
     }
 
     //------------------------------------------------------------------------------------------------
-    override void HandlerAttached(Widget w)
+    /**
+     * @brief Setup the UI elements once the root widget is created
+     * @param w The root widget
+     */
+    void SetupUI(Widget w)
     {
-        super.HandlerAttached(w);
-
         m_wRoot = w;
 
         // Get the TeamManager
