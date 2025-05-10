@@ -23,12 +23,12 @@
  */
 class RplComponent
 {
-    protected IEntity m_Owner;
+    protected EntityID m_OwnerID;
     protected int m_ID;
     
-    void RplComponent(IEntity owner = null)
+    void RplComponent(EntityID ownerID = 0)
     {
-        m_Owner = owner;
+        m_OwnerID = ownerID;
         m_ID = 0;
     }
     
@@ -39,8 +39,13 @@ class RplComponent
         return true;
     }
     
-    IEntity GetOwner() { return m_Owner; }
-    void SetOwner(IEntity owner) { m_Owner = owner; }
+    EntityID GetOwnerID() { return m_OwnerID; }
+    void SetOwnerID(EntityID ownerID) { m_OwnerID = ownerID; }
+    
+    IEntity GetOwner() 
+    { 
+        return GetGame().GetWorld().FindEntityByID(m_OwnerID); 
+    }
     
     int GetID() { return m_ID; }
     void SetID(int id) { m_ID = id; }

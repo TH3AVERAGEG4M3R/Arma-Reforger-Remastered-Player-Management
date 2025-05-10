@@ -232,18 +232,23 @@ class TeamManager
     
     /**
      * @brief Send a team invitation to a player
-     * @param sender The player sending the invitation
+     * @param senderEntityID The entity ID of the player sending the invitation
      * @param receiverID The identity of the player receiving the invitation
      * @return True if invitation sent successfully, false otherwise
      */
-    bool SendInvitation(IEntity sender, string receiverID)
+    bool SendInvitation(EntityID senderEntityID, string receiverID)
     {
         // In multiplayer, route through network component
         if (GetGame().IsMultiplayer() && m_NetworkComponent)
         {
-            return m_NetworkComponent.SendInvitation(sender, receiverID);
+            return m_NetworkComponent.SendInvitation(senderEntityID, receiverID);
         }
         
+        // Get the sender entity from the ID
+        IEntity sender = GetGame().GetWorld().FindEntityByID(senderEntityID);
+        if (!sender)
+            return false;
+            
         // Single player or server implementation
         string senderID = GetPlayerIdentity(sender);
         string senderName = GetPlayerName(sender);
@@ -295,17 +300,22 @@ class TeamManager
     /**
      * @brief Accept a team invitation
      * @param invitationID The ID of the invitation
-     * @param player The player accepting the invitation
+     * @param playerEntityID The entity ID of the player accepting the invitation
      * @return True if accepted successfully, false otherwise
      */
-    bool AcceptInvitation(string invitationID, IEntity player)
+    bool AcceptInvitation(string invitationID, EntityID playerEntityID)
     {
         // In multiplayer, route through network component
         if (GetGame().IsMultiplayer() && m_NetworkComponent)
         {
-            return m_NetworkComponent.AcceptInvitation(invitationID, player);
+            return m_NetworkComponent.AcceptInvitation(invitationID, playerEntityID);
         }
         
+        // Get the player entity from the ID
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerEntityID);
+        if (!player)
+            return false;
+            
         // Single player or server implementation
         ref TeamInvitation invitation = m_PendingInvitations.Get(invitationID);
         if (!invitation)
@@ -335,7 +345,7 @@ class TeamManager
         }
         
         // Accept invitation and add player to team
-        bool success = JoinTeam(teamID, player);
+        bool success = JoinTeam(teamID, player.GetID());
         if (success)
         {
             // Remove invitation
@@ -355,17 +365,22 @@ class TeamManager
     /**
      * @brief Decline a team invitation
      * @param invitationID The ID of the invitation
-     * @param player The player declining the invitation
+     * @param playerEntityID The entity ID of the player declining the invitation
      * @return True if declined successfully, false otherwise
      */
-    bool DeclineInvitation(string invitationID, IEntity player)
+    bool DeclineInvitation(string invitationID, EntityID playerEntityID)
     {
         // In multiplayer, route through network component
         if (GetGame().IsMultiplayer() && m_NetworkComponent)
         {
-            return m_NetworkComponent.DeclineInvitation(invitationID, player);
+            return m_NetworkComponent.DeclineInvitation(invitationID, playerEntityID);
         }
         
+        // Get the player entity from the ID
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerEntityID);
+        if (!player)
+            return false;
+            
         // Single player or server implementation
         ref TeamInvitation invitation = m_PendingInvitations.Get(invitationID);
         if (!invitation)
@@ -443,10 +458,10 @@ class TeamManager
     /**
      * @brief Register a flagpole for a team
      * @param teamID The ID of the team
-     * @param flagpole The flagpole entity
+     * @param flagpoleEntityID The entity ID of the flagpole
      * @return True if successful, false if team already has max number of flagpoles
      */
-    bool RegisterFlagpole(int teamID, IEntity flagpole)
+    bool RegisterFlagpole(int teamID, EntityID flagpoleEntityID)
     {
         // Check if the team exists
         if (!m_Teams.Contains(teamID))
@@ -465,7 +480,7 @@ class TeamManager
             return false;
             
         // Add the flagpole EntityID to the team
-        flagpoles.Insert(flagpole.GetID());
+        flagpoles.Insert(flagpoleEntityID);
         
         return true;
     }
