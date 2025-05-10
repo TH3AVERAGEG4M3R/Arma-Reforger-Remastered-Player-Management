@@ -1,6 +1,10 @@
 /**
  * @brief Team Manager class for handling team operations in ARMA Reforger
  */
+
+// Import necessary classes from the engine
+#include "../Network/Rpc/Rpc.c"
+#include "../Network/ScriptCallContext.c"
 class TeamManager
 {
     // Map of teams with team ID as key and array of team members as value

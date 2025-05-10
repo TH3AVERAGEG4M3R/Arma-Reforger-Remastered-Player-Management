@@ -1,6 +1,10 @@
 /**
  * @brief Component for handling team-based vehicle locking and access
  */
+
+// Import necessary classes from the engine
+#include "../Network/Rpc/Rpc.c"
+#include "../Network/ScriptCallContext.c"
 class TeamVehicleComponent : GenericComponent
 {
     protected ref TeamManager m_TeamManager;
