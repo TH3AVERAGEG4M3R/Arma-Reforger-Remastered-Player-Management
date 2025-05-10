@@ -265,7 +265,7 @@ class TeamManagementMenu
 /**
  * @brief Button handler for team management menu
  */
-class TeamButtonHandler : SCR_ButtonHandler
+class TeamButtonHandler
 {
     protected TeamManagementMenu m_Menu;
     protected string m_CallbackName;
@@ -276,7 +276,7 @@ class TeamButtonHandler : SCR_ButtonHandler
         m_CallbackName = callbackName;
     }
     
-    bool OnMouseDown(Widget w, int x, int y, EMouseButton button)
+    bool OnMouseDown(Widget w, int x, int y, int button)
     {
         if (button == EMouseButton.LEFT && m_Menu)
         {
