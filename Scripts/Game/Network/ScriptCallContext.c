@@ -96,6 +96,17 @@ class ScriptCallContext
     }
     
     /**
+     * @brief Read an int value with output parameter
+     * @param value Out parameter to store the int value
+     * @return True if read successful
+     */
+    bool Read(out int value)
+    {
+        value = ReadInt();
+        return true;
+    }
+    
+    /**
      * @brief Read a float value
      * @return The read float value
      */
@@ -103,6 +114,17 @@ class ScriptCallContext
     {
         // Implementation will be provided by ARMA Reforger engine
         return 0.0;
+    }
+    
+    /**
+     * @brief Read a float value with output parameter
+     * @param value Out parameter to store the float value
+     * @return True if read successful
+     */
+    bool Read(out float value)
+    {
+        value = ReadFloat();
+        return true;
     }
     
     /**
@@ -116,6 +138,17 @@ class ScriptCallContext
     }
     
     /**
+     * @brief Read a string value with output parameter
+     * @param value Out parameter to store the string value
+     * @return True if read successful
+     */
+    bool Read(out string value)
+    {
+        value = ReadString();
+        return true;
+    }
+    
+    /**
      * @brief Read a bool value
      * @return The read bool value
      */
@@ -123,6 +156,17 @@ class ScriptCallContext
     {
         // Implementation will be provided by ARMA Reforger engine
         return false;
+    }
+    
+    /**
+     * @brief Read a bool value with output parameter
+     * @param value Out parameter to store the bool value
+     * @return True if read successful
+     */
+    bool Read(out bool value)
+    {
+        value = ReadBool();
+        return true;
     }
     
     /**
@@ -136,6 +180,17 @@ class ScriptCallContext
     }
     
     /**
+     * @brief Read a vector value with output parameter
+     * @param value Out parameter to store the vector value
+     * @return True if read successful
+     */
+    bool Read(out vector value)
+    {
+        value = ReadVector();
+        return true;
+    }
+    
+    /**
      * @brief Read an entity
      * @return The read entity
      */
@@ -143,5 +198,16 @@ class ScriptCallContext
     {
         // Implementation will be provided by ARMA Reforger engine
         return null;
+    }
+    
+    /**
+     * @brief Read an entity with output parameter
+     * @param value Out parameter to store the entity
+     * @return True if read successful
+     */
+    bool Read(out IEntity value)
+    {
+        value = ReadEntity();
+        return true;
     }
 }

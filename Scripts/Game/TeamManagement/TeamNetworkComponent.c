@@ -429,7 +429,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             }
             
             // Send to player
-            rpl.SendRpc(RPC_SYNC_TEAM_DATA, rpc, true, player);
+            rpl.SendRPC(RPC_SYNC_TEAM_DATA, rpc);
         }
     }
     
@@ -697,7 +697,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(player);
                 rpc.Write(vehicle);
-                rpl.SendRpc(RPC_LOCK_VEHICLE, rpc, true, null);
+                rpl.SendRPC(RPC_LOCK_VEHICLE, rpc);
             }
             
             return false; // Actual result will be set by server response
