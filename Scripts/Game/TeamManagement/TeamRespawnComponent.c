@@ -52,7 +52,6 @@ class TeamRespawnComponent : GenericComponent
     //------------------------------------------------------------------------------------------------
     void PostInit(IEntity owner)
     {
-        
         SetEventMask(owner, EntityEvent.INIT);
         
         // Register to server RPCs
