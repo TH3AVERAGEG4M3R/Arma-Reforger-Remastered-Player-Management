@@ -276,7 +276,7 @@ class TeamButtonHandler : SCR_ButtonHandler
         m_CallbackName = callbackName;
     }
     
-    override bool OnMouseDown(Widget w, int x, int y, EMouseButton button)
+    bool OnMouseDown(Widget w, int x, int y, EMouseButton button)
     {
         if (button == EMouseButton.LEFT && m_Menu)
         {
