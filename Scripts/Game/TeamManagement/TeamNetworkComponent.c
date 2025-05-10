@@ -701,8 +701,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.Write(player.GetID());
-                rpc.Write(vehicle.GetID());
+                rpc.WriteInt(player.GetID());
+                rpc.WriteInt(vehicle.GetID());
                 rpl.SendRPC(RPC_LOCK_VEHICLE, rpc);
             }
             
@@ -736,9 +736,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 if (rpl)
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
-                    rpc.Write(player.GetID());
-                    rpc.Write(vehicle.GetID());
-                    rpc.Write(teamID);
+                    rpc.WriteInt(player.GetID());
+                    rpc.WriteInt(vehicle.GetID());
+                    rpc.WriteInt(teamID);
                     rpc.WriteBool(success);
                     
                     // Broadcast to all players in the team
@@ -774,8 +774,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.Write(player.GetID());
-                rpc.Write(vehicle.GetID());
+                rpc.WriteInt(player.GetID());
+                rpc.WriteInt(vehicle.GetID());
                 rpl.SendRPC(RPC_UNLOCK_VEHICLE, rpc);
             }
             
@@ -802,8 +802,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 if (rpl)
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
-                    rpc.Write(player.GetID());
-                    rpc.Write(vehicle.GetID());
+                    rpc.WriteInt(player.GetID());
+                    rpc.WriteInt(vehicle.GetID());
                     rpc.WriteBool(success);
                     
                     // Broadcast to everyone since the vehicle is now publicly accessible
@@ -929,7 +929,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.Write(sender.GetID());
+                rpc.WriteInt(sender.GetID());
                 rpc.WriteString(messageText);
                 rpl.SendRPC(RPC_TEAM_CHAT_MESSAGE, rpc);
             }
@@ -953,7 +953,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.Write(teamID);
+                rpc.WriteInt(teamID);
                 rpc.WriteString(senderID);
                 rpc.WriteString(senderName);
                 rpc.WriteString(messageText);
