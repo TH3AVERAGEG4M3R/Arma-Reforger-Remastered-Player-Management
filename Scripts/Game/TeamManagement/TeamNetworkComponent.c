@@ -83,7 +83,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.Write(player);
+                rpc.WriteInt(player.GetID());
                 rpl.SendRpc(RPC_CREATE_TEAM, rpc, true, null);
             }
             
@@ -100,8 +100,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 if (rpl)
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
-                    rpc.Write(player);
-                    rpc.Write(teamID);
+                    rpc.WriteInt(player.GetID());
+                    rpc.WriteInt(teamID);
                     rpl.BroadcastRpc(RPC_CREATE_TEAM, rpc, true, null);
                 }
             }
@@ -125,8 +125,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.Write(teamID);
-                rpc.Write(player);
+                rpc.WriteInt(teamID);
+                rpc.WriteInt(player.GetID());
                 rpl.SendRpc(RPC_JOIN_TEAM, rpc, true, null);
             }
             
@@ -143,9 +143,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 if (rpl)
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
-                    rpc.Write(teamID);
-                    rpc.Write(player);
-                    rpc.Write(success);
+                    rpc.WriteInt(teamID);
+                    rpc.WriteInt(player.GetID());
+                    rpc.WriteBool(success);
                     rpl.BroadcastRpc(RPC_JOIN_TEAM, rpc, true, null);
                 }
             }
@@ -168,7 +168,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.Write(player);
+                rpc.WriteInt(player.GetID());
                 rpl.SendRpc(RPC_LEAVE_TEAM, rpc, true, null);
             }
             
@@ -189,9 +189,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 if (rpl)
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
-                    rpc.Write(player);
-                    rpc.Write(teamID);
-                    rpc.Write(success);
+                    rpc.WriteInt(player.GetID());
+                    rpc.WriteInt(teamID);
+                    rpc.WriteBool(success);
                     rpl.BroadcastRpc(RPC_LEAVE_TEAM, rpc, true, null);
                 }
             }
