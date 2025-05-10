@@ -1,4 +1,5 @@
-// ScriptRPC type is provided by the game engine
+// Import necessary classes from the engine
+#include "$scripts:Game/Network/Rpc/Rpc.c"
 
 class TeamRespawnComponentClass: GenericComponentClass
 {

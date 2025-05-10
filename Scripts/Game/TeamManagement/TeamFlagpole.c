@@ -4,7 +4,8 @@
     allowing team members to respawn at its location.
 */
 
-// ScriptRPC type is provided by the game engine
+// Import necessary classes from the engine
+#include "$scripts:Game/Network/Rpc/Rpc.c"
 class TeamFlagpole : GenericEntity
 {
     protected int m_RespawnComponentID;

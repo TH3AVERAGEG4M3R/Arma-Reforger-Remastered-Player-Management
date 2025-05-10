@@ -1,6 +1,9 @@
 /**
  * @brief Team Chat Component for handling team-specific messaging
  */
+
+// Import necessary classes from the engine
+#include "$scripts:Game/Input/InputActions.c"
 class TeamChatComponentClass : ScriptComponentClass
 {
 }

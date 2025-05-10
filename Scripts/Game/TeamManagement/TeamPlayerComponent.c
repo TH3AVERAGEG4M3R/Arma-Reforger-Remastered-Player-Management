@@ -1,6 +1,9 @@
 /**
  * @brief Component that attaches to player entities to handle team functionality
  */
+
+// Import necessary classes from the engine
+#include "$scripts:Game/Input/InputActions.c"
 class TeamPlayerComponent : GenericComponent
 {
     protected ref TeamManager m_TeamManager;

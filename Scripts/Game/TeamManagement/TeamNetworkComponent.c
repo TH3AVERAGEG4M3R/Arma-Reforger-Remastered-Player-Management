@@ -3,13 +3,8 @@
  * Handles RPC calls and data synchronization across the network
  */
 
-// Required for network functionality
-[BaseContainerProps()]
-class ScriptCallContext
-{
-    void Write(Managed value);
-    Managed Read();
-}
+// Import necessary classes from the engine
+#include "$scripts:Game/Network/Rpc/Rpc.c"
 class TeamNetworkComponent : ScriptedWidgetComponent
 {
     // Singleton instance
