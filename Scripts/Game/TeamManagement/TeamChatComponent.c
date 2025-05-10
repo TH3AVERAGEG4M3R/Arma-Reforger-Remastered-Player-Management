@@ -4,6 +4,8 @@
 
 // Import necessary classes from the engine
 #include "$scripts:Game/Input/InputActions.c"
+#include "$scripts:Game/Input/ActionContext.c"
+#include "$scripts:Game/Network/ScriptCallContext.c"
 class TeamChatComponentClass : ScriptComponentClass
 {
 }

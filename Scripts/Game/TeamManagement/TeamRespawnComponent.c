@@ -65,7 +65,7 @@ class TeamRespawnComponent : GenericComponent
     }
     
     //------------------------------------------------------------------------------------------------
-    bool RplSave(ScriptBitWriter writer)
+    override bool RplSave(ScriptBitWriter writer)
     {
         writer.WriteInt(m_TeamID);
         writer.WriteInt(m_LeaderEntityID);
@@ -74,7 +74,7 @@ class TeamRespawnComponent : GenericComponent
     }
 
     //------------------------------------------------------------------------------------------------
-    bool RplLoad(ScriptBitReader reader)
+    override bool RplLoad(ScriptBitReader reader)
     {
         reader.ReadInt(m_TeamID);
         reader.ReadInt(m_LeaderEntityID);
