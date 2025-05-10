@@ -701,8 +701,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.Write(player);
-                rpc.Write(vehicle);
+                rpc.Write(player.GetID());
+                rpc.Write(vehicle.GetID());
                 rpl.SendRPC(RPC_LOCK_VEHICLE, rpc);
             }
             
@@ -736,10 +736,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 if (rpl)
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
-                    rpc.Write(player);
-                    rpc.Write(vehicle);
+                    rpc.Write(player.GetID());
+                    rpc.Write(vehicle.GetID());
                     rpc.Write(teamID);
-                    rpc.Write(success);
+                    rpc.WriteBool(success);
                     
                     // Broadcast to all players in the team
                     array<ref TeamMember> teamMembers = m_TeamManager.GetTeamMembers(teamID);
@@ -774,8 +774,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.Write(player);
-                rpc.Write(vehicle);
+                rpc.Write(player.GetID());
+                rpc.Write(vehicle.GetID());
                 rpl.SendRPC(RPC_UNLOCK_VEHICLE, rpc);
             }
             
@@ -802,9 +802,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 if (rpl)
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
-                    rpc.Write(player);
-                    rpc.Write(vehicle);
-                    rpc.Write(success);
+                    rpc.Write(player.GetID());
+                    rpc.Write(vehicle.GetID());
+                    rpc.WriteBool(success);
                     
                     // Broadcast to everyone since the vehicle is now publicly accessible
                     rpl.SendRPC(RPC_UNLOCK_VEHICLE, rpc);
@@ -871,12 +871,12 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         if (!ctx)
             return;
         
-        IEntity player = null;
-        IEntity vehicle = null;
-        
         // Read parameters
-        player = ctx.Read();
-        vehicle = ctx.Read();
+        int playerID = ctx.ReadInt();
+        int vehicleID = ctx.ReadInt();
+        
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerID);
+        IEntity vehicle = GetGame().GetWorld().FindEntityByID(vehicleID);
         
         if (!player || !vehicle)
             return;
@@ -889,7 +889,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         else
         {
             // Client side - update UI or show notification
-            bool success = ctx.Read();
+            bool success = ctx.ReadBool();
             
             if (success)
             {
@@ -929,8 +929,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.Write(sender);
-                rpc.Write(messageText);
+                rpc.Write(sender.GetID());
+                rpc.WriteString(messageText);
                 rpl.SendRPC(RPC_TEAM_CHAT_MESSAGE, rpc);
             }
             
@@ -954,9 +954,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             {
                 ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(teamID);
-                rpc.Write(senderID);
-                rpc.Write(senderName);
-                rpc.Write(messageText);
+                rpc.WriteString(senderID);
+                rpc.WriteString(senderName);
+                rpc.WriteString(messageText);
                 
                 foreach (ref TeamMember member : teamMembers)
                 {
@@ -988,9 +988,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         if (GetGame().IsServer())
         {
             // Server side - process the message
-            IEntity sender = ctx.Read();
-            string messageText = ctx.Read();
+            int senderID = ctx.ReadInt();
+            string messageText = ctx.ReadString();
             
+            IEntity sender = GetGame().GetWorld().FindEntityByID(senderID);
             if (!sender || messageText.Length() == 0)
                 return;
                 
@@ -1000,10 +1001,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         else
         {
             // Client side - display the message
-            int teamID = ctx.Read();
-            string senderID = ctx.Read();
-            string senderName = ctx.Read();
-            string messageText = ctx.Read();
+            int teamID = ctx.ReadInt();
+            string senderID = ctx.ReadString();
+            string senderName = ctx.ReadString();
+            string messageText = ctx.ReadString();
             
             // Create message object
             ref TeamChatMessage message = new TeamChatMessage(teamID, senderID, senderName, messageText);
