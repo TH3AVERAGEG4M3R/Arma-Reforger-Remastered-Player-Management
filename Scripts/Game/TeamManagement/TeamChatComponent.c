@@ -8,6 +8,10 @@
 #include "../Network/ScriptCallContext.c"
 #include "../Core/PlayerController.c"
 #include "../Core/IEntity.c"
+#include "../UI/BasicWidgets.c"
+#include "../Core/Game.c"
+#include "../Core/GenericComponent.c"
+#include "../Core/ScriptComponent.c"
 class TeamChatComponentClass : ScriptComponentClass
 {
 }
