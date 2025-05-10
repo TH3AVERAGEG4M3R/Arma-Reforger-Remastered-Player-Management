@@ -14,6 +14,9 @@ class ButtonWidget : Widget
     protected bool m_IsToggle;
     protected bool m_IsToggled;
     
+    // Click handler
+    protected ref Object m_ClickHandler;
+    
     // Constructor
     void ButtonWidget(string name = "", Widget parent = null)
     {
@@ -25,6 +28,16 @@ class ButtonWidget : Widget
         m_IsPressed = false;
         m_IsToggle = false;
         m_IsToggled = false;
+        m_ClickHandler = null;
+    }
+    
+    /**
+     * @brief Add a click handler to the button
+     * @param handler The handler object with OnClick method
+     */
+    void AddHandler(Object handler)
+    {
+        m_ClickHandler = handler;
     }
     
     /**
@@ -130,6 +143,12 @@ class ButtonWidget : Widget
             if (m_IsToggle)
             {
                 Toggle();
+            }
+            
+            // Call the click handler if available
+            if (m_ClickHandler)
+            {
+                m_ClickHandler.OnClick(this);
             }
             
             return true;
