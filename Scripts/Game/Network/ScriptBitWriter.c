@@ -1,19 +1,10 @@
 /**
- * @brief Class for managing RPC call contexts in ARMA Reforger
+ * @brief Class for writing bit-packed data for network transmission in ARMA Reforger
  */
-class ScriptCallContext
+class ScriptBitWriter
 {
-    // Internal data writer
-    protected ref ScriptBitWriter m_Writer;
-    
-    // Constructor
-    void ScriptCallContext()
-    {
-        m_Writer = new ScriptBitWriter();
-    }
-    
     /**
-     * @brief Write a value to the RPC context
+     * @brief Write a value to the bit stream
      * @param value The value to write (can be int, string, float, bool, vector, etc.)
      */
     void Write(typename value)
@@ -76,7 +67,7 @@ class ScriptCallContext
     }
     
     /**
-     * @brief Read a value from the RPC context
+     * @brief Read a value from the bit stream
      * @return The read value of the specified type
      */
     typename Read()

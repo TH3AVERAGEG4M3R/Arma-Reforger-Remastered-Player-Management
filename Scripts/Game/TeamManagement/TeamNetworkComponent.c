@@ -6,6 +6,13 @@
 // Import necessary classes from the engine
 #include "../Network/Rpc/Rpc.c"
 #include "../Network/ScriptCallContext.c"
+#include "../Network/ScriptBitWriter.c"
+#include "../Core/IEntity.c"
+#include "../Core/Game.c"
+#include "../Core/ScriptedWidgetComponent.c"
+#include "../Core/GenericComponent.c"
+#include "../Core/ScriptComponent.c"
+#include "../Core/PlayerController.c"
 class TeamNetworkComponent : ScriptedWidgetComponent
 {
     // Singleton instance
