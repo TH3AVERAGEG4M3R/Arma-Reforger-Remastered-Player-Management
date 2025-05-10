@@ -44,7 +44,7 @@ class TeamRespawnComponent : GenericComponent
     }
     
     //------------------------------------------------------------------------------------------------
-    void OnPostInit(IEntity owner)
+    void PostInit(IEntity owner)
     {
         
         SetEventMask(owner, EntityEvent.INIT);

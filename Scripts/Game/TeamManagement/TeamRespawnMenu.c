@@ -370,7 +370,7 @@ class PurchaseFlagpoleButtonHandler : SCR_ButtonHandler
         m_Menu = menu;
     }
     
-    override bool OnMouseDown(Widget w, int x, int y, EMouseButton button)
+    bool OnMouseDown(Widget w, int x, int y, EMouseButton button)
     {
         if (button == EMouseButton.LEFT && m_Menu)
         {
@@ -393,7 +393,7 @@ class SelectRespawnButtonHandler : SCR_ButtonHandler
         m_RespawnEntityID = respawnEntityID;
     }
     
-    override bool OnMouseDown(Widget w, int x, int y, EMouseButton button)
+    bool OnMouseDown(Widget w, int x, int y, EMouseButton button)
     {
         if (button == EMouseButton.LEFT && m_Menu)
         {
