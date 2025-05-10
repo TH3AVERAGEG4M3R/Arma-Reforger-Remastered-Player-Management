@@ -1,213 +1,176 @@
 /**
- * @brief Class for managing RPC call contexts in ARMA Reforger
+ * @brief Network script call context for RPC calls
  */
+
+#include "ScriptBitWriter.c"
+#include "ScriptBitReader.c"
+
 class ScriptCallContext
 {
-    // Internal data writer
+    // The internal bit writer for serializing data
     protected ref ScriptBitWriter m_Writer;
     
-    // Constructor
+    // The internal bit reader for deserializing data
+    protected ref ScriptBitReader m_Reader;
+    
+    // Whether this context is for writing (true) or reading (false)
+    protected bool m_IsWriter;
+    
+    /**
+     * @brief Constructor
+     */
     void ScriptCallContext()
     {
         m_Writer = new ScriptBitWriter();
+        m_Reader = new ScriptBitReader();
+        m_IsWriter = true; // Default to writer mode
     }
     
     /**
-     * @brief Write a value to the RPC context
-     * @param value The value to write (can be int, string, float, bool, vector, etc.)
+     * @brief Set the context to writer mode
      */
-    void Write(typename value)
+    void SetWriter()
     {
-        // Implementation will be provided by ARMA Reforger engine
+        m_IsWriter = true;
     }
     
     /**
-     * @brief Write an int value
-     * @param value The int value to write
+     * @brief Set the context to reader mode
+     */
+    void SetReader(array<byte> data)
+    {
+        m_IsWriter = false;
+        m_Reader.SetData(data);
+    }
+    
+    /**
+     * @brief Write a boolean value
+     * @param value The value to write
+     */
+    void Write(bool value)
+    {
+        if (m_IsWriter)
+            m_Writer.WriteBool(value);
+    }
+    
+    /**
+     * @brief Write an integer value
+     * @param value The value to write
      */
     void Write(int value)
     {
-        // Implementation will be provided by ARMA Reforger engine
+        if (m_IsWriter)
+            m_Writer.WriteInt(value);
     }
     
     /**
      * @brief Write a float value
-     * @param value The float value to write
+     * @param value The value to write
      */
     void Write(float value)
     {
-        // Implementation will be provided by ARMA Reforger engine
+        if (m_IsWriter)
+            m_Writer.WriteFloat(value);
     }
     
     /**
      * @brief Write a string value
-     * @param value The string value to write
+     * @param value The value to write
      */
     void Write(string value)
     {
-        // Implementation will be provided by ARMA Reforger engine
-    }
-    
-    /**
-     * @brief Write a bool value
-     * @param value The bool value to write
-     */
-    void Write(bool value)
-    {
-        // Implementation will be provided by ARMA Reforger engine
+        if (m_IsWriter)
+            m_Writer.WriteString(value);
     }
     
     /**
      * @brief Write a vector value
-     * @param value The vector value to write
+     * @param value The value to write
      */
     void Write(vector value)
     {
-        // Implementation will be provided by ARMA Reforger engine
+        if (m_IsWriter)
+        {
+            m_Writer.WriteFloat(value[0]);
+            m_Writer.WriteFloat(value[1]);
+            m_Writer.WriteFloat(value[2]);
+        }
     }
     
     /**
-     * @brief Write an entity
-     * @param value The entity to write
-     */
-    void Write(IEntity value)
-    {
-        // Implementation will be provided by ARMA Reforger engine
-    }
-    
-    /**
-     * @brief Read a value from the RPC context
-     * @return The read value of the specified type
-     */
-    typename Read()
-    {
-        // Implementation will be provided by ARMA Reforger engine
-        return typename.Empty;
-    }
-    
-    /**
-     * @brief Read an int value
-     * @return The read int value
-     */
-    int ReadInt()
-    {
-        // Implementation will be provided by ARMA Reforger engine
-        return 0;
-    }
-    
-    /**
-     * @brief Read an int value with output parameter
-     * @param value Out parameter to store the int value
-     * @return True if read successful
-     */
-    bool Read(out int value)
-    {
-        value = ReadInt();
-        return true;
-    }
-    
-    /**
-     * @brief Read a float value
-     * @return The read float value
-     */
-    float ReadFloat()
-    {
-        // Implementation will be provided by ARMA Reforger engine
-        return 0.0;
-    }
-    
-    /**
-     * @brief Read a float value with output parameter
-     * @param value Out parameter to store the float value
-     * @return True if read successful
-     */
-    bool Read(out float value)
-    {
-        value = ReadFloat();
-        return true;
-    }
-    
-    /**
-     * @brief Read a string value
-     * @return The read string value
-     */
-    string ReadString()
-    {
-        // Implementation will be provided by ARMA Reforger engine
-        return "";
-    }
-    
-    /**
-     * @brief Read a string value with output parameter
-     * @param value Out parameter to store the string value
-     * @return True if read successful
-     */
-    bool Read(out string value)
-    {
-        value = ReadString();
-        return true;
-    }
-    
-    /**
-     * @brief Read a bool value
-     * @return The read bool value
+     * @brief Read a boolean value
+     * @return The read value
      */
     bool ReadBool()
     {
-        // Implementation will be provided by ARMA Reforger engine
+        if (!m_IsWriter)
+            return m_Reader.ReadBool();
+        
         return false;
     }
     
     /**
-     * @brief Read a bool value with output parameter
-     * @param value Out parameter to store the bool value
-     * @return True if read successful
+     * @brief Read an integer value
+     * @return The read value
      */
-    bool Read(out bool value)
+    int ReadInt()
     {
-        value = ReadBool();
-        return true;
+        if (!m_IsWriter)
+            return m_Reader.ReadInt();
+        
+        return 0;
+    }
+    
+    /**
+     * @brief Read a float value
+     * @return The read value
+     */
+    float ReadFloat()
+    {
+        if (!m_IsWriter)
+            return m_Reader.ReadFloat();
+        
+        return 0.0;
+    }
+    
+    /**
+     * @brief Read a string value
+     * @return The read value
+     */
+    string ReadString()
+    {
+        if (!m_IsWriter)
+            return m_Reader.ReadString();
+        
+        return "";
     }
     
     /**
      * @brief Read a vector value
-     * @return The read vector value
+     * @return The read value
      */
     vector ReadVector()
     {
-        // Implementation will be provided by ARMA Reforger engine
-        return vector.Zero;
+        if (!m_IsWriter)
+        {
+            float x = m_Reader.ReadFloat();
+            float y = m_Reader.ReadFloat();
+            float z = m_Reader.ReadFloat();
+            return Vector(x, y, z);
+        }
+        
+        return Vector(0, 0, 0);
     }
     
     /**
-     * @brief Read a vector value with output parameter
-     * @param value Out parameter to store the vector value
-     * @return True if read successful
+     * @brief Get the serialized data
+     * @return The serialized data as a byte array
      */
-    bool Read(out vector value)
+    array<byte> GetData()
     {
-        value = ReadVector();
-        return true;
-    }
-    
-    /**
-     * @brief Read an entity
-     * @return The read entity
-     */
-    IEntity ReadEntity()
-    {
-        // Implementation will be provided by ARMA Reforger engine
+        if (m_IsWriter)
+            return m_Writer.GetData();
+        
         return null;
-    }
-    
-    /**
-     * @brief Read an entity with output parameter
-     * @param value Out parameter to store the entity
-     * @return True if read successful
-     */
-    bool Read(out IEntity value)
-    {
-        value = ReadEntity();
-        return true;
     }
 }

@@ -1,59 +1,113 @@
 /**
- * @brief Class for writing bit-packed data for network transmissions in ARMA Reforger
+ * @brief Network bit writer for serializing data
  */
+
 class ScriptBitWriter
 {
+    // The data buffer
+    protected ref array<byte> m_Data = new array<byte>();
+    
+    // The current position in bits
+    protected int m_BitPosition;
+    
     /**
-     * @brief Write an int value
-     * @param value The int value to write
+     * @brief Constructor
+     */
+    void ScriptBitWriter()
+    {
+        m_BitPosition = 0;
+    }
+    
+    /**
+     * @brief Write a boolean value
+     * @param value The value to write
+     */
+    void WriteBool(bool value)
+    {
+        // Add a new byte if needed
+        if (m_BitPosition % 8 == 0)
+            m_Data.Insert(0);
+        
+        // Set the bit in the current byte
+        int byteIndex = m_BitPosition / 8;
+        int bitIndex = m_BitPosition % 8;
+        
+        if (value)
+            m_Data[byteIndex] |= (1 << bitIndex);
+        
+        m_BitPosition++;
+    }
+    
+    /**
+     * @brief Write an integer value
+     * @param value The value to write
      */
     void WriteInt(int value)
     {
-        // Implementation will be provided by ARMA Reforger engine
+        // Write the value as 4 bytes (32 bits)
+        for (int i = 0; i < 4; i++)
+        {
+            byte b = (value >> (i * 8)) & 0xFF;
+            m_Data.Insert(b);
+        }
+        
+        m_BitPosition += 32;
     }
     
     /**
      * @brief Write a float value
-     * @param value The float value to write
+     * @param value The value to write
      */
     void WriteFloat(float value)
     {
-        // Implementation will be provided by ARMA Reforger engine
+        // Convert float to int bits and write those
+        int intBits = *((int*)&value);
+        WriteInt(intBits);
     }
     
     /**
      * @brief Write a string value
-     * @param value The string value to write
+     * @param value The value to write
      */
     void WriteString(string value)
     {
-        // Implementation will be provided by ARMA Reforger engine
+        // Write the string length
+        int length = value.Length();
+        WriteInt(length);
+        
+        // Write each character
+        for (int i = 0; i < length; i++)
+        {
+            int charCode = value[i]; // Get ASCII code of character
+            WriteByte(charCode);
+        }
     }
     
     /**
-     * @brief Write a bool value
-     * @param value The bool value to write
+     * @brief Write a single byte
+     * @param value The byte to write
      */
-    void WriteBool(bool value)
+    void WriteByte(byte value)
     {
-        // Implementation will be provided by ARMA Reforger engine
+        m_Data.Insert(value);
+        m_BitPosition += 8;
     }
     
     /**
-     * @brief Write a vector value
-     * @param value The vector value to write
+     * @brief Get the serialized data
+     * @return The serialized data as a byte array
      */
-    void WriteVector(vector value)
+    array<byte> GetData()
     {
-        // Implementation will be provided by ARMA Reforger engine
+        return m_Data;
     }
     
     /**
-     * @brief Write an entity
-     * @param value The entity to write
+     * @brief Reset the writer
      */
-    void WriteEntity(IEntity value)
+    void Reset()
     {
-        // Implementation will be provided by ARMA Reforger engine
+        m_Data.Clear();
+        m_BitPosition = 0;
     }
 }

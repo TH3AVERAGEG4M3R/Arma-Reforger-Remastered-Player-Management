@@ -1,71 +1,131 @@
 /**
- * @brief Class for reading bit-packed data from network transmissions in ARMA Reforger
+ * @brief Network bit reader for deserializing data
  */
+
 class ScriptBitReader
 {
+    // The data buffer
+    protected ref array<byte> m_Data;
+    
+    // The current position in bits
+    protected int m_BitPosition;
+    
     /**
-     * @brief Read an int value
-     * @param value Out parameter to store the int value
-     * @return True if successful
+     * @brief Constructor
      */
-    bool ReadInt(out int value)
+    void ScriptBitReader()
     {
-        value = 0;
-        return true;
+        m_Data = new array<byte>();
+        m_BitPosition = 0;
+    }
+    
+    /**
+     * @brief Set the data to read from
+     * @param data The data to read
+     */
+    void SetData(array<byte> data)
+    {
+        m_Data = data;
+        m_BitPosition = 0;
+    }
+    
+    /**
+     * @brief Read a boolean value
+     * @return The read value
+     */
+    bool ReadBool()
+    {
+        if (m_Data.Count() == 0)
+            return false;
+        
+        int byteIndex = m_BitPosition / 8;
+        int bitIndex = m_BitPosition % 8;
+        
+        if (byteIndex >= m_Data.Count())
+            return false;
+        
+        bool value = (m_Data[byteIndex] & (1 << bitIndex)) != 0;
+        m_BitPosition++;
+        
+        return value;
+    }
+    
+    /**
+     * @brief Read an integer value
+     * @return The read value
+     */
+    int ReadInt()
+    {
+        int value = 0;
+        
+        // Read 4 bytes (32 bits)
+        for (int i = 0; i < 4; i++)
+        {
+            if (m_BitPosition / 8 + i >= m_Data.Count())
+                break;
+            
+            byte b = m_Data[m_BitPosition / 8 + i];
+            value |= (b << (i * 8));
+        }
+        
+        m_BitPosition += 32;
+        return value;
     }
     
     /**
      * @brief Read a float value
-     * @param value Out parameter to store the float value
-     * @return True if successful
+     * @return The read value
      */
-    bool ReadFloat(out float value)
+    float ReadFloat()
     {
-        value = 0.0;
-        return true;
+        // Read the int bits and convert to float
+        int intBits = ReadInt();
+        return *((float*)&intBits);
     }
     
     /**
      * @brief Read a string value
-     * @param value Out parameter to store the string value
-     * @return True if successful
+     * @return The read value
      */
-    bool ReadString(out string value)
+    string ReadString()
     {
-        value = "";
-        return true;
+        // Read the string length
+        int length = ReadInt();
+        if (length <= 0 || length > 10000) // Sanity check
+            return "";
+        
+        // Read each character
+        string result = "";
+        for (int i = 0; i < length; i++)
+        {
+            byte charCode = ReadByte();
+            result += ((char)charCode).ToString();
+        }
+        
+        return result;
     }
     
     /**
-     * @brief Read a bool value
-     * @param value Out parameter to store the bool value
-     * @return True if successful
+     * @brief Read a single byte
+     * @return The read byte
      */
-    bool ReadBool(out bool value)
+    byte ReadByte()
     {
-        value = false;
-        return true;
+        int byteIndex = m_BitPosition / 8;
+        if (byteIndex >= m_Data.Count())
+            return 0;
+        
+        byte value = m_Data[byteIndex];
+        m_BitPosition += 8;
+        
+        return value;
     }
     
     /**
-     * @brief Read a vector value
-     * @param value Out parameter to store the vector value
-     * @return True if successful
+     * @brief Reset the reader
      */
-    bool ReadVector(out vector value)
+    void Reset()
     {
-        value = vector.Zero;
-        return true;
-    }
-    
-    /**
-     * @brief Read an entity
-     * @param value Out parameter to store the entity
-     * @return True if successful
-     */
-    bool ReadEntity(out IEntity value)
-    {
-        value = null;
-        return true;
+        m_BitPosition = 0;
     }
 }

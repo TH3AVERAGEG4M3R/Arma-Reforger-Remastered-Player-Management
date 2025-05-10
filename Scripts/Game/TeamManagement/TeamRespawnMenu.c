@@ -2,6 +2,7 @@
 #include "../Input/ActionContext.c"
 #include "../UI/WidgetEvents.c"
 #include "../Network/ScriptCallContext.c" 
+#include "../UI/Widget.c"
 #include "../UI/BasicWidgets.c"
 #include "../Core/Game.c"
 #include "../Core/Collections.c"

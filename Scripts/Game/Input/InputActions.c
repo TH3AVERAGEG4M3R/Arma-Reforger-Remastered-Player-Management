@@ -1,193 +1,201 @@
 /**
- * @brief Input Actions for handling input actions and triggers in ARMA Reforger
+ * @brief Input actions for the game
  */
 
-// Enumeration for input action triggers
-enum EActionTrigger
-{
-    DOWN,       // Triggered when input is pressed
-    UP,         // Triggered when input is released
-    VALUE,      // Triggered when input value changes
-    HOLD,       // Triggered when input is held
-    DOUBLE_TAP, // Triggered when input is double-tapped
-    HOLD_END    // Triggered when hold ends
-}
+#include "ActionContext.c"
+#include "InputDevice.c"
 
 /**
- * @brief Input Manager for handling input actions and devices
+ * @brief Base input manager class
  */
 class InputManager
 {
     // Singleton instance
     protected static InputManager s_Instance;
     
-    // Action listeners mapped by action name
-    protected ref map<string, ref array<ref ActionMapping>> m_ActionListeners = new map<string, ref array<ref ActionMapping>>();
+    // Map of registered action contexts
+    protected ref map<string, ref ActionContext> m_RegisteredContexts = new map<string, ref ActionContext>();
     
-    //------------------------------------------------------------------------------------------------
-    void InputManager()
-    {
-        s_Instance = this;
-    }
+    // Map of registered actions
+    protected ref map<string, ref ActionBase> m_RegisteredActions = new map<string, ref ActionBase>();
     
-    //------------------------------------------------------------------------------------------------
-    void ~InputManager()
-    {
-        if (s_Instance == this)
-            s_Instance = null;
-    }
+    // Input devices
+    protected ref array<ref InputDevice> m_InputDevices = new array<ref InputDevice>();
     
-    //------------------------------------------------------------------------------------------------
     /**
      * @brief Get the singleton instance
-     * @return The input manager instance
      */
     static InputManager GetInstance()
     {
         if (!s_Instance)
+        {
             s_Instance = new InputManager();
+        }
         
         return s_Instance;
     }
     
-    //------------------------------------------------------------------------------------------------
     /**
-     * @brief Add an action listener
-     * @param actionName The action name to listen for
-     * @param trigger The trigger type
-     * @param callback The callback function
-     * @return True if added successfully
+     * @brief Initialize the input manager
      */
-    bool AddActionListener(string actionName, EActionTrigger trigger, func<ActionContext, bool> callback)
+    void Init()
     {
-        if (!m_ActionListeners.Contains(actionName))
-            m_ActionListeners.Set(actionName, new array<ref ActionMapping>());
-            
-        ActionMapping mapping = new ActionMapping(actionName, trigger, callback);
-        m_ActionListeners.Get(actionName).Insert(mapping);
+        // Register keyboard device
+        RegisterInputDevice(new KeyboardInputDevice());
         
-        return true;
+        // Register mouse device
+        RegisterInputDevice(new MouseInputDevice());
+        
+        // Register default action context
+        RegisterActionContext(new ActionContext("Default", 0));
     }
     
-    //------------------------------------------------------------------------------------------------
     /**
-     * @brief Remove an action listener
-     * @param actionName The action name to remove
-     * @param callback The callback function to remove
-     * @return True if removed successfully
+     * @brief Register an input device
+     * @param device The device to register
      */
-    bool RemoveActionListener(string actionName, func<ActionContext, bool> callback)
+    void RegisterInputDevice(InputDevice device)
     {
-        if (!m_ActionListeners.Contains(actionName))
-            return false;
+        if (!device)
+            return;
             
-        array<ref ActionMapping> listeners = m_ActionListeners.Get(actionName);
-        for (int i = 0; i < listeners.Count(); i++)
+        m_InputDevices.Insert(device);
+    }
+    
+    /**
+     * @brief Register an action context
+     * @param context The context to register
+     */
+    void RegisterActionContext(ActionContext context)
+    {
+        if (!context)
+            return;
+            
+        string name = context.GetActionName();
+        if (name.Length() > 0)
         {
-            ActionMapping mapping = listeners[i];
-            if (mapping.GetCallback() == callback)
-            {
-                listeners.RemoveOrdered(i);
+            m_RegisteredContexts.Insert(name, context);
+        }
+    }
+    
+    /**
+     * @brief Get an action context by name
+     * @param name The name of the context
+     * @return The context, or null if not found
+     */
+    ActionContext GetActionContext(string name)
+    {
+        ActionContext context = null;
+        m_RegisteredContexts.Find(name, context);
+        return context;
+    }
+    
+    /**
+     * @brief Register an action
+     * @param action The action to register
+     */
+    void RegisterAction(ActionBase action)
+    {
+        if (!action)
+            return;
+            
+        string name = action.GetName();
+        if (name.Length() > 0)
+        {
+            m_RegisteredActions.Insert(name, action);
+        }
+    }
+    
+    /**
+     * @brief Get an action by name
+     * @param name The name of the action
+     * @return The action, or null if not found
+     */
+    ActionBase GetAction(string name)
+    {
+        ActionBase action = null;
+        m_RegisteredActions.Find(name, action);
+        return action;
+    }
+    
+    /**
+     * @brief Handle key down event
+     * @param key The key code
+     * @return True if the event was handled, false otherwise
+     */
+    bool OnKeyDown(int key)
+    {
+        foreach (InputDevice device : m_InputDevices)
+        {
+            if (device.HandleKeyDown(key))
                 return true;
-            }
         }
         
         return false;
     }
     
-    //------------------------------------------------------------------------------------------------
     /**
-     * @brief Process an action
-     * @param action The action context
-     * @return True if processed
+     * @brief Handle key up event
+     * @param key The key code
+     * @return True if the event was handled, false otherwise
      */
-    bool ProcessAction(ActionContext action)
+    bool OnKeyUp(int key)
     {
-        string actionName = action.GetActionName();
-        if (!m_ActionListeners.Contains(actionName))
-            return false;
-            
-        bool handled = false;
-        array<ref ActionMapping> listeners = m_ActionListeners.Get(actionName);
-        foreach (ActionMapping mapping : listeners)
+        foreach (InputDevice device : m_InputDevices)
         {
-            if (mapping.ProcessAction(action))
-                handled = true;
+            if (device.HandleKeyUp(key))
+                return true;
         }
         
-        return handled;
+        return false;
     }
 }
 
 /**
- * @brief Action Mapping for mapping actions to callbacks
+ * @brief Class to handle team management hotkeys
  */
-class ActionMapping
+class TeamManagementInputActions
 {
-    // Action name
-    protected string m_ActionName;
+    // Key codes
+    const int KEY_T = 84;  // 'T' key for team menu
+    const int KEY_Y = 89;  // 'Y' key for team chat
     
-    // Trigger type
-    protected EActionTrigger m_TriggerType;
+    // Action contexts
+    static const string TEAM_MENU_CONTEXT = "TeamMenuContext";
+    static const string TEAM_CHAT_CONTEXT = "TeamChatContext";
     
-    // Callback function
-    protected func<ActionContext, bool> m_Callback;
+    // Actions
+    static const string TEAM_MENU_ACTION = "TeamMenuAction";
+    static const string TEAM_CHAT_ACTION = "TeamChatAction";
     
-    //------------------------------------------------------------------------------------------------
-    /**
-     * @brief Constructor
-     * @param actionName The action name
-     * @param trigger The trigger type
-     * @param callback The callback function
-     */
-    void ActionMapping(string actionName, EActionTrigger trigger, func<ActionContext, bool> callback)
+    // Register actions with the input manager
+    static void RegisterActions()
     {
-        m_ActionName = actionName;
-        m_TriggerType = trigger;
-        m_Callback = callback;
+        InputManager inputManager = InputManager.GetInstance();
+        
+        // Register contexts
+        inputManager.RegisterActionContext(new ActionContext(TEAM_MENU_CONTEXT, 10));
+        inputManager.RegisterActionContext(new ActionContext(TEAM_CHAT_CONTEXT, 20));
+        
+        // Register actions
+        ActionBase teamMenuAction = new ActionBase(TEAM_MENU_ACTION);
+        teamMenuAction.SetContext(inputManager.GetActionContext(TEAM_MENU_CONTEXT));
+        inputManager.RegisterAction(teamMenuAction);
+        
+        ActionBase teamChatAction = new ActionBase(TEAM_CHAT_ACTION);
+        teamChatAction.SetContext(inputManager.GetActionContext(TEAM_CHAT_CONTEXT));
+        inputManager.RegisterAction(teamChatAction);
     }
     
-    //------------------------------------------------------------------------------------------------
-    /**
-     * @brief Process an action
-     * @param action The action context
-     * @return True if processed
-     */
-    bool ProcessAction(ActionContext action)
+    // Get the team menu action
+    static ActionBase GetTeamMenuAction()
     {
-        if (m_Callback)
-            return m_Callback.Invoke(action);
-            
-        return false;
+        return InputManager.GetInstance().GetAction(TEAM_MENU_ACTION);
     }
     
-    //------------------------------------------------------------------------------------------------
-    /**
-     * @brief Get the action name
-     * @return The action name
-     */
-    string GetActionName()
+    // Get the team chat action
+    static ActionBase GetTeamChatAction()
     {
-        return m_ActionName;
-    }
-    
-    //------------------------------------------------------------------------------------------------
-    /**
-     * @brief Get the trigger type
-     * @return The trigger type
-     */
-    EActionTrigger GetTriggerType()
-    {
-        return m_TriggerType;
-    }
-    
-    //------------------------------------------------------------------------------------------------
-    /**
-     * @brief Get the callback function
-     * @return The callback function
-     */
-    func<ActionContext, bool> GetCallback()
-    {
-        return m_Callback;
+        return InputManager.GetInstance().GetAction(TEAM_CHAT_ACTION);
     }
 }

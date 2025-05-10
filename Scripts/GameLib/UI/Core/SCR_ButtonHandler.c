@@ -1,4 +1,5 @@
 // SCR_ButtonHandler.c implementation for ARMA Reforger UI system
+#include "../../../Game/UI/Widget.c"
 
 // Mouse button enum
 enum EMouseButton
