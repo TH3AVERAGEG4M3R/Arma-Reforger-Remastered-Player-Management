@@ -632,12 +632,13 @@ class TeamManager
      */
     private IEntity GetPlayerByIdentity(string playerID)
     {
-        array<IEntity> players = new array<IEntity>();
-        GetGame().GetWorld().GetPlayerManager().GetPlayers(players);
+        array<EntityID> playerIDs = new array<EntityID>();
+        GetGame().GetWorld().GetPlayerManager().GetPlayerIDs(playerIDs);
         
-        foreach (IEntity player : players)
+        foreach (EntityID id : playerIDs)
         {
-            if (GetPlayerIdentity(player) == playerID)
+            IEntity player = GetGame().GetWorld().FindEntityByID(id);
+            if (player && GetPlayerIdentity(player) == playerID)
                 return player;
         }
         
