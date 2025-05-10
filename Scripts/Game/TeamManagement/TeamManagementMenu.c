@@ -3,7 +3,10 @@
  */
 
 // Import necessary classes from the engine
-// Required includes for ARMA Reforger
+#include "../Input/InputActions.c"
+#include "../Input/ActionContext.c"
+#include "../UI/Core/WidgetEvents.c"
+#include "../UI/SCR_ButtonHandler.c"
 class TeamManagementMenu
 {
     // Reference to UI elements

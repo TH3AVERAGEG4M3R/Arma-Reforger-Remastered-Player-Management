@@ -3,7 +3,9 @@
  */
 
 // Import necessary classes from the engine
-// Required includes for ARMA Reforger
+#include "../Input/InputActions.c"
+#include "../Input/ActionContext.c"
+#include "../Network/ScriptCallContext.c"
 class TeamChatComponentClass : ScriptComponentClass
 {
 }

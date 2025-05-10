@@ -3,7 +3,8 @@
  */
 
 // Import necessary classes from the engine
-// Required includes for ARMA Reforger
+#include "../Input/InputActions.c"
+#include "../Input/ActionContext.c"
 class TeamPlayerComponent : GenericComponent
 {
     protected ref TeamManager m_TeamManager;

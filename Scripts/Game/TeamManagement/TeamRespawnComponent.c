@@ -1,5 +1,6 @@
 // Import necessary classes from the engine
-// Required includes for ARMA Reforger
+#include "../Network/Rpc/Rpc.c"
+#include "../Network/ScriptCallContext.c"
 
 class TeamRespawnComponentClass: GenericComponentClass
 {

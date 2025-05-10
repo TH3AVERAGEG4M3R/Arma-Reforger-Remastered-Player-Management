@@ -3,7 +3,7 @@
  */
  
 // Import necessary classes from the engine
-// Required includes for ARMA Reforger
+#include "../Input/ActionContext.c"
 class TeamMapEntityClass : ScriptComponentClass
 {
 }

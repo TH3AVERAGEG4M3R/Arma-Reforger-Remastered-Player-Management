@@ -1,4 +1,8 @@
-// Required includes for ARMA Reforger
+#include "../Input/InputActions.c"
+#include "../Input/ActionContext.c"
+#include "../UI/Core/WidgetEvents.c"
+#include "../Network/ScriptCallContext.c"
+#include "../UI/SCR_ButtonHandler.c"
 
 class TeamRespawnMenu
 {
