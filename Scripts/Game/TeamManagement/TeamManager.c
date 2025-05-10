@@ -59,17 +59,22 @@ class TeamManager
     
     /**
      * @brief Create a new team with a player as the leader
-     * @param player The player who will be the team leader
+     * @param playerEntityID The entity ID of the player who will be the team leader
      * @return The ID of the newly created team
      */
-    int CreateTeam(IEntity player)
+    int CreateTeam(EntityID playerEntityID)
     {
         // In multiplayer, route through network component
         if (GetGame().IsMultiplayer() && m_NetworkComponent)
         {
-            return m_NetworkComponent.CreateTeam(player);
+            return m_NetworkComponent.CreateTeam(playerEntityID);
         }
         
+        // Get the player entity from the ID
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerEntityID);
+        if (!player)
+            return -1;
+            
         // Single player or server implementation
         string playerID = GetPlayerIdentity(player);
         string playerName = GetPlayerName(player);
@@ -100,17 +105,22 @@ class TeamManager
     /**
      * @brief Add a player to an existing team
      * @param teamID The ID of the team to join
-     * @param player The player joining the team
+     * @param playerEntityID The entity ID of the player joining the team
      * @return True if successful, false otherwise
      */
-    bool JoinTeam(int teamID, IEntity player)
+    bool JoinTeam(int teamID, EntityID playerEntityID)
     {
         // In multiplayer, route through network component
         if (GetGame().IsMultiplayer() && m_NetworkComponent)
         {
-            return m_NetworkComponent.JoinTeam(teamID, player);
+            return m_NetworkComponent.JoinTeam(teamID, playerEntityID);
         }
         
+        // Get the player entity from the ID
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerEntityID);
+        if (!player)
+            return false;
+            
         // Single player or server implementation
         if (!m_Teams.Contains(teamID))
             return false; // Team doesn't exist
@@ -146,17 +156,22 @@ class TeamManager
     
     /**
      * @brief Remove a player from their current team
-     * @param player The player leaving the team
+     * @param playerEntityID The entity ID of the player leaving the team
      * @return True if successful, false otherwise
      */
-    bool LeaveTeam(IEntity player)
+    bool LeaveTeam(EntityID playerEntityID)
     {
         // In multiplayer, route through network component
         if (GetGame().IsMultiplayer() && m_NetworkComponent)
         {
-            return m_NetworkComponent.LeaveTeam(player);
+            return m_NetworkComponent.LeaveTeam(playerEntityID);
         }
         
+        // Get the player entity from the ID
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerEntityID);
+        if (!player)
+            return false;
+            
         // Single player or server implementation
         string playerID = GetPlayerIdentity(player);
         string playerName = GetPlayerName(player);
