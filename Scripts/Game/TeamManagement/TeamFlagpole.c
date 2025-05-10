@@ -7,6 +7,10 @@
 // Import necessary classes from the engine
 #include "../Network/Rpc/Rpc.c"
 #include "../Network/ScriptCallContext.c"
+#include "../Network/ScriptBitWriter.c"
+#include "../Core/GenericEntity.c"
+#include "../Core/IEntity.c"
+#include "../Core/Game.c"
 class TeamFlagpole : GenericEntity
 {
     protected int m_RespawnComponentID;

@@ -8,6 +8,7 @@
 #include "../Core/Collections.c"
 #include "../Core/SCR_PlayerController.c"
 #include "../Core/Math.c"
+#include "../GameLib/UI/Core/SCR_ButtonHandler.c"
 
 class TeamRespawnMenu
 {

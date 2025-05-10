@@ -1,56 +1,65 @@
-/**
- * @brief Button handler class for ARMA Reforger UI
- */
+// SCR_ButtonHandler.c implementation for ARMA Reforger UI system
+
 class SCR_ButtonHandler
 {
-    /**
-     * @brief Handle mouse down events
-     * @param w The widget
-     * @param x X coordinate
-     * @param y Y coordinate
-     * @param button Button code
-     * @return True if handled, false otherwise
-     */
+    // Private member variables
+    protected Widget m_Widget;
+    
+    // Constructor
+    void SCR_ButtonHandler()
+    {
+    }
+    
+    // Called when mouse button is pressed over the widget
     bool OnMouseDown(Widget w, int x, int y, EMouseButton button)
     {
         return false;
     }
     
-    /**
-     * @brief Handle mouse up events
-     * @param w The widget
-     * @param x X coordinate
-     * @param y Y coordinate
-     * @param button Button code
-     * @return True if handled, false otherwise
-     */
+    // Called when mouse button is released over the widget
     bool OnMouseUp(Widget w, int x, int y, EMouseButton button)
     {
         return false;
     }
     
-    /**
-     * @brief Handle mouse enter events
-     * @param w The widget
-     * @param x X coordinate
-     * @param y Y coordinate
-     * @param button Button code
-     * @return True if handled, false otherwise
-     */
-    bool OnMouseEnter(Widget w, int x, int y, EMouseButton button)
+    // Called when a widget is clicked (press and release over the same widget)
+    bool OnClick(Widget w, int x, int y, EMouseButton button)
     {
         return false;
     }
     
-    /**
-     * @brief Handle mouse leave events
-     * @param w The widget
-     * @param x X coordinate
-     * @param y Y coordinate
-     * @param button Button code
-     * @return True if handled, false otherwise
-     */
-    bool OnMouseLeave(Widget w, int x, int y, EMouseButton button)
+    // Called when the mouse cursor enters a widget
+    bool OnMouseEnter(Widget w, int x, int y)
+    {
+        return false;
+    }
+    
+    // Called when the mouse cursor leaves a widget
+    bool OnMouseLeave(Widget w, int x, int y)
+    {
+        return false;
+    }
+    
+    // Called when a key is pressed while the widget has focus
+    bool OnKeyDown(Widget w, int key)
+    {
+        return false;
+    }
+    
+    // Called when a key is released while the widget has focus
+    bool OnKeyUp(Widget w, int key)
+    {
+        return false;
+    }
+    
+    // Called when a widget gets focus
+    bool OnFocus(Widget w, int x, int y)
+    {
+        return false;
+    }
+    
+    // Called when a widget loses focus
+    bool OnFocusLost(Widget w, int x, int y)
     {
         return false;
     }

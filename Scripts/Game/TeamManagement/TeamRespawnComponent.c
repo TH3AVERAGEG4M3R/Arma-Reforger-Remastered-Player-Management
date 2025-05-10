@@ -1,6 +1,12 @@
 // Import necessary classes from the engine
 #include "../Network/Rpc/Rpc.c"
 #include "../Network/ScriptCallContext.c"
+#include "../Network/ScriptBitWriter.c"
+#include "../Network/ScriptBitReader.c"
+#include "../Core/GenericComponent.c"
+#include "../Core/IEntity.c"
+#include "../Core/Game.c"
+#include "../Core/Math.c"
 
 class TeamRespawnComponentClass: GenericComponentClass
 {
