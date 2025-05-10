@@ -90,8 +90,8 @@ class TeamFlagpole : GenericEntity
             if (m_RplComponent)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.Write(playerID);
-                rpc.Write(customName);
+                rpc.WriteInt(playerID);
+                rpc.WriteString(customName);
                 m_RplComponent.SendRPC("RPC_PurchaseFlagpole", rpc);
                 return true; // Client doesn't know the result yet
             }

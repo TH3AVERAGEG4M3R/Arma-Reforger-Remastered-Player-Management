@@ -5,6 +5,9 @@
 // Import necessary classes from the engine
 #include "../Network/Rpc/Rpc.c"
 #include "../Network/ScriptCallContext.c"
+#include "../Core/Collections.c"
+#include "../Core/IEntity.c"
+#include "../Core/EntityID.c"
 class TeamManager
 {
     // Map of teams with team ID as key and array of team members as value
