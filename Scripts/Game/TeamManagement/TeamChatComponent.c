@@ -191,10 +191,9 @@ class TeamChatComponent : ScriptComponent
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Handle opening team chat (Y key)
-     * @param action The action context
      * @return True if handled, false otherwise
      */
-    protected bool OpenTeamChat(ActionContext action)
+    protected bool OpenTeamChat()
     {
         // Only continue for local player
         PlayerController playerController = PlayerController.Cast(m_PlayerEntity.GetController());
@@ -217,10 +216,9 @@ class TeamChatComponent : ScriptComponent
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Handle closing team chat (Escape key)
-     * @param action The action context
      * @return True if handled, false otherwise
      */
-    protected bool CloseTeamChat(ActionContext action)
+    protected bool CloseTeamChat()
     {
         // Only handle if chat input is active
         if (!m_InputActive)
