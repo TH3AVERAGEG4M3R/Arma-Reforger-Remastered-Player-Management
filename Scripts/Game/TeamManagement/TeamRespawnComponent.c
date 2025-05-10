@@ -1,12 +1,9 @@
 // Import necessary classes from the engine
-#include "../Network/Rpc/Rpc.c"
-#include "../Network/ScriptCallContext.c"
-#include "../Network/ScriptBitWriter.c"
-#include "../Network/ScriptBitReader.c"
 #include "../Core/GenericComponent.c"
 #include "../Core/IEntity.c"
 #include "../Core/Game.c"
 #include "../Core/Math.c"
+#include "../TeamManagement/TeamNetworkComponent.c" // Use our custom RPC implementation
 
 class TeamRespawnComponentClass: GenericComponentClass
 {
@@ -61,10 +58,10 @@ class TeamRespawnComponent : GenericComponent
             if (rpl)
             {
                 // Register for RPC method to handle respawn requests
-                rpl.RegisterRPC("RPC_RequestRespawn", "RPC_RequestRespawn", EScriptRPCFlags.kIsReliable);
+                rpl.RegisterHandler("RPC_RequestRespawn", this, "RPC_RequestRespawn");
                 
                 // Register for RPC method to assign team ownership
-                rpl.RegisterRPC("RPC_AssignTeam", "RPC_AssignTeam", EScriptRPCFlags.kIsReliable);
+                rpl.RegisterHandler("RPC_AssignTeam", this, "RPC_AssignTeam");
             }
         }
     }

@@ -5,14 +5,12 @@
 */
 
 // Import necessary classes from the engine
-#include "../Network/Rpc/Rpc.c"
-#include "../Network/ScriptCallContext.c"
-#include "../Network/ScriptBitWriter.c"
 #include "../Core/GenericEntity.c"
 #include "../Core/IEntity.c"
 #include "../Core/Game.c"
 #include "TeamRespawnComponent.c"
 #include "../Core/EntityID.c"
+#include "../TeamManagement/TeamNetworkComponent.c" // Use our custom RPC implementation
 class TeamFlagpole : GenericEntity
 {
     protected int m_RespawnComponentID;
@@ -52,7 +50,7 @@ class TeamFlagpole : GenericEntity
             // Register for RPC method to purchase flagpole
             if (m_RplComponent)
             {
-                m_RplComponent.RegisterRPC("RPC_PurchaseFlagpole", "RPC_PurchaseFlagpole", EScriptRPCFlags.kIsReliable);
+                m_RplComponent.RegisterHandler("RPC_PurchaseFlagpole", this, "RPC_PurchaseFlagpole");
             }
         }
     }
