@@ -1,35 +1,38 @@
-/**
- * @brief Class for handling input action contexts in ARMA Reforger
- */
+// ActionContext for ARMA Reforger input system
+class ActionBase
+{
+    bool GetActionPhase();
+    float GetActionValue();
+    int GetID();
+    InputDevice GetInputDevice();
+}
+
 class ActionContext
 {
-    /**
-     * @brief Get the action type
-     * @return The action type
-     */
-    int GetActionType()
-    {
-        // Implementation will be provided by ARMA Reforger engine
-        return 0;
-    }
+    // Constructor
+    void ActionContext() {}
     
-    /**
-     * @brief Get the action phase
-     * @return The action phase
-     */
-    int GetActionPhase()
-    {
-        // Implementation will be provided by ARMA Reforger engine
-        return 0;
-    }
-    
-    /**
-     * @brief Get the action value
-     * @return The action value (typically 0-1 range for analog inputs)
-     */
+    // Get the action value (0.0 to 1.0 for analog inputs)
     float GetActionValue()
     {
-        // Implementation will be provided by ARMA Reforger engine
-        return 0.0;
+        return 1.0;
+    }
+    
+    // Get the action phase (pressed, released, etc.)
+    bool GetActionPhase()
+    {
+        return true;
+    }
+    
+    // Get the action ID
+    int GetActionID()
+    {
+        return 0;
+    }
+    
+    // Get the input device that triggered this action
+    InputDevice GetInputDevice()
+    {
+        return null;
     }
 }
