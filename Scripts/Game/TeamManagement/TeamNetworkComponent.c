@@ -215,8 +215,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.Write(sender);
-                rpc.Write(receiverID);
+                rpc.WriteInt(sender.GetID());
+                rpc.WriteString(receiverID);
                 rpl.SendRpc(RPC_SEND_INVITATION, rpc, true, null);
             }
             
@@ -233,9 +233,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 if (rpl)
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
-                    rpc.Write(sender);
-                    rpc.Write(receiverID);
-                    rpc.Write(success);
+                    rpc.WriteInt(sender.GetID());
+                    rpc.WriteString(receiverID);
+                    rpc.WriteBool(success);
                     
                     // Only send to sender and receiver
                     IEntity receiver = GetPlayerByIdentity(receiverID);
@@ -273,8 +273,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.Write(invitationID);
-                rpc.Write(player);
+                rpc.WriteString(invitationID);
+                rpc.WriteInt(player.GetID());
                 rpl.SendRpc(RPC_ACCEPT_INVITATION, rpc, true, null);
             }
             
@@ -302,10 +302,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 if (rpl)
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
-                    rpc.Write(invitationID);
-                    rpc.Write(player);
-                    rpc.Write(teamID);
-                    rpc.Write(success);
+                    rpc.WriteString(invitationID);
+                    rpc.WriteInt(player.GetID());
+                    rpc.WriteInt(teamID);
+                    rpc.WriteBool(success);
                     
                     // Broadcast to all players in the team
                     array<ref TeamMember> teamMembers = m_TeamManager.GetTeamMembers(teamID);
@@ -345,8 +345,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.Write(invitationID);
-                rpc.Write(player);
+                rpc.WriteString(invitationID);
+                rpc.WriteInt(player.GetID());
                 rpl.SendRpc(RPC_DECLINE_INVITATION, rpc, true, null);
             }
             
@@ -370,9 +370,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 if (rpl)
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
-                    rpc.Write(invitationID);
-                    rpc.Write(player);
-                    rpc.Write(success);
+                    rpc.WriteString(invitationID);
+                    rpc.WriteInt(player.GetID());
+                    rpc.WriteBool(success);
                     
                     // Send to player and sender
                     array<IEntity> targets = new array<IEntity>();
