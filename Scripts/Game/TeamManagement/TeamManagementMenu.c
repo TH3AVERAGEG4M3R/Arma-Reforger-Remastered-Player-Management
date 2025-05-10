@@ -5,7 +5,7 @@
 // Import necessary classes from the engine
 #include "../Input/InputActions.c"
 #include "../Input/ActionContext.c"
-#include "../UI/Core/WidgetEvents.c"
+#include "../UI/WidgetEvents.c"
 #include "../UI/SCR_ButtonHandler.c"
 class TeamManagementMenu
 {

@@ -6,6 +6,8 @@
 #include "../Input/InputActions.c"
 #include "../Input/ActionContext.c"
 #include "../Network/ScriptCallContext.c"
+#include "../Core/PlayerController.c"
+#include "../Core/IEntity.c"
 class TeamChatComponentClass : ScriptComponentClass
 {
 }

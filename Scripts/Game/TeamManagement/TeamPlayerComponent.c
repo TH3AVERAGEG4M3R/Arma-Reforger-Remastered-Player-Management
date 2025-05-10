@@ -5,6 +5,8 @@
 // Import necessary classes from the engine
 #include "../Input/InputActions.c"
 #include "../Input/ActionContext.c"
+#include "../Core/PlayerController.c"
+#include "../Core/IEntity.c"
 class TeamPlayerComponent : GenericComponent
 {
     protected ref TeamManager m_TeamManager;
