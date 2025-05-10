@@ -352,7 +352,7 @@ class TeamRespawnMenu
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.Write(playerID);
+                rpc.WriteInt(playerID);
                 rpl.SendRPC("RPC_RequestRespawn", rpc);
             }
         }

@@ -50,7 +50,7 @@ class TeamRespawnComponent : GenericComponent
     }
     
     //------------------------------------------------------------------------------------------------
-    void PostInit(IEntity owner)
+    override void OnPostInit(IEntity owner)
     {
         SetEventMask(owner, EntityEvent.INIT);
         
@@ -70,7 +70,7 @@ class TeamRespawnComponent : GenericComponent
     }
     
     //------------------------------------------------------------------------------------------------
-    bool RplSave(ScriptBitWriter writer)
+    override bool RplSave(ScriptBitWriter writer)
     {
         writer.WriteInt(m_TeamID);
         writer.WriteInt(m_LeaderEntityID);
@@ -79,11 +79,11 @@ class TeamRespawnComponent : GenericComponent
     }
 
     //------------------------------------------------------------------------------------------------
-    bool RplLoad(ScriptBitReader reader)
+    override bool RplLoad(ScriptBitReader reader)
     {
-        reader.ReadInt(m_TeamID);
-        reader.ReadInt(m_LeaderEntityID);
-        reader.ReadString(m_RespawnName);
+        m_TeamID = reader.ReadInt();
+        m_LeaderEntityID = reader.ReadInt();
+        m_RespawnName = reader.ReadString();
         return true;
     }
     
@@ -107,9 +107,9 @@ class TeamRespawnComponent : GenericComponent
         if (rpl)
         {
             ScriptCallContext rpc = new ScriptCallContext();
-            rpc.Write(teamID);
-            rpc.Write(leaderEntityID);
-            rpc.Write(m_RespawnName);
+            rpc.WriteInt(teamID);
+            rpc.WriteInt(leaderEntityID);
+            rpc.WriteString(m_RespawnName);
             rpl.SendRPC("RPC_AssignTeam", rpc);
         }
     }
@@ -125,9 +125,9 @@ class TeamRespawnComponent : GenericComponent
         int leaderEntityID;
         string name;
         
-        ctx.Read(teamID);
-        ctx.Read(leaderEntityID);
-        ctx.Read(name);
+        teamID = ctx.ReadInt();
+        leaderEntityID = ctx.ReadInt();
+        name = ctx.ReadString();
         
         m_TeamID = teamID;
         m_LeaderEntityID = leaderEntityID;
@@ -255,7 +255,7 @@ class TeamRespawnComponent : GenericComponent
     private void RPC_RequestRespawn(ScriptCallContext ctx)
     {
         int playerID;
-        ctx.Read(playerID);
+        playerID = ctx.ReadInt();
         
         HandleRespawnRequest(playerID);
     }

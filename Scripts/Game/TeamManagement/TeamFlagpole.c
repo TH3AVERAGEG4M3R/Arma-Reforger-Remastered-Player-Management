@@ -66,8 +66,8 @@ class TeamFlagpole : GenericEntity
         int playerID;
         string customName;
         
-        ctx.Read(playerID);
-        ctx.Read(customName);
+        playerID = ctx.ReadInt();
+        customName = ctx.ReadString();
         
         // Call the purchase method directly
         bool success = PurchaseFlagpole(playerID, customName);
