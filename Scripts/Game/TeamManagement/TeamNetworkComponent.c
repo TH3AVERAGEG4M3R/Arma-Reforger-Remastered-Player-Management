@@ -119,10 +119,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     
     /**
      * @brief Network-safe method to create a team
-     * @param player The player creating the team
+     * @param playerEntityID The entity ID of the player creating the team
      * @return The ID of the newly created team
      */
-    int CreateTeam(IEntity player)
+    int CreateTeam(EntityID playerEntityID)
     {
         if (!GetGame().IsServer())
         {
@@ -131,7 +131,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.WriteInt(player.GetID());
+                rpc.WriteInt(playerEntityID);
                 rpl.SendRPC(RPC_CREATE_TEAM, rpc);
             }
             
@@ -140,7 +140,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         else
         {
             // Server side - create team and broadcast to all clients
-            int teamID = m_TeamManager.CreateTeam(player);
+            int teamID = m_TeamManager.CreateTeam(playerEntityID);
             
             if (teamID > 0)
             {
@@ -148,7 +148,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 if (rpl)
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
-                    rpc.WriteInt(player.GetID());
+                    rpc.WriteInt(playerEntityID);
                     rpc.WriteInt(teamID);
                     rpl.SendRPC(RPC_CREATE_TEAM, rpc);
                 }
@@ -161,10 +161,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     /**
      * @brief Network-safe method to join a team
      * @param teamID The ID of the team to join
-     * @param player The player joining the team
+     * @param playerEntityID The entity ID of the player joining the team
      * @return True if successful, false otherwise
      */
-    bool JoinTeam(int teamID, IEntity player)
+    bool JoinTeam(int teamID, EntityID playerEntityID)
     {
         if (!GetGame().IsServer())
         {
@@ -174,7 +174,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             {
                 ScriptCallContext rpc = new ScriptCallContext();
                 rpc.WriteInt(teamID);
-                rpc.WriteInt(player.GetID());
+                rpc.WriteInt(playerEntityID);
                 rpl.SendRPC(RPC_JOIN_TEAM, rpc);
             }
             
@@ -183,7 +183,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         else
         {
             // Server side - join team and broadcast to all clients
-            bool success = m_TeamManager.JoinTeam(teamID, player);
+            bool success = m_TeamManager.JoinTeam(teamID, playerEntityID);
             
             if (success)
             {
@@ -192,7 +192,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
                     rpc.WriteInt(teamID);
-                    rpc.WriteInt(player.GetID());
+                    rpc.WriteInt(playerEntityID);
                     rpc.WriteBool(success);
                     rpl.SendRPC(RPC_JOIN_TEAM, rpc);
                 }
@@ -204,10 +204,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     
     /**
      * @brief Network-safe method to leave a team
-     * @param player The player leaving the team
+     * @param playerEntityID The entity ID of the player leaving the team
      * @return True if successful, false otherwise
      */
-    bool LeaveTeam(IEntity player)
+    bool LeaveTeam(EntityID playerEntityID)
     {
         if (!GetGame().IsServer())
         {
@@ -216,7 +216,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.WriteInt(player.GetID());
+                rpc.WriteInt(playerEntityID);
                 rpl.SendRPC(RPC_LEAVE_TEAM, rpc);
             }
             
@@ -224,12 +224,17 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         else
         {
+            // Get the player entity from the ID
+            IEntity player = GetGame().GetWorld().FindEntityByID(playerEntityID);
+            if (!player)
+                return false;
+                
             // Get team ID before leaving (for notification)
             string playerID = GetPlayerIdentity(player);
             int teamID = m_TeamManager.GetPlayerTeam(playerID);
             
             // Server side - leave team and broadcast to all clients
-            bool success = m_TeamManager.LeaveTeam(player);
+            bool success = m_TeamManager.LeaveTeam(playerEntityID);
             
             if (success)
             {
@@ -237,7 +242,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 if (rpl)
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
-                    rpc.WriteInt(player.GetID());
+                    rpc.WriteInt(playerEntityID);
                     rpc.WriteInt(teamID);
                     rpc.WriteBool(success);
                     rpl.SendRPC(RPC_LEAVE_TEAM, rpc);
@@ -250,11 +255,11 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     
     /**
      * @brief Network-safe method to send a team invitation
-     * @param sender The player sending the invitation
+     * @param senderEntityID The entity ID of the player sending the invitation
      * @param receiverID The identity of the player receiving the invitation
      * @return True if invitation sent successfully, false otherwise
      */
-    bool SendInvitation(IEntity sender, string receiverID)
+    bool SendInvitation(EntityID senderEntityID, string receiverID)
     {
         if (!GetGame().IsServer())
         {
@@ -263,7 +268,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.WriteInt(sender.GetID());
+                rpc.WriteInt(senderEntityID);
                 rpc.WriteString(receiverID);
                 rpl.SendRPC(RPC_SEND_INVITATION, rpc);
             }
@@ -272,8 +277,13 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         else
         {
+            // Get the sender entity from the ID
+            IEntity sender = GetGame().GetWorld().FindEntityByID(senderEntityID);
+            if (!sender)
+                return false;
+                
             // Server side - send invitation and broadcast to relevant clients
-            bool success = m_TeamManager.SendInvitation(sender, receiverID);
+            bool success = m_TeamManager.SendInvitation(senderEntityID, receiverID);
             
             if (success)
             {
@@ -281,7 +291,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 if (rpl)
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
-                    rpc.WriteInt(sender.GetID());
+                    rpc.WriteInt(senderEntityID);
                     rpc.WriteString(receiverID);
                     rpc.WriteBool(success);
                     
@@ -309,10 +319,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     /**
      * @brief Network-safe method to accept a team invitation
      * @param invitationID The ID of the invitation
-     * @param player The player accepting the invitation
+     * @param playerEntityID The entity ID of the player accepting the invitation
      * @return True if accepted successfully, false otherwise
      */
-    bool AcceptInvitation(string invitationID, IEntity player)
+    bool AcceptInvitation(string invitationID, EntityID playerEntityID)
     {
         if (!GetGame().IsServer())
         {
@@ -322,7 +332,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             {
                 ScriptCallContext rpc = new ScriptCallContext();
                 rpc.WriteString(invitationID);
-                rpc.WriteInt(player.GetID());
+                rpc.WriteInt(playerEntityID);
                 rpl.SendRPC(RPC_ACCEPT_INVITATION, rpc);
             }
             
@@ -330,6 +340,11 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         else
         {
+            // Get the player entity from the ID
+            IEntity player = GetGame().GetWorld().FindEntityByID(playerEntityID);
+            if (!player)
+                return false;
+                
             // Get invitation details before accepting (for notification)
             ref TeamInvitation invitation = m_TeamManager.GetInvitation(invitationID);
             int teamID = 0;
@@ -342,7 +357,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             }
             
             // Server side - accept invitation and broadcast to all clients
-            bool success = m_TeamManager.AcceptInvitation(invitationID, player);
+            bool success = m_TeamManager.AcceptInvitation(invitationID, playerEntityID);
             
             if (success)
             {
@@ -351,7 +366,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
                     rpc.WriteString(invitationID);
-                    rpc.WriteInt(player.GetID());
+                    rpc.WriteInt(playerEntityID);
                     rpc.WriteInt(teamID);
                     rpc.WriteBool(success);
                     
@@ -381,10 +396,10 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     /**
      * @brief Network-safe method to decline a team invitation
      * @param invitationID The ID of the invitation
-     * @param player The player declining the invitation
+     * @param playerEntityID The entity ID of the player declining the invitation
      * @return True if declined successfully, false otherwise
      */
-    bool DeclineInvitation(string invitationID, IEntity player)
+    bool DeclineInvitation(string invitationID, EntityID playerEntityID)
     {
         if (!GetGame().IsServer())
         {
@@ -394,7 +409,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             {
                 ScriptCallContext rpc = new ScriptCallContext();
                 rpc.WriteString(invitationID);
-                rpc.WriteInt(player.GetID());
+                rpc.WriteInt(playerEntityID);
                 rpl.SendRPC(RPC_DECLINE_INVITATION, rpc);
             }
             
@@ -402,6 +417,11 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         else
         {
+            // Get the player entity from the ID
+            IEntity player = GetGame().GetWorld().FindEntityByID(playerEntityID);
+            if (!player)
+                return false;
+                
             // Get invitation details before declining (for notification)
             ref TeamInvitation invitation = m_TeamManager.GetInvitation(invitationID);
             string senderID = "";
@@ -410,7 +430,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 senderID = invitation.GetSenderID();
             
             // Server side - decline invitation and notify sender
-            bool success = m_TeamManager.DeclineInvitation(invitationID, player);
+            bool success = m_TeamManager.DeclineInvitation(invitationID, playerEntityID);
             
             if (success)
             {
@@ -419,7 +439,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
                     rpc.WriteString(invitationID);
-                    rpc.WriteInt(player.GetID());
+                    rpc.WriteInt(playerEntityID);
                     rpc.WriteBool(success);
                     
                     // Send to player and sender
@@ -443,12 +463,17 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     
     /**
      * @brief Sync team data to a specific player
-     * @param player The player to sync with
+     * @param playerEntityID The entity ID of the player to sync with
      */
-    void SyncTeamData(IEntity player)
+    void SyncTeamData(EntityID playerEntityID)
     {
         if (!GetGame().IsServer())
             return; // Only server can sync data
+            
+        // Get the player entity from the ID
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerEntityID);
+        if (!player)
+            return;
         
         // Get player's team
         string playerID = GetPlayerIdentity(player);
@@ -488,8 +513,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      */
     void OnRPC_CreateTeam(RplComponent rpl, ScriptCallContext ctx)
     {
-        int playerID = ctx.ReadInt();
-        IEntity player = GetGame().GetWorld().FindEntityByID(playerID);
+        int playerEntityID = ctx.ReadInt();
         
         if (GetGame().IsServer())
         {
@@ -516,8 +540,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     void OnRPC_JoinTeam(RplComponent rpl, ScriptCallContext ctx)
     {
         int teamID = ctx.ReadInt();
-        int playerID = ctx.ReadInt();
-        IEntity player = GetGame().GetWorld().FindEntityByID(playerID);
+        int playerEntityID = ctx.ReadInt();
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerEntityID);
         
         if (GetGame().IsServer())
         {
@@ -532,7 +556,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         {
             Print("TeamNetworkComponent: Player joined team " + teamID);
             // Update local team manager
-            m_TeamManager.JoinTeam(teamID, player);
+            m_TeamManager.JoinTeam(teamID, EntityID.FromInt(playerEntityID));
         }
     }
     
@@ -543,8 +567,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      */
     void OnRPC_LeaveTeam(RplComponent rpl, ScriptCallContext ctx)
     {
-        int playerID = ctx.ReadInt();
-        IEntity player = GetGame().GetWorld().FindEntityByID(playerID);
+        int playerEntityID = ctx.ReadInt();
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerEntityID);
         
         if (GetGame().IsServer())
         {
@@ -560,7 +584,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         {
             Print("TeamNetworkComponent: Player left team " + teamID);
             // Update local team manager
-            m_TeamManager.LeaveTeam(player);
+            m_TeamManager.LeaveTeam(EntityID.FromInt(playerEntityID));
         }
     }
     
