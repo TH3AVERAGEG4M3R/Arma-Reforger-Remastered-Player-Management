@@ -743,7 +743,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                         {
                             IEntity memberEntity = GetPlayerByIdentity(member.GetPlayerID());
                             if (memberEntity)
-                                rpl.SendRpc(RPC_LOCK_VEHICLE, rpc, true, memberEntity);
+                                rpl.SendRPC(RPC_LOCK_VEHICLE, rpc);
                         }
                     }
                 }
@@ -770,7 +770,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(player);
                 rpc.Write(vehicle);
-                rpl.SendRpc(RPC_UNLOCK_VEHICLE, rpc, true, null);
+                rpl.SendRPC(RPC_UNLOCK_VEHICLE, rpc);
             }
             
             return false; // Actual result will be set by server response
@@ -801,7 +801,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                     rpc.Write(success);
                     
                     // Broadcast to everyone since the vehicle is now publicly accessible
-                    rpl.BroadcastRpc(RPC_UNLOCK_VEHICLE, rpc, true, null);
+                    rpl.SendRPC(RPC_UNLOCK_VEHICLE, rpc);
                 }
             }
             
@@ -925,7 +925,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 ScriptCallContext rpc = new ScriptCallContext();
                 rpc.Write(sender);
                 rpc.Write(messageText);
-                rpl.SendRpc(RPC_TEAM_CHAT_MESSAGE, rpc, true, null);
+                rpl.SendRPC(RPC_TEAM_CHAT_MESSAGE, rpc);
             }
             
             return false; // Actual result will be set by server response
@@ -959,7 +959,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                     if (memberEntity)
                     {
                         // Send message to this team member
-                        rpl.SendRpc(RPC_TEAM_CHAT_MESSAGE, rpc, true, memberEntity);
+                        rpl.SendRPC(RPC_TEAM_CHAT_MESSAGE, rpc);
                     }
                 }
             }
