@@ -2,8 +2,14 @@
  * @brief Network component for team management system
  * Handles RPC calls and data synchronization across the network
  */
- 
-// ScriptRPC type is provided by the game engine
+
+// Required for network functionality
+[BaseContainerProps()]
+class ScriptCallContext
+{
+    void Write(Managed value);
+    Managed Read();
+}
 class TeamNetworkComponent : ScriptedWidgetComponent
 {
     // Singleton instance
