@@ -129,7 +129,6 @@ class TeamPlayerComponent : GenericComponent
     //------------------------------------------------------------------------------------------------
     /*!
         Handle opening the team management menu (T key)
-        \param action The action context
         \return True if handled, false otherwise
     */
     protected bool OpenTeamMenu()
@@ -158,10 +157,9 @@ class TeamPlayerComponent : GenericComponent
     //------------------------------------------------------------------------------------------------
     /*!
         Handle opening the respawn menu (R key)
-        \param action The action context
         \return True if handled, false otherwise
     */
-    protected bool OpenRespawnMenu(ActionContext action)
+    protected bool OpenRespawnMenu()
     {
         // Only continue for local player
         IEntity owner = GetOwner();
