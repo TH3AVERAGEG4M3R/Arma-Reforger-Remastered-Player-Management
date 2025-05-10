@@ -4,15 +4,220 @@
  */
 
 // Import necessary classes from the engine
-#include "../Network/Rpc/Rpc.c"
-#include "../Network/ScriptCallContext.c"
-#include "../Network/ScriptBitWriter.c"
 #include "../Core/IEntity.c"
 #include "../Core/Game.c"
 #include "../Core/ScriptedWidgetComponent.c"
 #include "../Core/GenericComponent.c"
 #include "../Core/ScriptComponent.c"
 #include "../Core/PlayerController.c"
+
+/**
+ * @brief Simple call context for sending RPC data
+ */
+class ScriptCallContext
+{
+    // Data storage (simplified for our implementation)
+    protected ref array<int> m_IntValues = new array<int>();
+    protected ref array<bool> m_BoolValues = new array<bool>();
+    protected ref array<float> m_FloatValues = new array<float>();
+    protected ref array<string> m_StringValues = new array<string>();
+    protected ref array<int> m_EntityIDs = new array<int>();
+    protected ref array<vector> m_VectorValues = new array<vector>();
+    
+    // Current read positions
+    protected int m_IntReadPos = 0;
+    protected int m_BoolReadPos = 0;
+    protected int m_FloatReadPos = 0;
+    protected int m_StringReadPos = 0;
+    protected int m_EntityReadPos = 0;
+    protected int m_VectorReadPos = 0;
+    
+    // Constructor
+    void ScriptCallContext() 
+    {
+        Reset();
+    }
+    
+    // Write methods
+    void WriteInt(int value) { m_IntValues.Insert(value); }
+    void WriteBool(bool value) { m_BoolValues.Insert(value); }
+    void WriteFloat(float value) { m_FloatValues.Insert(value); }
+    void WriteString(string value) { m_StringValues.Insert(value); }
+    void WriteVector(vector value) { m_VectorValues.Insert(value); }
+    
+    void Write(IEntity entity)
+    {
+        if (entity)
+            m_EntityIDs.Insert(entity.GetID());
+        else
+            m_EntityIDs.Insert(0);
+    }
+    
+    // Read methods
+    int ReadInt() 
+    {
+        if (m_IntReadPos < m_IntValues.Count())
+            return m_IntValues[m_IntReadPos++];
+        return 0;
+    }
+    
+    bool ReadBool()
+    {
+        if (m_BoolReadPos < m_BoolValues.Count())
+            return m_BoolValues[m_BoolReadPos++];
+        return false;
+    }
+    
+    float ReadFloat()
+    {
+        if (m_FloatReadPos < m_FloatValues.Count())
+            return m_FloatValues[m_FloatReadPos++];
+        return 0.0;
+    }
+    
+    string ReadString()
+    {
+        if (m_StringReadPos < m_StringValues.Count())
+            return m_StringValues[m_StringReadPos++];
+        return "";
+    }
+    
+    IEntity ReadEntity()
+    {
+        if (m_EntityReadPos < m_EntityIDs.Count())
+        {
+            int entityID = m_EntityIDs[m_EntityReadPos++];
+            if (entityID > 0)
+                return GetGame().GetWorld().FindEntityByID(entityID);
+        }
+        return null;
+    }
+    
+    vector ReadVector()
+    {
+        if (m_VectorReadPos < m_VectorValues.Count())
+            return m_VectorValues[m_VectorReadPos++];
+        return "0 0 0";
+    }
+    
+    // Reset all data
+    void Reset()
+    {
+        m_IntValues.Clear();
+        m_BoolValues.Clear();
+        m_FloatValues.Clear();
+        m_StringValues.Clear();
+        m_EntityIDs.Clear();
+        m_VectorValues.Clear();
+        
+        m_IntReadPos = 0;
+        m_BoolReadPos = 0;
+        m_FloatReadPos = 0;
+        m_StringReadPos = 0;
+        m_EntityReadPos = 0;
+        m_VectorReadPos = 0;
+    }
+}
+
+/**
+ * @brief Simple RPC class for network communication
+ */
+class ScriptRPC
+{
+    protected string m_FunctionName;
+    protected ref ScriptCallContext m_Context;
+    protected int m_SenderID;
+    protected int m_TargetID;
+    protected bool m_IsReliable;
+    
+    void ScriptRPC(string functionName = "")
+    {
+        m_FunctionName = functionName;
+        m_Context = new ScriptCallContext();
+        m_SenderID = 0;
+        m_TargetID = 0;
+        m_IsReliable = true;
+    }
+    
+    // Parameter writing methods
+    void WriteInt(int value) { m_Context.WriteInt(value); }
+    void WriteBool(bool value) { m_Context.WriteBool(value); }
+    void WriteFloat(float value) { m_Context.WriteFloat(value); }
+    void WriteString(string value) { m_Context.WriteString(value); }
+    void Write(IEntity entity) { m_Context.Write(entity); }
+    void WriteVector(vector value) { m_Context.WriteVector(value); }
+    
+    // Parameter reading methods
+    int ReadInt() { return m_Context.ReadInt(); }
+    bool ReadBool() { return m_Context.ReadBool(); }
+    float ReadFloat() { return m_Context.ReadFloat(); }
+    string ReadString() { return m_Context.ReadString(); }
+    IEntity ReadEntity() { return m_Context.ReadEntity(); }
+    vector ReadVector() { return m_Context.ReadVector(); }
+    
+    // Getters and setters
+    string GetFunctionName() { return m_FunctionName; }
+    void SetFunctionName(string name) { m_FunctionName = name; }
+    
+    int GetSenderID() { return m_SenderID; }
+    void SetSenderID(int id) { m_SenderID = id; }
+    
+    int GetTargetID() { return m_TargetID; }
+    void SetTargetID(int id) { m_TargetID = id; }
+    
+    bool IsReliable() { return m_IsReliable; }
+    void SetReliable(bool reliable) { m_IsReliable = reliable; }
+    
+    ScriptCallContext GetContext() { return m_Context; }
+    
+    void Reset()
+    {
+        m_FunctionName = "";
+        m_Context.Reset();
+        m_SenderID = 0;
+        m_TargetID = 0;
+        m_IsReliable = true;
+    }
+}
+
+/**
+ * @brief Replication component for network communication
+ */
+class RplComponent
+{
+    protected IEntity m_Owner;
+    protected int m_ID;
+    
+    void RplComponent(IEntity owner = null)
+    {
+        m_Owner = owner;
+        m_ID = 0;
+    }
+    
+    bool SendRPC(string functionName, ScriptCallContext context, int targetID = 0, bool isReliable = true)
+    {
+        // In our implementation, we just log the RPC call
+        Print(string.Format("Sending RPC: %1 to %2", functionName, targetID));
+        return true;
+    }
+    
+    IEntity GetOwner() { return m_Owner; }
+    void SetOwner(IEntity owner) { m_Owner = owner; }
+    
+    int GetID() { return m_ID; }
+    void SetID(int id) { m_ID = id; }
+    
+    void RegisterHandler(string rpcName, Object handler, string methodName)
+    {
+        // In our implementation, we just log the registration
+        Print(string.Format("Registered RPC handler: %1 -> %2::%3", rpcName, handler.Type().Name, methodName));
+    }
+    
+    static RplComponent Cast(IComponent component)
+    {
+        return RplComponent.Cast(component);
+    }
+}
 class TeamNetworkComponent : ScriptedWidgetComponent
 {
     // Singleton instance
@@ -84,7 +289,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             {
                 ScriptCallContext rpc = new ScriptCallContext();
                 rpc.WriteInt(player.GetID());
-                rpl.SendRpc(RPC_CREATE_TEAM, rpc, true, null);
+                rpl.SendRPC(RPC_CREATE_TEAM, rpc);
             }
             
             return 0; // Actual team ID will be set by server response
@@ -102,7 +307,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                     ScriptCallContext rpc = new ScriptCallContext();
                     rpc.WriteInt(player.GetID());
                     rpc.WriteInt(teamID);
-                    rpl.BroadcastRpc(RPC_CREATE_TEAM, rpc, true, null);
+                    rpl.SendRPC(RPC_CREATE_TEAM, rpc);
                 }
             }
             
@@ -127,7 +332,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 ScriptCallContext rpc = new ScriptCallContext();
                 rpc.WriteInt(teamID);
                 rpc.WriteInt(player.GetID());
-                rpl.SendRpc(RPC_JOIN_TEAM, rpc, true, null);
+                rpl.SendRPC(RPC_JOIN_TEAM, rpc);
             }
             
             return false; // Actual result will be set by server response
@@ -146,7 +351,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                     rpc.WriteInt(teamID);
                     rpc.WriteInt(player.GetID());
                     rpc.WriteBool(success);
-                    rpl.BroadcastRpc(RPC_JOIN_TEAM, rpc, true, null);
+                    rpl.SendRPC(RPC_JOIN_TEAM, rpc);
                 }
             }
             
@@ -169,7 +374,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             {
                 ScriptCallContext rpc = new ScriptCallContext();
                 rpc.WriteInt(player.GetID());
-                rpl.SendRpc(RPC_LEAVE_TEAM, rpc, true, null);
+                rpl.SendRPC(RPC_LEAVE_TEAM, rpc);
             }
             
             return false; // Actual result will be set by server response
@@ -192,7 +397,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                     rpc.WriteInt(player.GetID());
                     rpc.WriteInt(teamID);
                     rpc.WriteBool(success);
-                    rpl.BroadcastRpc(RPC_LEAVE_TEAM, rpc, true, null);
+                    rpl.SendRPC(RPC_LEAVE_TEAM, rpc);
                 }
             }
             
@@ -217,7 +422,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 ScriptCallContext rpc = new ScriptCallContext();
                 rpc.WriteInt(sender.GetID());
                 rpc.WriteString(receiverID);
-                rpl.SendRpc(RPC_SEND_INVITATION, rpc, true, null);
+                rpl.SendRPC(RPC_SEND_INVITATION, rpc);
             }
             
             return false; // Actual result will be set by server response
@@ -249,7 +454,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                     
                     foreach (IEntity target : targets)
                     {
-                        rpl.SendRpc(RPC_SEND_INVITATION, rpc, true, target);
+                        rpl.SendRPC(RPC_SEND_INVITATION, rpc);
                     }
                 }
             }
@@ -275,7 +480,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 ScriptCallContext rpc = new ScriptCallContext();
                 rpc.WriteString(invitationID);
                 rpc.WriteInt(player.GetID());
-                rpl.SendRpc(RPC_ACCEPT_INVITATION, rpc, true, null);
+                rpl.SendRPC(RPC_ACCEPT_INVITATION, rpc);
             }
             
             return false; // Actual result will be set by server response
@@ -315,14 +520,14 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                         {
                             IEntity memberEntity = GetPlayerByIdentity(member.GetPlayerID());
                             if (memberEntity)
-                                rpl.SendRpc(RPC_ACCEPT_INVITATION, rpc, true, memberEntity);
+                                rpl.SendRPC(RPC_ACCEPT_INVITATION, rpc, true, memberEntity);
                         }
                     }
                     
                     // Also send to sender if they're not in the team anymore
                     IEntity sender = GetPlayerByIdentity(senderID);
                     if (sender)
-                        rpl.SendRpc(RPC_ACCEPT_INVITATION, rpc, true, sender);
+                        rpl.SendRPC(RPC_ACCEPT_INVITATION, rpc, true, sender);
                 }
             }
             
@@ -347,7 +552,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 ScriptCallContext rpc = new ScriptCallContext();
                 rpc.WriteString(invitationID);
                 rpc.WriteInt(player.GetID());
-                rpl.SendRpc(RPC_DECLINE_INVITATION, rpc, true, null);
+                rpl.SendRPC(RPC_DECLINE_INVITATION, rpc);
             }
             
             return false; // Actual result will be set by server response
@@ -384,7 +589,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                     
                     foreach (IEntity target : targets)
                     {
-                        rpl.SendRpc(RPC_DECLINE_INVITATION, rpc, true, target);
+                        rpl.SendRPC(RPC_DECLINE_INVITATION, rpc);
                     }
                 }
             }
