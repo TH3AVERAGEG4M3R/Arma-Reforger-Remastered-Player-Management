@@ -11,6 +11,8 @@
 #include "../Core/GenericEntity.c"
 #include "../Core/IEntity.c"
 #include "../Core/Game.c"
+#include "TeamRespawnComponent.c"
+#include "../Core/EntityID.c"
 class TeamFlagpole : GenericEntity
 {
     protected int m_RespawnComponentID;

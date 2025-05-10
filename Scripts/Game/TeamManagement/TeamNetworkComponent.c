@@ -418,14 +418,14 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         if (rpl)
         {
             ScriptCallContext rpc = new ScriptCallContext();
-            rpc.Write(teamID);
-            rpc.Write(teamMembers.Count());
+            rpc.WriteInt(teamID);
+            rpc.WriteInt(teamMembers.Count());
             
             foreach (ref TeamMember member : teamMembers)
             {
-                rpc.Write(member.GetPlayerID());
-                rpc.Write(member.GetPlayerName());
-                rpc.Write(member.IsLeader());
+                rpc.WriteString(member.GetPlayerID());
+                rpc.WriteString(member.GetPlayerName());
+                rpc.WriteBool(member.IsLeader());
             }
             
             // Send to player
