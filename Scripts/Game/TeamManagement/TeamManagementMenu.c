@@ -6,13 +6,12 @@
 #include "../Input/InputActions.c"
 #include "../Input/ActionContext.c"
 #include "../UI/WidgetEvents.c"
-#include "../UI/SCR_ButtonHandler.c"
 #include "../UI/BasicWidgets.c"
 #include "../Core/Game.c"
 #include "../Core/Collections.c"
 #include "../Core/SCR_PlayerController.c"
 #include "../Core/IEntity.c"
-#include "../GameLib/UI/Core/SCR_ButtonHandler.c"
+#include "../../GameLib/UI/Core/SCR_ButtonHandler.c"
 class TeamManagementMenu
 {
     // Reference to UI elements

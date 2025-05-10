@@ -2,13 +2,12 @@
 #include "../Input/ActionContext.c"
 #include "../UI/WidgetEvents.c"
 #include "../Network/ScriptCallContext.c" 
-#include "../UI/SCR_ButtonHandler.c"
 #include "../UI/BasicWidgets.c"
 #include "../Core/Game.c"
 #include "../Core/Collections.c"
 #include "../Core/SCR_PlayerController.c"
 #include "../Core/Math.c"
-#include "../GameLib/UI/Core/SCR_ButtonHandler.c"
+#include "../../GameLib/UI/Core/SCR_ButtonHandler.c"
 
 class TeamRespawnMenu
 {
