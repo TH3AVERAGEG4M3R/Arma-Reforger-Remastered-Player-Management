@@ -1,41 +1,124 @@
-// InputDevice for ARMA Reforger input system
+/**
+ * @brief Input Device class for handling input devices in ARMA Reforger
+ */
 class InputDevice
 {
-    // Device type constants
-    static const int KEYBOARD = 0;
-    static const int MOUSE = 1;
-    static const int GAMEPAD = 2;
-    
-    // Constructor
-    void InputDevice() {}
-    
-    // Get the device type
-    int GetType()
+    // Device type enum
+    enum EDeviceType
     {
-        return KEYBOARD;
+        KEYBOARD,
+        MOUSE,
+        GAMEPAD,
+        TOUCH,
+        UNKNOWN
     }
     
-    // Check if this is a keyboard device
+    // Device type
+    protected EDeviceType m_DeviceType;
+    
+    // Device ID or index
+    protected int m_DeviceID;
+    
+    // Device name
+    protected string m_DeviceName;
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Constructor with device type
+     * @param type The device type
+     */
+    void InputDevice(EDeviceType type = EDeviceType.UNKNOWN)
+    {
+        m_DeviceType = type;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Set the device ID
+     * @param id The device ID
+     */
+    void SetDeviceID(int id)
+    {
+        m_DeviceID = id;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Set the device name
+     * @param name The device name
+     */
+    void SetDeviceName(string name)
+    {
+        m_DeviceName = name;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Get the device type
+     * @return The device type
+     */
+    EDeviceType GetDeviceType()
+    {
+        return m_DeviceType;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Get the device ID
+     * @return The device ID
+     */
+    int GetDeviceID()
+    {
+        return m_DeviceID;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Get the device name
+     * @return The device name
+     */
+    string GetDeviceName()
+    {
+        return m_DeviceName;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Check if this is a keyboard device
+     * @return True if keyboard
+     */
     bool IsKeyboard()
     {
-        return GetType() == KEYBOARD;
+        return m_DeviceType == EDeviceType.KEYBOARD;
     }
     
-    // Check if this is a mouse device
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Check if this is a mouse device
+     * @return True if mouse
+     */
     bool IsMouse()
     {
-        return GetType() == MOUSE;
+        return m_DeviceType == EDeviceType.MOUSE;
     }
     
-    // Check if this is a gamepad device
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Check if this is a gamepad device
+     * @return True if gamepad
+     */
     bool IsGamepad()
     {
-        return GetType() == GAMEPAD;
+        return m_DeviceType == EDeviceType.GAMEPAD;
     }
     
-    // Get the device ID
-    int GetID()
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Check if this is a touch device
+     * @return True if touch
+     */
+    bool IsTouch()
     {
-        return 0;
+        return m_DeviceType == EDeviceType.TOUCH;
     }
 }

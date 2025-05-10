@@ -1,39 +1,90 @@
-// ActionContext for ARMA Reforger input system
+/**
+ * @brief Action Context for handling input context in ARMA Reforger
+ */
 #include "InputDevice.c"
-class ActionBase
+class ActionContext
 {
-    bool GetActionPhase() { return true; }
-    float GetActionValue() { return 1.0; }
-    int GetID() { return 0; }
-    InputDevice GetInputDevice() { return null; }
-}
-
-class ActionContext : ActionBase
-{
-    // Constructor
-    void ActionContext() {}
+    // Input device that triggered this action
+    protected InputDevice m_Device;
     
-    // Get the action value (0.0 to 1.0 for analog inputs)
-    override float GetActionValue()
+    // Input action name or ID
+    protected string m_ActionName;
+    
+    // Additional action parameters if needed
+    protected ref map<string, float> m_ActionParameters;
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Constructor
+     */
+    void ActionContext()
     {
-        return 1.0;
+        m_ActionParameters = new map<string, float>();
     }
     
-    // Get the action phase (pressed, released, etc.)
-    override bool GetActionPhase()
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Set the action name
+     * @param actionName The name of the action
+     */
+    void SetActionName(string actionName)
     {
-        return true;
+        m_ActionName = actionName;
     }
     
-    // Get the action ID
-    override int GetID()
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Set the input device
+     * @param device The input device
+     */
+    void SetDevice(InputDevice device)
     {
-        return 0;
+        m_Device = device;
     }
     
-    // Get the input device that triggered this action
-    override InputDevice GetInputDevice()
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Set an action parameter value
+     * @param name The parameter name
+     * @param value The parameter value
+     */
+    void SetActionParam(string name, float value)
     {
-        return null;
+        m_ActionParameters.Set(name, value);
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Get the action name
+     * @return The action name
+     */
+    string GetActionName()
+    {
+        return m_ActionName;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Get the input device
+     * @return The input device
+     */
+    InputDevice GetDevice()
+    {
+        return m_Device;
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    /**
+     * @brief Get an action parameter value
+     * @param name The parameter name
+     * @param defaultValue Default value if parameter not found
+     * @return The parameter value or default value
+     */
+    float GetActionParam(string name, float defaultValue = 0.0)
+    {
+        if (m_ActionParameters.Contains(name))
+            return m_ActionParameters.Get(name);
+        
+        return defaultValue;
     }
 }

@@ -4,6 +4,10 @@
  
 // Import necessary classes from the engine
 #include "../Input/ActionContext.c"
+#include "../Input/InputActions.c"
+#include "../Core/ScriptComponent.c"
+#include "../Core/IEntity.c"
+#include "../Core/Game.c"
 class TeamMapEntityClass : ScriptComponentClass
 {
 }
