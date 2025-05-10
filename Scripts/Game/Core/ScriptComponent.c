@@ -1,29 +1,59 @@
-// ScriptComponent for ARMA Reforger
+// ScriptComponent.c - Base class for script components in ARMA Reforger
+// This class provides the base functionality for script-based components
 
-class ScriptComponentClass
-{
-}
+#include "IComponent.c"
 
-class ScriptComponent : GenericComponent
+/**
+ * @brief Base class for script components
+ */
+class ScriptComponent : IComponent
 {
     // Constructor
-    void ScriptComponent() {}
-    
-    // Initialize component
-    override void OnPostInit(IEntity owner)
+    void ScriptComponent(string name = "")
     {
-        super.OnPostInit(owner);
+        // Call base constructor
+        super.IComponent(name);
     }
     
-    // Cleanup component
-    override void OnDelete(IEntity owner)
+    // Post-init method for script components
+    void OnPostInit()
     {
-        super.OnDelete(owner);
+        // Base implementation does nothing
     }
     
-    // Static cast method
-    static ScriptComponent Cast(GenericComponent component)
+    // Save/load methods for replication
+    void RplSave()
     {
-        return null;
+        // Base implementation does nothing
     }
+    
+    void RplLoad()
+    {
+        // Base implementation does nothing
+    }
+}
+
+// Specific script component types
+class ScriptedWidgetComponent : ScriptComponent
+{
+    // Constructor
+    void ScriptedWidgetComponent(string name = "")
+    {
+        // Call base constructor
+        super.ScriptComponent(name);
+    }
+    
+    // Additional widget-specific methods would go here
+}
+
+class GenericComponent : ScriptComponent
+{
+    // Constructor
+    void GenericComponent(string name = "")
+    {
+        // Call base constructor
+        super.ScriptComponent(name);
+    }
+    
+    // Additional generic component methods would go here
 }

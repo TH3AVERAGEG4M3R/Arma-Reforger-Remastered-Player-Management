@@ -1,122 +1,49 @@
-// Game class for ARMA Reforger
+// Game.c - Core game class for ARMA Reforger
+// This class provides access to the game world and other global systems
 
-enum ENetMode
-{
-    NM_Standalone,
-    NM_Client,
-    NM_Server,
-    NM_DedicatedServer
-}
+#include "World.c"
 
-class SCR_NotificationSystem
-{
-    static void SendNotification(string message)
-    {
-        // Placeholder implementation
-    }
-}
-
-class World
-{
-    IEntity FindEntityByID(int entityID)
-    {
-        return null;
-    }
-    
-    void FindEntitiesByType(Class type, out array<IEntity> foundEntities)
-    {
-        // Placeholder implementation
-    }
-}
-
-class WorkspaceWidget
-{
-    Widget CreateWidgets(string layoutPath, Widget parent = null)
-    {
-        return null;
-    }
-}
-
-class CallQueue
-{
-    void CallLater(string methodName, int delay, Class instance)
-    {
-        // Placeholder implementation
-    }
-}
-
+/**
+ * @brief Singleton class representing the game
+ */
 class Game
 {
-    private static Game s_Instance;
+    // Singleton instance
+    private static ref Game s_Instance;
     
+    // Game world
+    protected ref World m_World;
+    
+    // Private constructor (use GetInstance())
+    private void Game()
+    {
+        m_World = new World();
+    }
+    
+    /**
+     * @brief Get the singleton instance
+     * @return The singleton instance
+     */
     static Game GetInstance()
     {
         if (!s_Instance)
             s_Instance = new Game();
+            
         return s_Instance;
     }
     
-    static Game GetGame()
-    {
-        return GetInstance();
-    }
-    
-    bool IsMultiplayer()
-    {
-        return false;
-    }
-    
-    bool IsServer()
-    {
-        return true;
-    }
-    
-    InputManager GetInputManager()
-    {
-        return null;
-    }
-    
+    /**
+     * @brief Get the game world
+     * @return The game world
+     */
     World GetWorld()
     {
-        return null;
-    }
-    
-    ENetMode GetNetMode()
-    {
-        return ENetMode.NM_Standalone;
-    }
-    
-    WorkspaceWidget GetWorkspace()
-    {
-        return null;
-    }
-    
-    CallQueue GetCallQueue()
-    {
-        return null;
-    }
-    
-    IEntity SpawnEntityPrefab(Resource resource, World world, EntitySpawnParams spawnParams)
-    {
-        return null;
+        return m_World;
     }
 }
 
-class EntitySpawnParams
+// Convenience function for getting the game instance
+Game GetGame()
 {
-    int TransformMode;
-    vector Transform[4];
-}
-
-enum ETransformMode
-{
-    WORLD
-}
-
-class Resource
-{
-    static Resource Load(string resourcePath)
-    {
-        return null;
-    }
+    return Game.GetInstance();
 }
