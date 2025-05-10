@@ -1,141 +1,140 @@
-/**
- * @brief ActionContext class for handling input events
- */
+// ActionContext.c - Input action context for ARMA Reforger
+// This class defines the context in which input actions are executed
 
 class ActionContext
 {
-    // The action name associated with this context
-    protected string m_ActionName;
+    // Reference to the entity that initiated the action (usually a player)
+    protected IEntity m_Entity;
     
-    // The priority of this action context
-    protected int m_Priority;
+    // Input device that triggered the action
+    protected InputDevice m_InputDevice;
     
-    // Whether this action context is active
-    protected bool m_IsActive;
+    // Additional action data
+    protected float m_Value;           // For analog inputs (e.g., joystick axis)
+    protected bool m_IsPressed;        // Whether a button is pressed
+    protected bool m_IsDown;           // Whether a button is held down
+    protected bool m_IsReleased;       // Whether a button was released
     
-    // The parent context for this action
-    protected ActionContext m_ParentContext;
+    // Constructor
+    void ActionContext(IEntity entity = null, InputDevice device = null)
+    {
+        m_Entity = entity;
+        m_InputDevice = device;
+        m_Value = 0.0;
+        m_IsPressed = false;
+        m_IsDown = false;
+        m_IsReleased = false;
+    }
+    
+    //------------------------------------------
+    // Getters and setters
+    //------------------------------------------
     
     /**
-     * @brief Constructor
+     * @brief Get the entity that initiated the action
+     * @return The entity
      */
-    void ActionContext(string actionName = "", int priority = 0)
+    IEntity GetEntity()
     {
-        m_ActionName = actionName;
-        m_Priority = priority;
-        m_IsActive = true;
+        return m_Entity;
     }
     
     /**
-     * @brief Get the action name
-     * @return The action name
+     * @brief Set the entity that initiated the action
+     * @param entity The entity
      */
-    string GetActionName()
+    void SetEntity(IEntity entity)
     {
-        return m_ActionName;
+        m_Entity = entity;
     }
     
     /**
-     * @brief Get the priority of this action context
-     * @return The priority (higher values mean higher priority)
+     * @brief Get the input device that triggered the action
+     * @return The input device
      */
-    int GetPriority()
+    InputDevice GetInputDevice()
     {
-        return m_Priority;
+        return m_InputDevice;
     }
     
     /**
-     * @brief Check if this action context is active
-     * @return True if active, false otherwise
+     * @brief Set the input device that triggered the action
+     * @param device The input device
      */
-    bool IsActive()
+    void SetInputDevice(InputDevice device)
     {
-        return m_IsActive;
+        m_InputDevice = device;
     }
     
     /**
-     * @brief Set the active state of this action context
-     * @param active The new active state
+     * @brief Get the analog value of the action
+     * @return The value
      */
-    void SetActive(bool active)
+    float GetValue()
     {
-        m_IsActive = active;
+        return m_Value;
     }
     
     /**
-     * @brief Set the parent context
-     * @param parent The parent context
+     * @brief Set the analog value of the action
+     * @param value The value
      */
-    void SetParentContext(ActionContext parent)
+    void SetValue(float value)
     {
-        m_ParentContext = parent;
+        m_Value = value;
     }
     
     /**
-     * @brief Get the parent context
-     * @return The parent context
+     * @brief Check if the action was pressed (button down event)
+     * @return True if pressed, false otherwise
      */
-    ActionContext GetParentContext()
+    bool IsPressed()
     {
-        return m_ParentContext;
-    }
-}
-
-/**
- * @brief ActionBase class for handling specific input actions
- */
-class ActionBase
-{
-    // The name of this action
-    protected string m_Name;
-    
-    // The context this action is associated with
-    protected ActionContext m_Context;
-    
-    /**
-     * @brief Constructor
-     */
-    void ActionBase(string name = "")
-    {
-        m_Name = name;
+        return m_IsPressed;
     }
     
     /**
-     * @brief Get the name of this action
-     * @return The action name
+     * @brief Set the pressed state
+     * @param isPressed The pressed state
      */
-    string GetName()
+    void SetPressed(bool isPressed)
     {
-        return m_Name;
+        m_IsPressed = isPressed;
     }
     
     /**
-     * @brief Set the context for this action
-     * @param context The context to set
+     * @brief Check if the action is down (button held)
+     * @return True if down, false otherwise
      */
-    void SetContext(ActionContext context)
+    bool IsDown()
     {
-        m_Context = context;
+        return m_IsDown;
     }
     
     /**
-     * @brief Get the context for this action
-     * @return The action context
+     * @brief Set the down state
+     * @param isDown The down state
      */
-    ActionContext GetContext()
+    void SetDown(bool isDown)
     {
-        return m_Context;
+        m_IsDown = isDown;
     }
     
     /**
-     * @brief Check if this action is active
-     * @return True if active, false otherwise
+     * @brief Check if the action was released (button up event)
+     * @return True if released, false otherwise
      */
-    bool IsActive()
+    bool IsReleased()
     {
-        if (!m_Context)
-            return false;
-            
-        return m_Context.IsActive();
+        return m_IsReleased;
+    }
+    
+    /**
+     * @brief Set the released state
+     * @param isReleased The released state
+     */
+    void SetReleased(bool isReleased)
+    {
+        m_IsReleased = isReleased;
     }
 }

@@ -1,102 +1,412 @@
-/**
- * @brief Widget and widget related classes for the UI system
- */
+// Widget.c - Base UI widget class for ARMA Reforger
+// This class defines the base UI element for user interfaces
 
-// Base widget class
 class Widget
 {
-    // Get a child widget by name
-    Widget FindAnyWidget(string name)
+    // Widget properties
+    protected string m_Name;               // Unique name of the widget
+    protected Widget m_Parent;             // Parent widget
+    protected ref array<ref Widget> m_Children; // Child widgets
+    protected bool m_IsVisible;            // Is the widget visible?
+    protected bool m_IsEnabled;            // Is the widget enabled?
+    protected int m_PosX;                  // X position relative to parent
+    protected int m_PosY;                  // Y position relative to parent
+    protected int m_Width;                 // Width of the widget
+    protected int m_Height;                // Height of the widget
+    protected int m_ZOrder;                // Z-order for overlapping widgets
+    protected string m_Style;              // Style class name
+    
+    // Constructor
+    void Widget(string name = "", Widget parent = null)
     {
-        return null; // Placeholder implementation
+        m_Name = name;
+        m_Parent = parent;
+        m_Children = new array<ref Widget>();
+        m_IsVisible = true;
+        m_IsEnabled = true;
+        m_PosX = 0;
+        m_PosY = 0;
+        m_Width = 100;
+        m_Height = 30;
+        m_ZOrder = 0;
+        m_Style = "";
+        
+        // Add to parent if provided
+        if (m_Parent)
+        {
+            m_Parent.AddChild(this);
+        }
     }
     
-    // Set the visibility of the widget
-    void SetVisible(bool visible) {}
+    //------------------------------------------
+    // Child management
+    //------------------------------------------
     
-    // Clear items from a container widget
-    void ClearItems() {}
-    
-    // Add a child widget to a container
-    void AddChild(Widget child) {}
-    
-    // Cast a widget to a specific type
-    static Widget Cast(Widget widget)
+    /**
+     * @brief Add a child widget
+     * @param child The child widget to add
+     */
+    void AddChild(Widget child)
     {
-        return widget; // Placeholder implementation
-    }
-}
-
-// Button widget
-class ButtonWidget : Widget
-{
-    // Set if the button is enabled
-    void SetEnabled(bool enabled) {}
-    
-    // Set the button text
-    void SetText(string text) {}
-    
-    // Set the button color
-    void SetColor(vector color) {}
-    
-    // Add an event handler
-    void AddHandler(SCR_ButtonHandler handler) {}
-    
-    // Cast from a widget to a button widget
-    static ButtonWidget Cast(Widget w)
-    {
-        return ButtonWidget.Cast(w); // Placeholder implementation
-    }
-}
-
-// Text widget
-class TextWidget : Widget
-{
-    // Set the text
-    void SetText(string text) {}
-    
-    // Cast from a widget to a text widget
-    static TextWidget Cast(Widget w)
-    {
-        return TextWidget.Cast(w); // Placeholder implementation
-    }
-}
-
-// Edit box widget
-class EditBoxWidget : Widget
-{
-    // Get the entered text
-    string GetText()
-    {
-        return ""; // Placeholder implementation
+        if (!child)
+            return;
+            
+        // Set parent reference
+        child.SetParent(this);
+        
+        // Add to children list
+        m_Children.Insert(child);
     }
     
-    // Set the text
-    void SetText(string text) {}
+    /**
+     * @brief Remove a child widget
+     * @param child The child widget to remove
+     */
+    void RemoveChild(Widget child)
+    {
+        if (!child)
+            return;
+            
+        // Find the child
+        int index = m_Children.Find(child);
+        if (index >= 0)
+        {
+            // Clear parent reference
+            child.SetParent(null);
+            
+            // Remove from children list
+            m_Children.Remove(index);
+        }
+    }
     
-    // Cast from a widget to an edit box widget
-    static EditBoxWidget Cast(Widget w)
+    /**
+     * @brief Get a child widget by name
+     * @param name The name of the child to find
+     * @return The found child widget, or null if not found
+     */
+    Widget FindWidget(string name)
     {
-        return EditBoxWidget.Cast(w); // Placeholder implementation
+        // Check if this is the widget we're looking for
+        if (m_Name == name)
+            return this;
+            
+        // Search children
+        foreach (Widget child : m_Children)
+        {
+            Widget found = child.FindWidget(name);
+            if (found)
+                return found;
+        }
+        
+        return null;
     }
-}
-
-// Vertical layout widget
-class VerticalLayoutWidget : Widget
-{
-    // Cast from a widget to a vertical layout widget
-    static VerticalLayoutWidget Cast(Widget w)
+    
+    //------------------------------------------
+    // Getters and setters
+    //------------------------------------------
+    
+    /**
+     * @brief Get the widget name
+     * @return The widget name
+     */
+    string GetName()
     {
-        return VerticalLayoutWidget.Cast(w); // Placeholder implementation
+        return m_Name;
     }
-}
-
-// Image widget
-class ImageWidget : Widget
-{
-    // Cast from a widget to an image widget
-    static ImageWidget Cast(Widget w)
+    
+    /**
+     * @brief Set the widget name
+     * @param name The new name
+     */
+    void SetName(string name)
     {
-        return ImageWidget.Cast(w); // Placeholder implementation
+        m_Name = name;
+    }
+    
+    /**
+     * @brief Get the parent widget
+     * @return The parent widget
+     */
+    Widget GetParent()
+    {
+        return m_Parent;
+    }
+    
+    /**
+     * @brief Set the parent widget
+     * @param parent The new parent
+     */
+    void SetParent(Widget parent)
+    {
+        m_Parent = parent;
+    }
+    
+    /**
+     * @brief Get all child widgets
+     * @return Array of child widgets
+     */
+    array<ref Widget> GetChildren()
+    {
+        return m_Children;
+    }
+    
+    /**
+     * @brief Check if the widget is visible
+     * @return True if visible, false otherwise
+     */
+    bool IsVisible()
+    {
+        return m_IsVisible;
+    }
+    
+    /**
+     * @brief Set visibility
+     * @param visible The new visibility state
+     */
+    void SetVisible(bool visible)
+    {
+        m_IsVisible = visible;
+        
+        // Recursive visibility update
+        foreach (Widget child : m_Children)
+        {
+            child.SetVisible(visible);
+        }
+    }
+    
+    /**
+     * @brief Check if the widget is enabled
+     * @return True if enabled, false otherwise
+     */
+    bool IsEnabled()
+    {
+        return m_IsEnabled;
+    }
+    
+    /**
+     * @brief Set enabled state
+     * @param enabled The new enabled state
+     */
+    void SetEnabled(bool enabled)
+    {
+        m_IsEnabled = enabled;
+    }
+    
+    /**
+     * @brief Get the X position
+     * @return The X position
+     */
+    int GetPosX()
+    {
+        return m_PosX;
+    }
+    
+    /**
+     * @brief Get the Y position
+     * @return The Y position
+     */
+    int GetPosY()
+    {
+        return m_PosY;
+    }
+    
+    /**
+     * @brief Set the position
+     * @param x The new X position
+     * @param y The new Y position
+     */
+    void SetPosition(int x, int y)
+    {
+        m_PosX = x;
+        m_PosY = y;
+    }
+    
+    /**
+     * @brief Get the width
+     * @return The width
+     */
+    int GetWidth()
+    {
+        return m_Width;
+    }
+    
+    /**
+     * @brief Get the height
+     * @return The height
+     */
+    int GetHeight()
+    {
+        return m_Height;
+    }
+    
+    /**
+     * @brief Set the size
+     * @param width The new width
+     * @param height The new height
+     */
+    void SetSize(int width, int height)
+    {
+        m_Width = width;
+        m_Height = height;
+    }
+    
+    /**
+     * @brief Get the Z-order
+     * @return The Z-order
+     */
+    int GetZOrder()
+    {
+        return m_ZOrder;
+    }
+    
+    /**
+     * @brief Set the Z-order
+     * @param zOrder The new Z-order
+     */
+    void SetZOrder(int zOrder)
+    {
+        m_ZOrder = zOrder;
+    }
+    
+    /**
+     * @brief Get the style class
+     * @return The style class
+     */
+    string GetStyle()
+    {
+        return m_Style;
+    }
+    
+    /**
+     * @brief Set the style class
+     * @param style The new style class
+     */
+    void SetStyle(string style)
+    {
+        m_Style = style;
+    }
+    
+    //------------------------------------------
+    // Event handling
+    //------------------------------------------
+    
+    /**
+     * @brief Called when the widget is created
+     */
+    void OnCreate()
+    {
+        // Base implementation does nothing
+    }
+    
+    /**
+     * @brief Called when the widget is destroyed
+     */
+    void OnDestroy()
+    {
+        // Base implementation does nothing
+    }
+    
+    /**
+     * @brief Called when the mouse button is pressed on this widget
+     * @param x X position relative to widget
+     * @param y Y position relative to widget
+     * @param button The button that was pressed
+     * @return True if the event was handled, false otherwise
+     */
+    bool OnMouseDown(int x, int y, int button)
+    {
+        // Base implementation does nothing
+        return false;
+    }
+    
+    /**
+     * @brief Called when the mouse button is released on this widget
+     * @param x X position relative to widget
+     * @param y Y position relative to widget
+     * @param button The button that was released
+     * @return True if the event was handled, false otherwise
+     */
+    bool OnMouseUp(int x, int y, int button)
+    {
+        // Base implementation does nothing
+        return false;
+    }
+    
+    /**
+     * @brief Called when the mouse moves over this widget
+     * @param x X position relative to widget
+     * @param y Y position relative to widget
+     * @return True if the event was handled, false otherwise
+     */
+    bool OnMouseMove(int x, int y)
+    {
+        // Base implementation does nothing
+        return false;
+    }
+    
+    /**
+     * @brief Called when the mouse enters this widget
+     * @param x X position relative to widget
+     * @param y Y position relative to widget
+     * @return True if the event was handled, false otherwise
+     */
+    bool OnMouseEnter(int x, int y)
+    {
+        // Base implementation does nothing
+        return false;
+    }
+    
+    /**
+     * @brief Called when the mouse leaves this widget
+     * @param x X position relative to widget
+     * @param y Y position relative to widget
+     * @return True if the event was handled, false otherwise
+     */
+    bool OnMouseLeave(int x, int y)
+    {
+        // Base implementation does nothing
+        return false;
+    }
+    
+    /**
+     * @brief Called when a key is pressed while this widget has focus
+     * @param key The key that was pressed
+     * @return True if the event was handled, false otherwise
+     */
+    bool OnKeyDown(int key)
+    {
+        // Base implementation does nothing
+        return false;
+    }
+    
+    /**
+     * @brief Called when a key is released while this widget has focus
+     * @param key The key that was released
+     * @return True if the event was handled, false otherwise
+     */
+    bool OnKeyUp(int key)
+    {
+        // Base implementation does nothing
+        return false;
+    }
+    
+    /**
+     * @brief Called when this widget gains focus
+     * @return True if the event was handled, false otherwise
+     */
+    bool OnFocus()
+    {
+        // Base implementation does nothing
+        return false;
+    }
+    
+    /**
+     * @brief Called when this widget loses focus
+     * @return True if the event was handled, false otherwise
+     */
+    bool OnFocusLost()
+    {
+        // Base implementation does nothing
+        return false;
     }
 }

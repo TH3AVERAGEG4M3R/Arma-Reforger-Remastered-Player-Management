@@ -1,151 +1,241 @@
-/**
- * @brief Input device classes for handling various input methods
- */
+// InputDevice.c - Input device base class for ARMA Reforger
+// This class represents an abstract input device
 
-/**
- * @brief Base input device class
- */
+enum EInputDeviceType
+{
+    KEYBOARD,
+    MOUSE,
+    GAMEPAD
+}
+
 class InputDevice
 {
-    // Map of key bindings to action names
-    protected ref map<int, string> m_KeyBindings = new map<int, string>();
+    // Type of the input device
+    protected EInputDeviceType m_Type;
+    
+    // Device identifier
+    protected int m_DeviceID;
+    
+    // Is the device connected/available?
+    protected bool m_IsConnected;
+    
+    // Constructor
+    void InputDevice(EInputDeviceType type = EInputDeviceType.KEYBOARD, int deviceID = 0)
+    {
+        m_Type = type;
+        m_DeviceID = deviceID;
+        m_IsConnected = true;
+    }
+    
+    //------------------------------------------
+    // Getters and setters
+    //------------------------------------------
     
     /**
-     * @brief Constructor
+     * @brief Get the device type
+     * @return The device type
      */
-    void InputDevice()
+    EInputDeviceType GetType()
     {
+        return m_Type;
     }
     
     /**
-     * @brief Register a key binding for an action
-     * @param key The key code
-     * @param actionName The name of the action to trigger
+     * @brief Get the device ID
+     * @return The device ID
      */
-    void RegisterKeyBinding(int key, string actionName)
+    int GetDeviceID()
     {
-        m_KeyBindings.Insert(key, actionName);
+        return m_DeviceID;
     }
     
     /**
-     * @brief Handle key down event
-     * @param key The key code
-     * @return True if the event was handled, false otherwise
+     * @brief Check if the device is connected
+     * @return True if connected, false otherwise
      */
-    bool HandleKeyDown(int key)
+    bool IsConnected()
     {
-        string actionName;
-        if (m_KeyBindings.Find(key, actionName))
-        {
-            // Handle the action
-            return true;
-        }
-        
-        return false;
+        return m_IsConnected;
     }
     
     /**
-     * @brief Handle key up event
-     * @param key The key code
-     * @return True if the event was handled, false otherwise
+     * @brief Set the connected state
+     * @param isConnected The connected state
      */
-    bool HandleKeyUp(int key)
+    void SetConnected(bool isConnected)
     {
-        string actionName;
-        if (m_KeyBindings.Find(key, actionName))
-        {
-            // Handle the action
-            return true;
-        }
-        
-        return false;
+        m_IsConnected = isConnected;
     }
-}
-
-/**
- * @brief Keyboard input device
- */
-class KeyboardInputDevice : InputDevice
-{
+    
+    //------------------------------------------
+    // Virtual methods to be overridden by derived classes
+    //------------------------------------------
+    
     /**
-     * @brief Constructor
+     * @brief Update the device state
+     * Should be called every frame to update the device state
      */
-    void KeyboardInputDevice()
+    void Update()
     {
-        // Define default key bindings
-        // Note: This would be configurable in a real implementation
-        
-        // Register bindings for team management
-        RegisterKeyBinding(84, "TeamMenuAction");    // 'T' key
-        RegisterKeyBinding(89, "TeamChatAction");    // 'Y' key
+        // Base implementation does nothing
     }
 }
 
-/**
- * @brief Mouse input device
- */
-class MouseInputDevice : InputDevice
+//------------------------------------------
+// Derived classes for specific input devices
+//------------------------------------------
+
+class KeyboardDevice : InputDevice
 {
-    // Mouse button codes
-    const int MOUSE_LEFT = 0;
-    const int MOUSE_RIGHT = 1;
-    const int MOUSE_MIDDLE = 2;
+    // States of all keys (pressed or not)
+    protected array<bool> m_KeyStates;
     
-    /**
-     * @brief Constructor
-     */
-    void MouseInputDevice()
+    // Constructor
+    void KeyboardDevice(int deviceID = 0)
     {
-        // Define default mouse bindings
-        // Note: This would be configurable in a real implementation
+        // Call base constructor with keyboard type
+        InputDevice(EInputDeviceType.KEYBOARD, deviceID);
+        
+        // Initialize key states (common keyboard has 256 keys)
+        m_KeyStates = new array<bool>();
+        for (int i = 0; i < 256; i++)
+        {
+            m_KeyStates.Insert(false);
+        }
     }
     
     /**
-     * @brief Handle mouse button down event
-     * @param button The mouse button code
-     * @param x The x position
-     * @param y The y position
-     * @return True if the event was handled, false otherwise
+     * @brief Check if a key is pressed
+     * @param keyCode The key code to check
+     * @return True if pressed, false otherwise
      */
-    bool HandleMouseButtonDown(int button, int x, int y)
+    bool IsKeyPressed(int keyCode)
     {
-        // Handle mouse button events
-        return false;
+        // Ensure keyCode is in valid range
+        if (keyCode < 0 || keyCode >= m_KeyStates.Count())
+            return false;
+            
+        return m_KeyStates[keyCode];
     }
     
     /**
-     * @brief Handle mouse button up event
-     * @param button The mouse button code
-     * @param x The x position
-     * @param y The y position
-     * @return True if the event was handled, false otherwise
+     * @brief Set the state of a key
+     * @param keyCode The key code to set
+     * @param isPressed The pressed state
      */
-    bool HandleMouseButtonUp(int button, int x, int y)
+    void SetKeyState(int keyCode, bool isPressed)
     {
-        // Handle mouse button events
-        return false;
+        // Ensure keyCode is in valid range
+        if (keyCode < 0 || keyCode >= m_KeyStates.Count())
+            return;
+            
+        m_KeyStates[keyCode] = isPressed;
+    }
+}
+
+class MouseDevice : InputDevice
+{
+    // Mouse position
+    protected int m_PosX;
+    protected int m_PosY;
+    
+    // Mouse wheel delta
+    protected float m_WheelDelta;
+    
+    // Mouse button states
+    protected array<bool> m_ButtonStates;
+    
+    // Constructor
+    void MouseDevice(int deviceID = 0)
+    {
+        // Call base constructor with mouse type
+        InputDevice(EInputDeviceType.MOUSE, deviceID);
+        
+        // Initialize position and wheel
+        m_PosX = 0;
+        m_PosY = 0;
+        m_WheelDelta = 0.0;
+        
+        // Initialize button states (left, right, middle, and possible extra buttons)
+        m_ButtonStates = new array<bool>();
+        for (int i = 0; i < 5; i++)
+        {
+            m_ButtonStates.Insert(false);
+        }
     }
     
     /**
-     * @brief Handle mouse move event
-     * @param x The x position
-     * @param y The y position
-     * @return True if the event was handled, false otherwise
+     * @brief Get the mouse X position
+     * @return The X position
      */
-    bool HandleMouseMove(int x, int y)
+    int GetPosX()
     {
-        // Handle mouse movement
-        return false;
+        return m_PosX;
     }
     
     /**
-     * @brief Handle mouse wheel event
+     * @brief Get the mouse Y position
+     * @return The Y position
+     */
+    int GetPosY()
+    {
+        return m_PosY;
+    }
+    
+    /**
+     * @brief Set the mouse position
+     * @param x The X position
+     * @param y The Y position
+     */
+    void SetPosition(int x, int y)
+    {
+        m_PosX = x;
+        m_PosY = y;
+    }
+    
+    /**
+     * @brief Get the mouse wheel delta
+     * @return The wheel delta
+     */
+    float GetWheelDelta()
+    {
+        return m_WheelDelta;
+    }
+    
+    /**
+     * @brief Set the mouse wheel delta
      * @param delta The wheel delta
-     * @return True if the event was handled, false otherwise
      */
-    bool HandleMouseWheel(int delta)
+    void SetWheelDelta(float delta)
     {
-        // Handle mouse wheel movement
-        return false;
+        m_WheelDelta = delta;
+    }
+    
+    /**
+     * @brief Check if a mouse button is pressed
+     * @param button The button to check
+     * @return True if pressed, false otherwise
+     */
+    bool IsButtonPressed(int button)
+    {
+        // Ensure button is in valid range
+        if (button < 0 || button >= m_ButtonStates.Count())
+            return false;
+            
+        return m_ButtonStates[button];
+    }
+    
+    /**
+     * @brief Set the state of a mouse button
+     * @param button The button to set
+     * @param isPressed The pressed state
+     */
+    void SetButtonState(int button, bool isPressed)
+    {
+        // Ensure button is in valid range
+        if (button < 0 || button >= m_ButtonStates.Count())
+            return;
+            
+        m_ButtonStates[button] = isPressed;
     }
 }

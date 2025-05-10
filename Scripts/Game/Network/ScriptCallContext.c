@@ -1,100 +1,108 @@
-/**
- * @brief Network script call context for RPC calls
- */
-
-#include "ScriptBitWriter.c"
-#include "ScriptBitReader.c"
+// ScriptCallContext.c - Network call context for ARMA Reforger
+// This class handles serialization and deserialization of RPC data
 
 class ScriptCallContext
 {
-    // The internal bit writer for serializing data
+    // Binary data for reading/writing
     protected ref ScriptBitWriter m_Writer;
-    
-    // The internal bit reader for deserializing data
     protected ref ScriptBitReader m_Reader;
     
-    // Whether this context is for writing (true) or reading (false)
-    protected bool m_IsWriter;
-    
-    /**
-     * @brief Constructor
-     */
+    // Constructor
     void ScriptCallContext()
     {
         m_Writer = new ScriptBitWriter();
         m_Reader = new ScriptBitReader();
-        m_IsWriter = true; // Default to writer mode
     }
     
-    /**
-     * @brief Set the context to writer mode
-     */
-    void SetWriter()
-    {
-        m_IsWriter = true;
-    }
+    //------------------------------------------
+    // Writer methods
+    //------------------------------------------
     
     /**
-     * @brief Set the context to reader mode
+     * @brief Write an integer value
+     * @param value The value to write
      */
-    void SetReader(array<byte> data)
+    void WriteInt(int value)
     {
-        m_IsWriter = false;
-        m_Reader.SetData(data);
+        m_Writer.WriteInt(value);
     }
     
     /**
      * @brief Write a boolean value
      * @param value The value to write
      */
-    void Write(bool value)
+    void WriteBool(bool value)
     {
-        if (m_IsWriter)
-            m_Writer.WriteBool(value);
-    }
-    
-    /**
-     * @brief Write an integer value
-     * @param value The value to write
-     */
-    void Write(int value)
-    {
-        if (m_IsWriter)
-            m_Writer.WriteInt(value);
+        m_Writer.WriteBool(value);
     }
     
     /**
      * @brief Write a float value
      * @param value The value to write
      */
-    void Write(float value)
+    void WriteFloat(float value)
     {
-        if (m_IsWriter)
-            m_Writer.WriteFloat(value);
+        m_Writer.WriteFloat(value);
     }
     
     /**
      * @brief Write a string value
      * @param value The value to write
      */
-    void Write(string value)
+    void WriteString(string value)
     {
-        if (m_IsWriter)
-            m_Writer.WriteString(value);
+        m_Writer.WriteString(value);
+    }
+    
+    /**
+     * @brief Write an entity ID
+     * @param entity The entity to write the ID of
+     */
+    void Write(IEntity entity)
+    {
+        if (entity)
+        {
+            m_Writer.WriteBool(true);
+            m_Writer.WriteInt(entity.GetID());
+        }
+        else
+        {
+            m_Writer.WriteBool(false);
+        }
     }
     
     /**
      * @brief Write a vector value
      * @param value The value to write
      */
-    void Write(vector value)
+    void WriteVector(vector value)
     {
-        if (m_IsWriter)
-        {
-            m_Writer.WriteFloat(value[0]);
-            m_Writer.WriteFloat(value[1]);
-            m_Writer.WriteFloat(value[2]);
-        }
+        m_Writer.WriteFloat(value[0]);
+        m_Writer.WriteFloat(value[1]);
+        m_Writer.WriteFloat(value[2]);
+    }
+    
+    /**
+     * @brief Write raw data directly
+     * @param data The data to write
+     * @param size The size of the data in bytes
+     */
+    void WriteRaw(void* data, int size)
+    {
+        m_Writer.WriteRaw(data, size);
+    }
+    
+    //------------------------------------------
+    // Reader methods
+    //------------------------------------------
+    
+    /**
+     * @brief Read an integer value
+     * @return The read value
+     */
+    int ReadInt()
+    {
+        return m_Reader.ReadInt();
     }
     
     /**
@@ -103,22 +111,7 @@ class ScriptCallContext
      */
     bool ReadBool()
     {
-        if (!m_IsWriter)
-            return m_Reader.ReadBool();
-        
-        return false;
-    }
-    
-    /**
-     * @brief Read an integer value
-     * @return The read value
-     */
-    int ReadInt()
-    {
-        if (!m_IsWriter)
-            return m_Reader.ReadInt();
-        
-        return 0;
+        return m_Reader.ReadBool();
     }
     
     /**
@@ -127,10 +120,7 @@ class ScriptCallContext
      */
     float ReadFloat()
     {
-        if (!m_IsWriter)
-            return m_Reader.ReadFloat();
-        
-        return 0.0;
+        return m_Reader.ReadFloat();
     }
     
     /**
@@ -139,10 +129,21 @@ class ScriptCallContext
      */
     string ReadString()
     {
-        if (!m_IsWriter)
-            return m_Reader.ReadString();
-        
-        return "";
+        return m_Reader.ReadString();
+    }
+    
+    /**
+     * @brief Read an entity
+     * @return The read entity, or null if the entity was null or not found
+     */
+    IEntity ReadEntity()
+    {
+        bool hasEntity = m_Reader.ReadBool();
+        if (!hasEntity)
+            return null;
+            
+        int entityID = m_Reader.ReadInt();
+        return GetGame().GetWorld().FindEntityByID(entityID);
     }
     
     /**
@@ -151,26 +152,61 @@ class ScriptCallContext
      */
     vector ReadVector()
     {
-        if (!m_IsWriter)
-        {
-            float x = m_Reader.ReadFloat();
-            float y = m_Reader.ReadFloat();
-            float z = m_Reader.ReadFloat();
-            return Vector(x, y, z);
-        }
-        
-        return Vector(0, 0, 0);
+        float x = m_Reader.ReadFloat();
+        float y = m_Reader.ReadFloat();
+        float z = m_Reader.ReadFloat();
+        return Vector(x, y, z);
     }
     
     /**
-     * @brief Get the serialized data
-     * @return The serialized data as a byte array
+     * @brief Read raw data directly
+     * @param data Buffer to read into
+     * @param size The size of the data in bytes
+     * @return Number of bytes read
      */
-    array<byte> GetData()
+    int ReadRaw(void* data, int size)
     {
-        if (m_IsWriter)
-            return m_Writer.GetData();
-        
-        return null;
+        return m_Reader.ReadRaw(data, size);
+    }
+    
+    //------------------------------------------
+    // Utility methods
+    //------------------------------------------
+    
+    /**
+     * @brief Get the size of the written data in bytes
+     * @return The size in bytes
+     */
+    int GetSize()
+    {
+        return m_Writer.GetSize();
+    }
+    
+    /**
+     * @brief Reset the reader and writer
+     */
+    void Reset()
+    {
+        m_Writer.Reset();
+        m_Reader.Reset();
+    }
+    
+    /**
+     * @brief Get the raw data buffer
+     * @return Pointer to the data buffer
+     */
+    void* GetData()
+    {
+        return m_Writer.GetData();
+    }
+    
+    /**
+     * @brief Set the data for reading
+     * @param data Pointer to the data buffer
+     * @param size Size of the data in bytes
+     */
+    void SetData(void* data, int size)
+    {
+        m_Reader.SetData(data, size);
     }
 }

@@ -1,32 +1,82 @@
-/**
- * @brief Network bit reader for deserializing data
- */
+// ScriptBitReader.c - Network data reader for ARMA Reforger
+// This class handles reading binary data received over the network
 
 class ScriptBitReader
 {
-    // The data buffer
-    protected ref array<byte> m_Data;
+    // Data buffer
+    protected void* m_Buffer;
     
-    // The current position in bits
+    // Current read position in bits
     protected int m_BitPosition;
     
-    /**
-     * @brief Constructor
-     */
+    // Current buffer size in bytes
+    protected int m_BufferSize;
+    
+    // Constructor
     void ScriptBitReader()
     {
-        m_Data = new array<byte>();
+        m_Buffer = null;
         m_BitPosition = 0;
+        m_BufferSize = 0;
     }
     
-    /**
-     * @brief Set the data to read from
-     * @param data The data to read
-     */
-    void SetData(array<byte> data)
+    // Destructor
+    void ~ScriptBitReader()
     {
-        m_Data = data;
-        m_BitPosition = 0;
+        // We don't free the buffer here as it might be owned by someone else
+        m_Buffer = null;
+    }
+    
+    //------------------------------------------
+    // Reader methods
+    //------------------------------------------
+    
+    /**
+     * @brief Read an integer value
+     * @return The read value
+     */
+    int ReadInt()
+    {
+        // Check if we have enough data
+        if (!CanRead(32))
+        {
+            Print("ScriptBitReader: Trying to read past the end of the buffer!");
+            return 0;
+        }
+        
+        // Read the value
+        int bytePosition = m_BitPosition >> 3; // Divide by 8
+        int bitOffset = m_BitPosition & 7;     // Modulo 8
+        
+        int value;
+        
+        if (bitOffset == 0)
+        {
+            // Aligned read (faster)
+            int* src = (int*)(((byte*)m_Buffer) + bytePosition);
+            value = *src;
+        }
+        else
+        {
+            // Unaligned read (slower)
+            byte* src = ((byte*)m_Buffer) + bytePosition;
+            
+            // Read byte by byte with bit shifting
+            value = ((src[0] >> bitOffset) |
+                    (src[1] << (8 - bitOffset)) |
+                    (src[2] << (16 - bitOffset)) |
+                    (src[3] << (24 - bitOffset)));
+            
+            if (bitOffset > 24)
+            {
+                value |= (src[4] << (32 - bitOffset));
+            }
+        }
+        
+        // Update bit position
+        m_BitPosition += 32;
+        
+        return value;
     }
     
     /**
@@ -35,40 +85,23 @@ class ScriptBitReader
      */
     bool ReadBool()
     {
-        if (m_Data.Count() == 0)
-            return false;
-        
-        int byteIndex = m_BitPosition / 8;
-        int bitIndex = m_BitPosition % 8;
-        
-        if (byteIndex >= m_Data.Count())
-            return false;
-        
-        bool value = (m_Data[byteIndex] & (1 << bitIndex)) != 0;
-        m_BitPosition++;
-        
-        return value;
-    }
-    
-    /**
-     * @brief Read an integer value
-     * @return The read value
-     */
-    int ReadInt()
-    {
-        int value = 0;
-        
-        // Read 4 bytes (32 bits)
-        for (int i = 0; i < 4; i++)
+        // Check if we have enough data
+        if (!CanRead(1))
         {
-            if (m_BitPosition / 8 + i >= m_Data.Count())
-                break;
-            
-            byte b = m_Data[m_BitPosition / 8 + i];
-            value |= (b << (i * 8));
+            Print("ScriptBitReader: Trying to read past the end of the buffer!");
+            return false;
         }
         
-        m_BitPosition += 32;
+        // Read the value
+        int bytePosition = m_BitPosition >> 3; // Divide by 8
+        int bitOffset = m_BitPosition & 7;     // Modulo 8
+        
+        byte* src = ((byte*)m_Buffer) + bytePosition;
+        bool value = (*src & (1 << bitOffset)) != 0;
+        
+        // Update bit position
+        m_BitPosition += 1;
+        
         return value;
     }
     
@@ -78,9 +111,9 @@ class ScriptBitReader
      */
     float ReadFloat()
     {
-        // Read the int bits and convert to float
-        int intBits = ReadInt();
-        return *((float*)&intBits);
+        // Read as int and reinterpret
+        int intValue = ReadInt();
+        return *((float*)&intValue);
     }
     
     /**
@@ -89,36 +122,77 @@ class ScriptBitReader
      */
     string ReadString()
     {
-        // Read the string length
+        // Read string length first
         int length = ReadInt();
-        if (length <= 0 || length > 10000) // Sanity check
-            return "";
         
-        // Read each character
+        // For empty string, return early
+        if (length == 0)
+            return "";
+            
+        // Read characters
         string result = "";
         for (int i = 0; i < length; i++)
         {
-            byte charCode = ReadByte();
-            result += ((char)charCode).ToString();
+            int charValue = ReadInt();
+            result += (char)charValue;
         }
         
         return result;
     }
     
     /**
-     * @brief Read a single byte
-     * @return The read byte
+     * @brief Read raw data directly
+     * @param data Buffer to read into
+     * @param size The size of the data in bytes
+     * @return Number of bytes read
      */
-    byte ReadByte()
+    int ReadRaw(void* data, int size)
     {
-        int byteIndex = m_BitPosition / 8;
-        if (byteIndex >= m_Data.Count())
+        // If we're not byte-aligned, align first
+        AlignToByte();
+        
+        // Calculate available bytes
+        int availableBytes = ((m_BufferSize * 8) - m_BitPosition) >> 3;
+        int bytesToRead = Math.Min(size, availableBytes);
+        
+        // If no bytes to read, return early
+        if (bytesToRead <= 0)
             return 0;
+            
+        // Copy the data
+        int bytePosition = m_BitPosition >> 3; // Divide by 8
+        byte* src = ((byte*)m_Buffer) + bytePosition;
+        memcpy(data, src, bytesToRead);
         
-        byte value = m_Data[byteIndex];
-        m_BitPosition += 8;
+        // Update bit position
+        m_BitPosition += (bytesToRead * 8);
         
-        return value;
+        return bytesToRead;
+    }
+    
+    //------------------------------------------
+    // Utility methods
+    //------------------------------------------
+    
+    /**
+     * @brief Check if we can read the requested number of bits
+     * @param bitCount Number of bits to read
+     * @return True if we can read, false otherwise
+     */
+    protected bool CanRead(int bitCount)
+    {
+        return m_Buffer && (m_BitPosition + bitCount <= m_BufferSize * 8);
+    }
+    
+    /**
+     * @brief Align the bit position to the next byte boundary
+     */
+    void AlignToByte()
+    {
+        if (m_BitPosition & 7) // If not aligned
+        {
+            m_BitPosition = (m_BitPosition + 7) & ~7; // Round up to next multiple of 8
+        }
     }
     
     /**
@@ -127,5 +201,54 @@ class ScriptBitReader
     void Reset()
     {
         m_BitPosition = 0;
+    }
+    
+    /**
+     * @brief Set the data buffer for reading
+     * @param data Pointer to the data buffer
+     * @param size Size of the buffer in bytes
+     */
+    void SetData(void* data, int size)
+    {
+        m_Buffer = data;
+        m_BufferSize = size;
+        m_BitPosition = 0;
+    }
+    
+    /**
+     * @brief Get the current read position in bits
+     * @return Current position in bits
+     */
+    int GetBitPosition()
+    {
+        return m_BitPosition;
+    }
+    
+    /**
+     * @brief Set the read position in bits
+     * @param position New position in bits
+     */
+    void SetBitPosition(int position)
+    {
+        // Ensure the position is valid
+        if (position < 0)
+        {
+            position = 0;
+        }
+        else if (position > m_BufferSize * 8)
+        {
+            position = m_BufferSize * 8;
+        }
+        
+        m_BitPosition = position;
+    }
+    
+    /**
+     * @brief Check if we reached the end of the buffer
+     * @return True if at end, false otherwise
+     */
+    bool IsAtEnd()
+    {
+        return m_BitPosition >= m_BufferSize * 8;
     }
 }

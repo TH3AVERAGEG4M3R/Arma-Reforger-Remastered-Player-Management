@@ -1,201 +1,339 @@
-/**
- * @brief Input actions for the game
- */
+// InputActions.c - Input action definitions for ARMA Reforger
 
-#include "ActionContext.c"
-#include "InputDevice.c"
+// Action types
+enum EInputActionType
+{
+    PRESS,      // Triggered once when pressed
+    HOLD,       // Triggered continuously while held
+    RELEASE,    // Triggered once when released
+    AXIS        // Analog axis value (e.g., joystick movement)
+}
 
-/**
- * @brief Base input manager class
- */
-class InputManager
+// Action ID constants
+enum EInputActionID
+{
+    UNDEFINED = 0,
+    
+    // Movement actions
+    MOVE_FORWARD = 1,
+    MOVE_BACKWARD = 2,
+    MOVE_LEFT = 3,
+    MOVE_RIGHT = 4,
+    SPRINT = 5,
+    CROUCH = 6,
+    PRONE = 7,
+    JUMP = 8,
+    
+    // Combat actions
+    FIRE = 10,
+    AIM = 11,
+    RELOAD = 12,
+    WEAPON_SWITCH = 13,
+    GRENADE = 14,
+    MELEE = 15,
+    
+    // Vehicle actions
+    VEHICLE_ACCELERATE = 20,
+    VEHICLE_BRAKE = 21,
+    VEHICLE_STEER_LEFT = 22,
+    VEHICLE_STEER_RIGHT = 23,
+    VEHICLE_ENTER_EXIT = 24,
+    
+    // UI actions
+    OPEN_MAP = 30,
+    OPEN_INVENTORY = 31,
+    OPEN_TEAM_MENU = 32,
+    OPEN_CHAT = 33,
+    UI_CONFIRM = 34,
+    UI_CANCEL = 35,
+    UI_TAB_NEXT = 36,
+    UI_TAB_PREV = 37,
+    
+    // Team actions
+    TEAM_CHAT = 40,
+    TEAM_INVITE = 41,
+    TEAM_KICK = 42,
+    TEAM_RESPAWN = 43,
+    
+    // Mouse actions
+    MOUSE_X = 50,
+    MOUSE_Y = 51,
+    MOUSE_WHEEL = 52
+}
+
+// Input action binding definition
+class InputActionBinding
+{
+    protected EInputActionID m_ActionID;      // ID of the action
+    protected EInputActionType m_ActionType;  // Type of the action
+    protected int m_DeviceID;                 // Input device ID
+    protected int m_InputID;                  // Input identifier (key code, button ID, etc.)
+    protected float m_AxisMultiplier;         // Multiplier for axis values
+    protected bool m_InvertAxis;              // Whether to invert axis values
+    
+    // Constructor
+    void InputActionBinding(EInputActionID actionID, EInputActionType actionType, int deviceID, int inputID)
+    {
+        m_ActionID = actionID;
+        m_ActionType = actionType;
+        m_DeviceID = deviceID;
+        m_InputID = inputID;
+        m_AxisMultiplier = 1.0;
+        m_InvertAxis = false;
+    }
+    
+    //------------------------------------------
+    // Getters and setters
+    //------------------------------------------
+    
+    EInputActionID GetActionID()
+    {
+        return m_ActionID;
+    }
+    
+    EInputActionType GetActionType()
+    {
+        return m_ActionType;
+    }
+    
+    int GetDeviceID()
+    {
+        return m_DeviceID;
+    }
+    
+    int GetInputID()
+    {
+        return m_InputID;
+    }
+    
+    float GetAxisMultiplier()
+    {
+        return m_AxisMultiplier;
+    }
+    
+    void SetAxisMultiplier(float multiplier)
+    {
+        m_AxisMultiplier = multiplier;
+    }
+    
+    bool GetInvertAxis()
+    {
+        return m_InvertAxis;
+    }
+    
+    void SetInvertAxis(bool invert)
+    {
+        m_InvertAxis = invert;
+    }
+}
+
+// Input action manager
+class InputActionManager
 {
     // Singleton instance
-    protected static InputManager s_Instance;
+    protected static ref InputActionManager s_Instance;
     
-    // Map of registered action contexts
-    protected ref map<string, ref ActionContext> m_RegisteredContexts = new map<string, ref ActionContext>();
+    // Registered input actions
+    protected ref array<ref InputActionBinding> m_Bindings;
     
-    // Map of registered actions
-    protected ref map<string, ref ActionBase> m_RegisteredActions = new map<string, ref ActionBase>();
-    
-    // Input devices
-    protected ref array<ref InputDevice> m_InputDevices = new array<ref InputDevice>();
+    // Default constructor
+    void InputActionManager()
+    {
+        m_Bindings = new array<ref InputActionBinding>();
+        RegisterDefaultBindings();
+    }
     
     /**
      * @brief Get the singleton instance
+     * @return The singleton instance
      */
-    static InputManager GetInstance()
+    static InputActionManager GetInstance()
     {
         if (!s_Instance)
         {
-            s_Instance = new InputManager();
+            s_Instance = new InputActionManager();
         }
         
         return s_Instance;
     }
     
     /**
-     * @brief Initialize the input manager
+     * @brief Register default input bindings
      */
-    void Init()
+    protected void RegisterDefaultBindings()
     {
-        // Register keyboard device
-        RegisterInputDevice(new KeyboardInputDevice());
+        // Movement bindings
+        RegisterBinding(new InputActionBinding(EInputActionID.MOVE_FORWARD, EInputActionType.HOLD, 0, 87));  // W
+        RegisterBinding(new InputActionBinding(EInputActionID.MOVE_BACKWARD, EInputActionType.HOLD, 0, 83)); // S
+        RegisterBinding(new InputActionBinding(EInputActionID.MOVE_LEFT, EInputActionType.HOLD, 0, 65));     // A
+        RegisterBinding(new InputActionBinding(EInputActionID.MOVE_RIGHT, EInputActionType.HOLD, 0, 68));    // D
+        RegisterBinding(new InputActionBinding(EInputActionID.SPRINT, EInputActionType.HOLD, 0, 16));        // Shift
+        RegisterBinding(new InputActionBinding(EInputActionID.CROUCH, EInputActionType.PRESS, 0, 67));       // C
+        RegisterBinding(new InputActionBinding(EInputActionID.PRONE, EInputActionType.PRESS, 0, 90));        // Z
+        RegisterBinding(new InputActionBinding(EInputActionID.JUMP, EInputActionType.PRESS, 0, 32));         // Space
         
-        // Register mouse device
-        RegisterInputDevice(new MouseInputDevice());
+        // Combat bindings
+        RegisterBinding(new InputActionBinding(EInputActionID.FIRE, EInputActionType.PRESS, 1, 0));          // Left mouse button
+        RegisterBinding(new InputActionBinding(EInputActionID.AIM, EInputActionType.HOLD, 1, 1));            // Right mouse button
+        RegisterBinding(new InputActionBinding(EInputActionID.RELOAD, EInputActionType.PRESS, 0, 82));       // R
+        RegisterBinding(new InputActionBinding(EInputActionID.WEAPON_SWITCH, EInputActionType.PRESS, 0, 70)); // F
         
-        // Register default action context
-        RegisterActionContext(new ActionContext("Default", 0));
+        // UI bindings
+        RegisterBinding(new InputActionBinding(EInputActionID.OPEN_MAP, EInputActionType.PRESS, 0, 77));      // M
+        RegisterBinding(new InputActionBinding(EInputActionID.OPEN_INVENTORY, EInputActionType.PRESS, 0, 73)); // I
+        RegisterBinding(new InputActionBinding(EInputActionID.OPEN_TEAM_MENU, EInputActionType.PRESS, 0, 84)); // T
+        RegisterBinding(new InputActionBinding(EInputActionID.OPEN_CHAT, EInputActionType.PRESS, 0, 89));     // Y
+        
+        // Team bindings
+        RegisterBinding(new InputActionBinding(EInputActionID.TEAM_CHAT, EInputActionType.PRESS, 0, 85));     // U
+        
+        // Mouse axes
+        RegisterBinding(new InputActionBinding(EInputActionID.MOUSE_X, EInputActionType.AXIS, 1, 100));      // Special input ID for mouse X
+        RegisterBinding(new InputActionBinding(EInputActionID.MOUSE_Y, EInputActionType.AXIS, 1, 101));      // Special input ID for mouse Y
+        RegisterBinding(new InputActionBinding(EInputActionID.MOUSE_WHEEL, EInputActionType.AXIS, 1, 102));  // Special input ID for mouse wheel
     }
     
     /**
-     * @brief Register an input device
-     * @param device The device to register
+     * @brief Register a new binding
+     * @param binding The binding to register
      */
-    void RegisterInputDevice(InputDevice device)
+    void RegisterBinding(InputActionBinding binding)
     {
-        if (!device)
+        if (!binding)
             return;
             
-        m_InputDevices.Insert(device);
+        m_Bindings.Insert(binding);
     }
     
     /**
-     * @brief Register an action context
-     * @param context The context to register
+     * @brief Find bindings for an action
+     * @param actionID The action ID to find bindings for
+     * @return Array of matching bindings
      */
-    void RegisterActionContext(ActionContext context)
+    array<ref InputActionBinding> FindBindings(EInputActionID actionID)
     {
-        if (!context)
-            return;
+        array<ref InputActionBinding> result = new array<ref InputActionBinding>();
+        
+        foreach (InputActionBinding binding : m_Bindings)
+        {
+            if (binding.GetActionID() == actionID)
+            {
+                result.Insert(binding);
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * @brief Process input and generate action contexts
+     * Typically called every frame to convert raw input to actions
+     * @param devices Array of input devices to process
+     * @return Array of action contexts for triggered actions
+     */
+    array<ref ActionContext> ProcessInput(array<ref InputDevice> devices)
+    {
+        array<ref ActionContext> result = new array<ref ActionContext>();
+        
+        // Process all registered bindings
+        foreach (InputActionBinding binding : m_Bindings)
+        {
+            int deviceID = binding.GetDeviceID();
+            InputDevice device = FindDevice(devices, deviceID);
             
-        string name = context.GetActionName();
-        if (name.Length() > 0)
-        {
-            m_RegisteredContexts.Insert(name, context);
-        }
-    }
-    
-    /**
-     * @brief Get an action context by name
-     * @param name The name of the context
-     * @return The context, or null if not found
-     */
-    ActionContext GetActionContext(string name)
-    {
-        ActionContext context = null;
-        m_RegisteredContexts.Find(name, context);
-        return context;
-    }
-    
-    /**
-     * @brief Register an action
-     * @param action The action to register
-     */
-    void RegisterAction(ActionBase action)
-    {
-        if (!action)
-            return;
-            
-        string name = action.GetName();
-        if (name.Length() > 0)
-        {
-            m_RegisteredActions.Insert(name, action);
-        }
-    }
-    
-    /**
-     * @brief Get an action by name
-     * @param name The name of the action
-     * @return The action, or null if not found
-     */
-    ActionBase GetAction(string name)
-    {
-        ActionBase action = null;
-        m_RegisteredActions.Find(name, action);
-        return action;
-    }
-    
-    /**
-     * @brief Handle key down event
-     * @param key The key code
-     * @return True if the event was handled, false otherwise
-     */
-    bool OnKeyDown(int key)
-    {
-        foreach (InputDevice device : m_InputDevices)
-        {
-            if (device.HandleKeyDown(key))
-                return true;
-        }
-        
-        return false;
-    }
-    
-    /**
-     * @brief Handle key up event
-     * @param key The key code
-     * @return True if the event was handled, false otherwise
-     */
-    bool OnKeyUp(int key)
-    {
-        foreach (InputDevice device : m_InputDevices)
-        {
-            if (device.HandleKeyUp(key))
-                return true;
+            if (!device || !device.IsConnected())
+                continue;
+                
+            // Different handling based on device type and action type
+            if (device.GetType() == EInputDeviceType.KEYBOARD)
+            {
+                KeyboardDevice keyboard = KeyboardDevice.Cast(device);
+                if (!keyboard)
+                    continue;
+                    
+                int keyCode = binding.GetInputID();
+                bool isPressed = keyboard.IsKeyPressed(keyCode);
+                
+                if (isPressed && (binding.GetActionType() == EInputActionType.PRESS || binding.GetActionType() == EInputActionType.HOLD))
+                {
+                    ref ActionContext ctx = new ActionContext(null, device);
+                    ctx.SetPressed(binding.GetActionType() == EInputActionType.PRESS);
+                    ctx.SetDown(binding.GetActionType() == EInputActionType.HOLD);
+                    ctx.SetValue(1.0); // Digital inputs are either 0.0 or 1.0
+                    result.Insert(ctx);
+                }
+            }
+            else if (device.GetType() == EInputDeviceType.MOUSE)
+            {
+                MouseDevice mouse = MouseDevice.Cast(device);
+                if (!mouse)
+                    continue;
+                    
+                int inputID = binding.GetInputID();
+                
+                // Handle mouse button
+                if (inputID < 100) 
+                {
+                    bool isPressed = mouse.IsButtonPressed(inputID);
+                    
+                    if (isPressed && (binding.GetActionType() == EInputActionType.PRESS || binding.GetActionType() == EInputActionType.HOLD))
+                    {
+                        ref ActionContext ctx = new ActionContext(null, device);
+                        ctx.SetPressed(binding.GetActionType() == EInputActionType.PRESS);
+                        ctx.SetDown(binding.GetActionType() == EInputActionType.HOLD);
+                        ctx.SetValue(1.0);
+                        result.Insert(ctx);
+                    }
+                }
+                // Handle mouse axes
+                else if (binding.GetActionType() == EInputActionType.AXIS)
+                {
+                    float value = 0.0;
+                    
+                    if (inputID == 100) // Mouse X
+                    {
+                        value = mouse.GetPosX() * binding.GetAxisMultiplier();
+                    }
+                    else if (inputID == 101) // Mouse Y
+                    {
+                        value = mouse.GetPosY() * binding.GetAxisMultiplier();
+                    }
+                    else if (inputID == 102) // Mouse wheel
+                    {
+                        value = mouse.GetWheelDelta() * binding.GetAxisMultiplier();
+                    }
+                    
+                    if (binding.GetInvertAxis())
+                    {
+                        value = -value;
+                    }
+                    
+                    ref ActionContext ctx = new ActionContext(null, device);
+                    ctx.SetValue(value);
+                    result.Insert(ctx);
+                }
+            }
         }
         
-        return false;
-    }
-}
-
-/**
- * @brief Class to handle team management hotkeys
- */
-class TeamManagementInputActions
-{
-    // Key codes
-    const int KEY_T = 84;  // 'T' key for team menu
-    const int KEY_Y = 89;  // 'Y' key for team chat
-    
-    // Action contexts
-    static const string TEAM_MENU_CONTEXT = "TeamMenuContext";
-    static const string TEAM_CHAT_CONTEXT = "TeamChatContext";
-    
-    // Actions
-    static const string TEAM_MENU_ACTION = "TeamMenuAction";
-    static const string TEAM_CHAT_ACTION = "TeamChatAction";
-    
-    // Register actions with the input manager
-    static void RegisterActions()
-    {
-        InputManager inputManager = InputManager.GetInstance();
-        
-        // Register contexts
-        inputManager.RegisterActionContext(new ActionContext(TEAM_MENU_CONTEXT, 10));
-        inputManager.RegisterActionContext(new ActionContext(TEAM_CHAT_CONTEXT, 20));
-        
-        // Register actions
-        ActionBase teamMenuAction = new ActionBase(TEAM_MENU_ACTION);
-        teamMenuAction.SetContext(inputManager.GetActionContext(TEAM_MENU_CONTEXT));
-        inputManager.RegisterAction(teamMenuAction);
-        
-        ActionBase teamChatAction = new ActionBase(TEAM_CHAT_ACTION);
-        teamChatAction.SetContext(inputManager.GetActionContext(TEAM_CHAT_CONTEXT));
-        inputManager.RegisterAction(teamChatAction);
+        return result;
     }
     
-    // Get the team menu action
-    static ActionBase GetTeamMenuAction()
+    /**
+     * @brief Find a device by ID
+     * @param devices Array of devices to search
+     * @param deviceID The device ID to find
+     * @return The found device, or null if not found
+     */
+    protected InputDevice FindDevice(array<ref InputDevice> devices, int deviceID)
     {
-        return InputManager.GetInstance().GetAction(TEAM_MENU_ACTION);
-    }
-    
-    // Get the team chat action
-    static ActionBase GetTeamChatAction()
-    {
-        return InputManager.GetInstance().GetAction(TEAM_CHAT_ACTION);
+        foreach (InputDevice device : devices)
+        {
+            if (device.GetDeviceID() == deviceID)
+            {
+                return device;
+            }
+        }
+        
+        return null;
     }
 }
