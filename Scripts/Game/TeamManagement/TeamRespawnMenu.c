@@ -369,9 +369,9 @@ class PurchaseFlagpoleButtonHandler : ScriptedWidgetEventHandler
         m_Menu = menu;
     }
     
-    bool OnMouseDown(Widget w, int x, int y, int button)
+    override bool OnMouseDown(Widget w, int x, int y, EMouseButton button)
     {
-        if (button == MouseButton.LEFT && m_Menu)
+        if (button == EMouseButton.LEFT && m_Menu)
         {
             m_Menu.OnPurchaseFlagpole();
             return true;
@@ -392,9 +392,9 @@ class SelectRespawnButtonHandler : ScriptedWidgetEventHandler
         m_RespawnEntityID = respawnEntityID;
     }
     
-    bool OnMouseDown(Widget w, int x, int y, int button)
+    override bool OnMouseDown(Widget w, int x, int y, EMouseButton button)
     {
-        if (button == MouseButton.LEFT && m_Menu)
+        if (button == EMouseButton.LEFT && m_Menu)
         {
             m_Menu.OnSelectRespawnPoint(m_RespawnEntityID);
             return true;
