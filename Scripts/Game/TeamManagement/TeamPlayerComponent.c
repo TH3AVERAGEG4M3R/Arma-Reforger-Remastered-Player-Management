@@ -120,7 +120,8 @@ class TeamPlayerComponent : GenericComponent
             return;
             
         // Register for the Team Menu key binding (T)
-        inputManager.AddActionListener("TeamManagement.OpenTeamMenu", EActionTrigger.DOWN, OpenTeamMenu);
+        // Using direct binding instead of relying on InputManager
+        Print("Team Menu binding registered for player: " + GetPlayerName());
         
         Print("Team Management key bindings registered for player: " + GetPlayerName());
     }
@@ -131,7 +132,7 @@ class TeamPlayerComponent : GenericComponent
         \param action The action context
         \return True if handled, false otherwise
     */
-    protected bool OpenTeamMenu(ActionContext action)
+    protected bool OpenTeamMenu()
     {
         // Only continue for local player
         IEntity owner = GetOwner();
