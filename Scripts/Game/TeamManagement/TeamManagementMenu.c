@@ -1,6 +1,9 @@
 /**
  * @brief UI class for the team management menu
  */
+
+// Import necessary classes from the engine
+#include "$scripts:Game/GUI/Core/WidgetEvents.c"
 class TeamManagementMenu
 {
     // Reference to UI elements
@@ -265,9 +268,9 @@ class TeamButtonHandler : ScriptedWidgetEventHandler
         m_CallbackName = callbackName;
     }
     
-    override bool OnMouseDown(Widget w, int x, int y, int button)
+    override bool OnMouseDown(Widget w, int x, int y, EMouseButton button)
     {
-        if (button == MouseButton.LEFT && m_Menu)
+        if (button == EMouseButton.LEFT && m_Menu)
         {
             GetGame().GetCallQueue().CallLater(m_Menu.m_CallbackName, 0, m_Menu);
             return true;

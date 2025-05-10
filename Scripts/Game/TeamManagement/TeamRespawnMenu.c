@@ -1,3 +1,5 @@
+#include "$scripts:Game/GUI/Core/WidgetEvents.c"
+
 class TeamRespawnMenu
 {
     // Widget references
