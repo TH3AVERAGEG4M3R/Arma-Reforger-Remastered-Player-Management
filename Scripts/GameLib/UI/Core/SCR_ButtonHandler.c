@@ -1,5 +1,13 @@
 // SCR_ButtonHandler.c implementation for ARMA Reforger UI system
 
+// Mouse button enum
+enum EMouseButton
+{
+    LEFT = 0,
+    RIGHT = 1,
+    MIDDLE = 2
+};
+
 class SCR_ButtonHandler
 {
     // Private member variables
