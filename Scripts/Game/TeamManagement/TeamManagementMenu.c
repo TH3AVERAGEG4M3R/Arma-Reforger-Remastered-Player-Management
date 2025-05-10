@@ -4,6 +4,7 @@
 
 // Import necessary classes from the engine
 #include "$scripts:Game/GUI/Core/WidgetEvents.c"
+#include "$scripts:GameLib/UI/Core/SCR_ButtonHandler.c"
 class TeamManagementMenu
 {
     // Reference to UI elements
@@ -257,7 +258,7 @@ class TeamManagementMenu
 /**
  * @brief Button handler for team management menu
  */
-class TeamButtonHandler : ScriptedWidgetEventHandler
+class TeamButtonHandler : SCR_ButtonHandler
 {
     protected TeamManagementMenu m_Menu;
     protected string m_CallbackName;
