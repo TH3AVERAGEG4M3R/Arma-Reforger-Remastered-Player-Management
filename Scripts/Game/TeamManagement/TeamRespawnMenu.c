@@ -8,7 +8,6 @@
 #include "../Core/Collections.c"
 #include "../Core/SCR_PlayerController.c"
 #include "../Core/Math.c"
-#include "../UI/SCR_ButtonHandler.c"
 
 class TeamRespawnMenu
 {
@@ -377,7 +376,8 @@ class TeamRespawnMenu
 }
 
 //------------------------------------------------------------------------------------------------
-class PurchaseFlagpoleButtonHandler : SCR_ButtonHandler
+// Direct callback class for the purchase flagpole button
+class PurchaseFlagpoleButtonHandler
 {
     protected TeamRespawnMenu m_Menu;
     
@@ -386,19 +386,19 @@ class PurchaseFlagpoleButtonHandler : SCR_ButtonHandler
         m_Menu = menu;
     }
     
-    bool OnMouseDown(Widget w, int x, int y, EMouseButton button)
+    // Called when the button is clicked
+    void OnClick(ButtonWidget button)
     {
-        if (button == EMouseButton.LEFT && m_Menu)
+        if (m_Menu)
         {
             m_Menu.OnPurchaseFlagpole();
-            return true;
         }
-        return false;
     }
 }
 
 //------------------------------------------------------------------------------------------------
-class SelectRespawnButtonHandler : SCR_ButtonHandler
+// Direct callback class for the select respawn button
+class SelectRespawnButtonHandler
 {
     protected TeamRespawnMenu m_Menu;
     protected int m_RespawnEntityID;
@@ -409,13 +409,12 @@ class SelectRespawnButtonHandler : SCR_ButtonHandler
         m_RespawnEntityID = respawnEntityID;
     }
     
-    bool OnMouseDown(Widget w, int x, int y, EMouseButton button)
+    // Called when the button is clicked
+    void OnClick(ButtonWidget button)
     {
-        if (button == EMouseButton.LEFT && m_Menu)
+        if (m_Menu)
         {
             m_Menu.OnSelectRespawnPoint(m_RespawnEntityID);
-            return true;
         }
-        return false;
     }
 }
