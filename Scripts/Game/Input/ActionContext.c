@@ -1,37 +1,38 @@
 // ActionContext for ARMA Reforger input system
+#include "InputDevice.c"
 class ActionBase
 {
-    bool GetActionPhase();
-    float GetActionValue();
-    int GetID();
-    InputDevice GetInputDevice();
+    bool GetActionPhase() { return true; }
+    float GetActionValue() { return 1.0; }
+    int GetID() { return 0; }
+    InputDevice GetInputDevice() { return null; }
 }
 
-class ActionContext
+class ActionContext : ActionBase
 {
     // Constructor
     void ActionContext() {}
     
     // Get the action value (0.0 to 1.0 for analog inputs)
-    float GetActionValue()
+    override float GetActionValue()
     {
         return 1.0;
     }
     
     // Get the action phase (pressed, released, etc.)
-    bool GetActionPhase()
+    override bool GetActionPhase()
     {
         return true;
     }
     
     // Get the action ID
-    int GetActionID()
+    override int GetID()
     {
         return 0;
     }
     
     // Get the input device that triggered this action
-    InputDevice GetInputDevice()
+    override InputDevice GetInputDevice()
     {
         return null;
     }
