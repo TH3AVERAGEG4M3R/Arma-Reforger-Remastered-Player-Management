@@ -25,7 +25,7 @@ class TeamRespawnMenu
     protected TeamManager m_TeamManager;
     
     // List of available respawn points for the player's team
-    protected ref array<IEntity> m_AvailableRespawnPoints = new array<IEntity>();
+    protected ref array<EntityID> m_AvailableRespawnPoints = new array<EntityID>();
     
     //------------------------------------------------------------------------------------------------
     void Init()
@@ -118,8 +118,12 @@ class TeamRespawnMenu
         FindTeamRespawnPoints(teamID);
         
         // Add respawn points to the list
-        foreach (IEntity respawnEntity : m_AvailableRespawnPoints)
+        foreach (EntityID entityID : m_AvailableRespawnPoints)
         {
+            IEntity respawnEntity = GetGame().GetWorld().FindEntityByID(entityID);
+            if (!respawnEntity)
+                continue;
+                
             TeamFlagpole flagpole = TeamFlagpole.Cast(respawnEntity);
             if (!flagpole)
                 continue;
@@ -196,12 +200,15 @@ class TeamRespawnMenu
         m_AvailableRespawnPoints.Clear();
         
         // Find all flagpoles in the world
-        array<IEntity> foundEntities = new array<IEntity>();
-        GetGame().GetWorld().FindEntitiesByType(TeamFlagpole, foundEntities);
+        array<EntityID> foundEntityIDs = new array<EntityID>();
+        GetGame().GetWorld().FindEntityIDsByType(TeamFlagpole, foundEntityIDs);
         
         // Filter for the player's team
-        foreach (IEntity entity : foundEntities)
+        foreach (EntityID entityID : foundEntityIDs)
         {
+            IEntity entity = GetGame().GetWorld().FindEntityByID(entityID);
+            if (!entity)
+                continue;
             TeamFlagpole flagpole = TeamFlagpole.Cast(entity);
             if (!flagpole)
                 continue;
@@ -213,7 +220,7 @@ class TeamRespawnMenu
             // Check if this respawn point belongs to the player's team
             if (respawnComponent.GetTeamID() == teamID)
             {
-                m_AvailableRespawnPoints.Insert(entity);
+                m_AvailableRespawnPoints.Insert(entity.GetID());
             }
         }
     }

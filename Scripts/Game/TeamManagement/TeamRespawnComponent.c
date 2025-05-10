@@ -309,12 +309,16 @@ class TeamRespawnComponent : GenericComponent
     static bool CanPlaceFlagpoleAt(vector position)
     {
         // Find all existing flagpoles in the world
-        array<IEntity> existingFlagpoles = new array<IEntity>();
-        GetGame().GetWorld().FindEntitiesByType(TeamFlagpole, existingFlagpoles);
+        array<EntityID> existingFlagpoleIDs = new array<EntityID>();
+        GetGame().GetWorld().FindEntityIDsByType(TeamFlagpole, existingFlagpoleIDs);
         
         // Check distance to each existing flagpole
-        foreach (IEntity entity : existingFlagpoles)
+        foreach (EntityID entityID : existingFlagpoleIDs)
         {
+            IEntity entity = GetGame().GetWorld().FindEntityByID(entityID);
+            if (!entity)
+                continue;
+                
             vector flagpolePos = entity.GetOrigin();
             float distance = vector.Distance(position, flagpolePos);
             
