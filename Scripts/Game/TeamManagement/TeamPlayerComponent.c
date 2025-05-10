@@ -4,6 +4,7 @@
 
 // Import necessary classes from the engine
 #include "$scripts:Game/Input/InputActions.c"
+#include "$scripts:Game/Input/ActionContext.c"
 class TeamPlayerComponent : GenericComponent
 {
     protected ref TeamManager m_TeamManager;

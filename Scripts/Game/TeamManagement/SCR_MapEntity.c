@@ -1,6 +1,9 @@
 /**
  * @brief Map Entity for managing map markers and displays
  */
+ 
+// Import necessary classes from the engine
+#include "$scripts:Game/Input/ActionContext.c"
 class TeamMapEntityClass : ScriptComponentClass
 {
 }
@@ -95,7 +98,7 @@ class TeamMapEntity : ScriptComponent
      * @param action The action context
      * @return True if handled
      */
-    protected bool OnMapOpen(Class action)
+    protected bool OnMapOpen(ActionContext action)
     {
         m_MapVisible = true;
         return true;
@@ -107,7 +110,7 @@ class TeamMapEntity : ScriptComponent
      * @param action The action context
      * @return True if handled
      */
-    protected bool OnMapClose(Class action)
+    protected bool OnMapClose(ActionContext action)
     {
         m_MapVisible = false;
         return true;

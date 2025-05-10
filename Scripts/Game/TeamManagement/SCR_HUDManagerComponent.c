@@ -1,3 +1,5 @@
+#include "$scripts:Game/Input/ActionContext.c"
+
 class TeamHUDManagerComponentClass : ScriptComponentClass
 {
 }
@@ -56,7 +58,7 @@ class TeamHUDManagerComponent : ScriptComponent
         return false;
     }
 
-    protected bool ToggleHUD(Class action)
+    protected bool ToggleHUD(ActionContext action)
     {
         m_HudVisible = !m_HudVisible;
         return true;
