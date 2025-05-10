@@ -1,4 +1,5 @@
 #include "$scripts:Game/GUI/Core/WidgetEvents.c"
+#include "$scripts:GameLib/UI/Core/SCR_ButtonHandler.c"
 
 class TeamRespawnMenu
 {
@@ -360,7 +361,7 @@ class TeamRespawnMenu
 }
 
 //------------------------------------------------------------------------------------------------
-class PurchaseFlagpoleButtonHandler : ScriptedWidgetEventHandler
+class PurchaseFlagpoleButtonHandler : SCR_ButtonHandler
 {
     protected TeamRespawnMenu m_Menu;
     
@@ -381,7 +382,7 @@ class PurchaseFlagpoleButtonHandler : ScriptedWidgetEventHandler
 }
 
 //------------------------------------------------------------------------------------------------
-class SelectRespawnButtonHandler : ScriptedWidgetEventHandler
+class SelectRespawnButtonHandler : SCR_ButtonHandler
 {
     protected TeamRespawnMenu m_Menu;
     protected int m_RespawnEntityID;
