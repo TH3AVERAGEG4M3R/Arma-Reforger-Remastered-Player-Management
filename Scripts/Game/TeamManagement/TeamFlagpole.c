@@ -5,8 +5,7 @@
 */
 
 // Import necessary classes from the engine
-#include "$scripts:Game/Network/Rpc/Rpc.c"
-#include "$scripts:Game/Network/ScriptCallContext.c"
+// Required includes for ARMA Reforger
 class TeamFlagpole : GenericEntity
 {
     protected int m_RespawnComponentID;

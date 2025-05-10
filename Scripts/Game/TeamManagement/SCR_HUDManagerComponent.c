@@ -1,4 +1,4 @@
-#include "$scripts:Game/Input/ActionContext.c"
+// Required includes for ARMA Reforger
 
 class TeamHUDManagerComponentClass : ScriptComponentClass
 {

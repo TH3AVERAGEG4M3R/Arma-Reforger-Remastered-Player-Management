@@ -1,5 +1,4 @@
-#include "$scripts:Game/GUI/Core/WidgetEvents.c"
-#include "$scripts:GameLib/UI/Core/SCR_ButtonHandler.c"
+// Required includes for ARMA Reforger
 
 class TeamRespawnMenu
 {
