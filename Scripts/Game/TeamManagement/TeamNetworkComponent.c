@@ -440,7 +440,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      */
     void OnRPC_CreateTeam(RplComponent rpl, ScriptCallContext ctx)
     {
-        IEntity player = ctx.Read();
+        int playerID = ctx.ReadInt();
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerID);
         
         if (GetGame().IsServer())
         {
@@ -449,7 +450,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         
         // Client side handling (from server broadcast)
-        int teamID = ctx.Read();
+        int teamID = ctx.ReadInt();
         
         // Update local team manager with the new team
         if (teamID > 0)
@@ -466,8 +467,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      */
     void OnRPC_JoinTeam(RplComponent rpl, ScriptCallContext ctx)
     {
-        int teamID = ctx.Read();
-        IEntity player = ctx.Read();
+        int teamID = ctx.ReadInt();
+        int playerID = ctx.ReadInt();
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerID);
         
         if (GetGame().IsServer())
         {
@@ -476,7 +478,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         
         // Client side handling (from server broadcast)
-        bool success = ctx.Read();
+        bool success = ctx.ReadBool();
         
         if (success)
         {
@@ -493,7 +495,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      */
     void OnRPC_LeaveTeam(RplComponent rpl, ScriptCallContext ctx)
     {
-        IEntity player = ctx.Read();
+        int playerID = ctx.ReadInt();
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerID);
         
         if (GetGame().IsServer())
         {
@@ -502,8 +505,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         
         // Client side handling (from server broadcast)
-        int teamID = ctx.Read();
-        bool success = ctx.Read();
+        int teamID = ctx.ReadInt();
+        bool success = ctx.ReadBool();
         
         if (success)
         {
@@ -520,8 +523,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      */
     void OnRPC_SendInvitation(RplComponent rpl, ScriptCallContext ctx)
     {
-        IEntity sender = ctx.Read();
-        string receiverID = ctx.Read();
+        int senderID = ctx.ReadInt();
+        IEntity sender = GetGame().GetWorld().FindEntityByID(senderID);
+        string receiverID = ctx.ReadString();
         
         if (GetGame().IsServer())
         {
@@ -530,7 +534,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         
         // Client side handling
-        bool success = ctx.Read();
+        bool success = ctx.ReadBool();
         
         if (success)
         {
@@ -553,8 +557,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      */
     void OnRPC_AcceptInvitation(RplComponent rpl, ScriptCallContext ctx)
     {
-        string invitationID = ctx.Read();
-        IEntity player = ctx.Read();
+        string invitationID = ctx.ReadString();
+        int playerID = ctx.ReadInt();
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerID);
         
         if (GetGame().IsServer())
         {
@@ -563,8 +568,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         
         // Client side handling
-        int teamID = ctx.Read();
-        bool success = ctx.Read();
+        int teamID = ctx.ReadInt();
+        bool success = ctx.ReadBool();
         
         if (success)
         {
@@ -582,8 +587,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      */
     void OnRPC_DeclineInvitation(RplComponent rpl, ScriptCallContext ctx)
     {
-        string invitationID = ctx.Read();
-        IEntity player = ctx.Read();
+        string invitationID = ctx.ReadString();
+        int playerID = ctx.ReadInt();
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerID);
         
         if (GetGame().IsServer())
         {
@@ -592,7 +598,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         
         // Client side handling
-        bool success = ctx.Read();
+        bool success = ctx.ReadBool();
         
         if (success)
         {
@@ -615,8 +621,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         
         // Read team data
-        int teamID = ctx.Read();
-        int memberCount = ctx.Read();
+        int teamID = ctx.ReadInt();
+        int memberCount = ctx.ReadInt();
         
         // Create team on client if it doesn't exist
         if (!m_TeamManager.TeamExists(teamID))
@@ -630,9 +636,9 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         
         for (int i = 0; i < memberCount; i++)
         {
-            string playerID = ctx.Read();
-            string playerName = ctx.Read();
-            bool isLeader = ctx.Read();
+            string playerID = ctx.ReadString();
+            string playerName = ctx.ReadString();
+            bool isLeader = ctx.ReadBool();
             
             m_TeamManager.AddTeamMember(teamID, playerID, playerName, isLeader);
         }
@@ -818,12 +824,12 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         if (!ctx)
             return;
         
-        IEntity player = null;
-        IEntity vehicle = null;
-        
         // Read parameters
-        player = ctx.Read();
-        vehicle = ctx.Read();
+        int playerID = ctx.ReadInt();
+        int vehicleID = ctx.ReadInt();
+        
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerID);
+        IEntity vehicle = GetGame().GetWorld().FindEntityByID(vehicleID);
         
         if (!player || !vehicle)
             return;
@@ -836,8 +842,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         else
         {
             // Client side - update UI or show notification
-            int teamID = ctx.Read();
-            bool success = ctx.Read();
+            int teamID = ctx.ReadInt();
+            bool success = ctx.ReadBool();
             
             if (success)
             {
