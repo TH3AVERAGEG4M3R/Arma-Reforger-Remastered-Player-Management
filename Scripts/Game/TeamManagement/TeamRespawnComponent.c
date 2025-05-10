@@ -56,10 +56,10 @@ class TeamRespawnComponent : GenericComponent
             if (rpl)
             {
                 // Register for RPC method to handle respawn requests
-                rpl.RegisterScriptRPC("RPC_RequestRespawn", "RPC_RequestRespawn", EScriptRPCFlags.kIsReliable);
+                rpl.RegisterRPC("RPC_RequestRespawn", "RPC_RequestRespawn", EScriptRPCFlags.kIsReliable);
                 
                 // Register for RPC method to assign team ownership
-                rpl.RegisterScriptRPC("RPC_AssignTeam", "RPC_AssignTeam", EScriptRPCFlags.kIsReliable);
+                rpl.RegisterRPC("RPC_AssignTeam", "RPC_AssignTeam", EScriptRPCFlags.kIsReliable);
             }
         }
     }

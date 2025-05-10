@@ -46,7 +46,7 @@ class TeamFlagpole : GenericEntity
             // Register for RPC method to purchase flagpole
             if (m_RplComponent)
             {
-                m_RplComponent.RegisterScriptRPC("RPC_PurchaseFlagpole", "RPC_PurchaseFlagpole", EScriptRPCFlags.kIsReliable);
+                m_RplComponent.RegisterRPC("RPC_PurchaseFlagpole", "RPC_PurchaseFlagpole", EScriptRPCFlags.kIsReliable);
             }
         }
     }
