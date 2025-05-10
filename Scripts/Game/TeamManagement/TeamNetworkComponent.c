@@ -595,8 +595,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
      */
     void OnRPC_SendInvitation(RplComponent rpl, ScriptCallContext ctx)
     {
-        int senderID = ctx.ReadInt();
-        IEntity sender = GetGame().GetWorld().FindEntityByID(senderID);
+        int senderEntityID = ctx.ReadInt();
+        IEntity sender = GetGame().GetWorld().FindEntityByID(senderEntityID);
         string receiverID = ctx.ReadString();
         
         if (GetGame().IsServer())
@@ -617,7 +617,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (localPlayerID == receiverID)
             {
                 // Get local sender entity
-                m_TeamManager.SendInvitation(sender, receiverID);
+                m_TeamManager.SendInvitation(EntityID.FromInt(senderEntityID), receiverID);
             }
         }
     }
@@ -630,8 +630,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     void OnRPC_AcceptInvitation(RplComponent rpl, ScriptCallContext ctx)
     {
         string invitationID = ctx.ReadString();
-        int playerID = ctx.ReadInt();
-        IEntity player = GetGame().GetWorld().FindEntityByID(playerID);
+        int playerEntityID = ctx.ReadInt();
         
         if (GetGame().IsServer())
         {
@@ -648,7 +647,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             Print("TeamNetworkComponent: Invitation " + invitationID + " accepted");
             
             // Local update will be handled by join team update
-            m_TeamManager.AcceptInvitation(invitationID, player);
+            m_TeamManager.AcceptInvitation(invitationID, EntityID.FromInt(playerEntityID));
         }
     }
     
@@ -660,8 +659,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     void OnRPC_DeclineInvitation(RplComponent rpl, ScriptCallContext ctx)
     {
         string invitationID = ctx.ReadString();
-        int playerID = ctx.ReadInt();
-        IEntity player = GetGame().GetWorld().FindEntityByID(playerID);
+        int playerEntityID = ctx.ReadInt();
         
         if (GetGame().IsServer())
         {
@@ -675,7 +673,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         if (success)
         {
             Print("TeamNetworkComponent: Invitation " + invitationID + " declined");
-            m_TeamManager.DeclineInvitation(invitationID, player);
+            m_TeamManager.DeclineInvitation(invitationID, EntityID.FromInt(playerEntityID));
         }
     }
     
@@ -760,11 +758,11 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     
     /**
      * @brief Network-safe method to lock a vehicle for team access
-     * @param player The player locking the vehicle
-     * @param vehicle The vehicle entity to lock
+     * @param playerEntityID The entity ID of the player locking the vehicle
+     * @param vehicleEntityID The entity ID of the vehicle to lock
      * @return True if successful, false otherwise
      */
-    bool LockVehicle(IEntity player, IEntity vehicle)
+    bool LockVehicle(EntityID playerEntityID, EntityID vehicleEntityID)
     {
         if (!GetGame().IsServer())
         {
@@ -773,8 +771,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.WriteInt(player.GetID());
-                rpc.WriteInt(vehicle.GetID());
+                rpc.WriteInt(playerEntityID);
+                rpc.WriteInt(vehicleEntityID);
                 rpl.SendRPC(RPC_LOCK_VEHICLE, rpc);
             }
             
@@ -782,6 +780,13 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         else
         {
+            // Get the entities from their IDs
+            IEntity player = GetGame().GetWorld().FindEntityByID(playerEntityID);
+            IEntity vehicle = GetGame().GetWorld().FindEntityByID(vehicleEntityID);
+            
+            if (!player || !vehicle)
+                return false;
+                
             // Get the player's team ID
             string playerID = GetPlayerIdentity(player);
             int teamID = m_TeamManager.GetPlayerTeam(playerID);
@@ -808,8 +813,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 if (rpl)
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
-                    rpc.WriteInt(player.GetID());
-                    rpc.WriteInt(vehicle.GetID());
+                    rpc.WriteInt(playerEntityID);
+                    rpc.WriteInt(vehicleEntityID);
                     rpc.WriteInt(teamID);
                     rpc.WriteBool(success);
                     
@@ -832,12 +837,26 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     }
     
     /**
-     * @brief Network-safe method to unlock a vehicle
-     * @param player The player unlocking the vehicle
-     * @param vehicle The vehicle entity to unlock
+     * @brief Network-safe method to lock a vehicle for team access (legacy method for backward compatibility)
+     * @param player The player locking the vehicle
+     * @param vehicle The vehicle entity to lock
      * @return True if successful, false otherwise
      */
-    bool UnlockVehicle(IEntity player, IEntity vehicle)
+    bool LockVehicle(IEntity player, IEntity vehicle)
+    {
+        if (!player || !vehicle)
+            return false;
+            
+        return LockVehicle(player.GetID(), vehicle.GetID());
+    }
+    
+    /**
+     * @brief Network-safe method to unlock a vehicle
+     * @param playerEntityID The entity ID of the player unlocking the vehicle
+     * @param vehicleEntityID The entity ID of the vehicle to unlock
+     * @return True if successful, false otherwise
+     */
+    bool UnlockVehicle(EntityID playerEntityID, EntityID vehicleEntityID)
     {
         if (!GetGame().IsServer())
         {
@@ -846,8 +865,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.WriteInt(player.GetID());
-                rpc.WriteInt(vehicle.GetID());
+                rpc.WriteInt(playerEntityID);
+                rpc.WriteInt(vehicleEntityID);
                 rpl.SendRPC(RPC_UNLOCK_VEHICLE, rpc);
             }
             
@@ -855,6 +874,13 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
         else
         {
+            // Get the entities from their IDs
+            IEntity player = GetGame().GetWorld().FindEntityByID(playerEntityID);
+            IEntity vehicle = GetGame().GetWorld().FindEntityByID(vehicleEntityID);
+            
+            if (!player || !vehicle)
+                return false;
+                
             // Get vehicle component
             TeamVehicleComponent vehicleComp = TeamVehicleComponent.Cast(vehicle.FindComponent(TeamVehicleComponent));
             if (!vehicleComp)
@@ -874,8 +900,8 @@ class TeamNetworkComponent : ScriptedWidgetComponent
                 if (rpl)
                 {
                     ScriptCallContext rpc = new ScriptCallContext();
-                    rpc.WriteInt(player.GetID());
-                    rpc.WriteInt(vehicle.GetID());
+                    rpc.WriteInt(playerEntityID);
+                    rpc.WriteInt(vehicleEntityID);
                     rpc.WriteBool(success);
                     
                     // Broadcast to everyone since the vehicle is now publicly accessible
@@ -888,6 +914,20 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     }
     
     /**
+     * @brief Network-safe method to unlock a vehicle (legacy method for backward compatibility)
+     * @param player The player unlocking the vehicle
+     * @param vehicle The vehicle entity to unlock
+     * @return True if successful, false otherwise
+     */
+    bool UnlockVehicle(IEntity player, IEntity vehicle)
+    {
+        if (!player || !vehicle)
+            return false;
+            
+        return UnlockVehicle(player.GetID(), vehicle.GetID());
+    }
+    
+    /**
      * @brief RPC handler for locking a vehicle
      * @param ctx The script call context
      */
@@ -897,11 +937,14 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             return;
         
         // Read parameters
-        int playerID = ctx.ReadInt();
-        int vehicleID = ctx.ReadInt();
+        int playerEntityID = ctx.ReadInt();
+        int vehicleEntityID = ctx.ReadInt();
         
-        IEntity player = GetGame().GetWorld().FindEntityByID(playerID);
-        IEntity vehicle = GetGame().GetWorld().FindEntityByID(vehicleID);
+        EntityID playerID = EntityID.FromInt(playerEntityID);
+        EntityID vehicleID = EntityID.FromInt(vehicleEntityID);
+        
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerEntityID);
+        IEntity vehicle = GetGame().GetWorld().FindEntityByID(vehicleEntityID);
         
         if (!player || !vehicle)
             return;
@@ -944,11 +987,14 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             return;
         
         // Read parameters
-        int playerID = ctx.ReadInt();
-        int vehicleID = ctx.ReadInt();
+        int playerEntityID = ctx.ReadInt();
+        int vehicleEntityID = ctx.ReadInt();
         
-        IEntity player = GetGame().GetWorld().FindEntityByID(playerID);
-        IEntity vehicle = GetGame().GetWorld().FindEntityByID(vehicleID);
+        EntityID playerID = EntityID.FromInt(playerEntityID);
+        EntityID vehicleID = EntityID.FromInt(vehicleEntityID);
+        
+        IEntity player = GetGame().GetWorld().FindEntityByID(playerEntityID);
+        IEntity vehicle = GetGame().GetWorld().FindEntityByID(vehicleEntityID);
         
         if (!player || !vehicle)
             return;
@@ -974,23 +1020,28 @@ class TeamNetworkComponent : ScriptedWidgetComponent
     //------------------------------------------------------------------------------------------------
     /**
      * @brief Network-safe method to send a team chat message
-     * @param sender The player sending the message
+     * @param senderEntityID The entity ID of the player sending the message
      * @param messageText The text of the message
      * @return True if message sent successfully, false otherwise
      */
-    bool SendTeamChatMessage(IEntity sender, string messageText)
+    bool SendTeamChatMessage(EntityID senderEntityID, string messageText)
     {
-        if (!sender || messageText.Length() == 0)
+        if (messageText.Length() == 0)
             return false;
             
-        string senderID = GetPlayerIdentity(sender);
+        // Get the player entity from the ID
+        IEntity sender = GetGame().GetWorld().FindEntityByID(senderEntityID);
+        if (!sender)
+            return false;
+            
+        string senderPlayerID = GetPlayerIdentity(sender);
         string senderName = GetPlayerName(sender);
         
-        if (senderID.Length() == 0)
+        if (senderPlayerID.Length() == 0)
             return false;
             
         // Get the player's team
-        int teamID = m_TeamManager.GetPlayerTeam(senderID);
+        int teamID = m_TeamManager.GetPlayerTeam(senderPlayerID);
         if (teamID <= 0)
             return false; // Player is not in a team
             
@@ -1001,7 +1052,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             if (rpl)
             {
                 ScriptCallContext rpc = new ScriptCallContext();
-                rpc.WriteInt(sender.GetID());
+                rpc.WriteInt(senderEntityID);
                 rpc.WriteString(messageText);
                 rpl.SendRPC(RPC_TEAM_CHAT_MESSAGE, rpc);
             }
@@ -1013,7 +1064,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             // Server side - distribute message to all team members
             
             // Create message
-            ref TeamChatMessage message = new TeamChatMessage(teamID, senderID, senderName, messageText);
+            ref TeamChatMessage message = new TeamChatMessage(teamID, senderPlayerID, senderName, messageText);
             
             // Get all team members
             array<ref TeamMember> teamMembers = m_TeamManager.GetTeamMembers(teamID);
@@ -1026,7 +1077,7 @@ class TeamNetworkComponent : ScriptedWidgetComponent
             {
                 ScriptCallContext rpc = new ScriptCallContext();
                 rpc.WriteInt(teamID);
-                rpc.WriteString(senderID);
+                rpc.WriteString(senderPlayerID);
                 rpc.WriteString(senderName);
                 rpc.WriteString(messageText);
                 
@@ -1046,6 +1097,20 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         }
     }
     
+    /**
+     * @brief Network-safe method to send a team chat message (legacy method for backward compatibility)
+     * @param sender The player sending the message
+     * @param messageText The text of the message
+     * @return True if message sent successfully, false otherwise
+     */
+    bool SendTeamChatMessage(IEntity sender, string messageText)
+    {
+        if (!sender)
+            return false;
+            
+        return SendTeamChatMessage(sender.GetID(), messageText);
+    }
+    
     //------------------------------------------------------------------------------------------------
     /**
      * @brief RPC handler for team chat messages
@@ -1060,15 +1125,16 @@ class TeamNetworkComponent : ScriptedWidgetComponent
         if (GetGame().IsServer())
         {
             // Server side - process the message
-            int senderID = ctx.ReadInt();
+            int senderEntityID = ctx.ReadInt();
             string messageText = ctx.ReadString();
             
-            IEntity sender = GetGame().GetWorld().FindEntityByID(senderID);
+            EntityID senderID = EntityID.FromInt(senderEntityID);
+            IEntity sender = GetGame().GetWorld().FindEntityByID(senderEntityID);
             if (!sender || messageText.Length() == 0)
                 return;
                 
             // Forward the message to all team members
-            SendTeamChatMessage(sender, messageText);
+            SendTeamChatMessage(senderID, messageText);
         }
         else
         {
