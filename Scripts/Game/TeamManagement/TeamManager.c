@@ -442,8 +442,8 @@ class TeamManager
         if (flagpoles.Count() >= MAX_FLAGPOLES_PER_TEAM)
             return false;
             
-        // Add the flagpole to the team
-        flagpoles.Insert(flagpole);
+        // Add the flagpole EntityID to the team
+        flagpoles.Insert(flagpole.GetID());
         
         return true;
     }
@@ -464,7 +464,7 @@ class TeamManager
     /**
      * @brief Get all flagpoles for a team
      * @param teamID The ID of the team
-     * @return Array of flagpole entities, or empty array if none
+     * @return Array of flagpole entity IDs, or empty array if none
      */
     array<EntityID> GetTeamFlagpoles(int teamID)
     {
