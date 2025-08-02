@@ -1,140 +1,193 @@
 // ActionContext.c - Input action context for ARMA Reforger
-// This class defines the context in which input actions are executed
+// This file contains the ActionContext and ActionBase classes which are used for input handling
 
+#include "../Core/Game.c"
+
+/**
+ * @brief Base class for input actions in the ARMA Reforger framework
+ */
+class ActionBase
+{
+    // Action ID
+    protected int m_ActionID;
+    
+    // Action name
+    protected string m_ActionName;
+    
+    // Whether the action is active
+    protected bool m_IsActive;
+    
+    /**
+     * @brief Constructor
+     * @param actionID The unique identifier for this action
+     * @param actionName The name of the action
+     */
+    void ActionBase(int actionID = 0, string actionName = "")
+    {
+        m_ActionID = actionID;
+        m_ActionName = actionName;
+        m_IsActive = false;
+    }
+    
+    /**
+     * @brief Get the action ID
+     * @return The action ID
+     */
+    int GetActionID()
+    {
+        return m_ActionID;
+    }
+    
+    /**
+     * @brief Get the action name
+     * @return The action name
+     */
+    string GetActionName()
+    {
+        return m_ActionName;
+    }
+    
+    /**
+     * @brief Check if the action is active
+     * @return True if the action is active, false otherwise
+     */
+    bool IsActive()
+    {
+        return m_IsActive;
+    }
+    
+    /**
+     * @brief Set the active state of the action
+     * @param active The new active state
+     */
+    void SetActive(bool active)
+    {
+        m_IsActive = active;
+    }
+    
+    /**
+     * @brief Execute the action
+     * @param ctx The action context
+     * @return True if the action was executed successfully, false otherwise
+     */
+    bool Execute(ActionContext ctx)
+    {
+        return false; // Base implementation does nothing
+    }
+}
+
+/**
+ * @brief Context for input actions in the ARMA Reforger framework
+ */
 class ActionContext
 {
-    // Reference to the entity that initiated the action (usually a player)
-    protected IEntity m_Entity;
+    // Input value (e.g., from a gamepad trigger)
+    protected float m_InputValue;
     
-    // Input device that triggered the action
-    protected InputDevice m_InputDevice;
+    // Source of the input (e.g., keyboard, gamepad)
+    protected int m_InputDevice;
     
-    // Additional action data
-    protected float m_Value;           // For analog inputs (e.g., joystick axis)
-    protected bool m_IsPressed;        // Whether a button is pressed
-    protected bool m_IsDown;           // Whether a button is held down
-    protected bool m_IsReleased;       // Whether a button was released
+    // Flags for the action context
+    protected int m_Flags;
     
-    // Constructor
-    void ActionContext(IEntity entity = null, InputDevice device = null)
-    {
-        m_Entity = entity;
-        m_InputDevice = device;
-        m_Value = 0.0;
-        m_IsPressed = false;
-        m_IsDown = false;
-        m_IsReleased = false;
-    }
-    
-    //------------------------------------------
-    // Getters and setters
-    //------------------------------------------
+    // Entity associated with the action
+    protected EntityID m_EntityID;
     
     /**
-     * @brief Get the entity that initiated the action
-     * @return The entity
+     * @brief Constructor
+     * @param inputValue The input value
+     * @param inputDevice The input device
      */
-    IEntity GetEntity()
+    void ActionContext(float inputValue = 0.0, int inputDevice = 0, EntityID entityID = EntityID.Invalid())
     {
-        return m_Entity;
+        m_InputValue = inputValue;
+        m_InputDevice = inputDevice;
+        m_Flags = 0;
+        m_EntityID = entityID;
     }
     
     /**
-     * @brief Set the entity that initiated the action
-     * @param entity The entity
+     * @brief Get the input value
+     * @return The input value
      */
-    void SetEntity(IEntity entity)
+    float GetInputValue()
     {
-        m_Entity = entity;
+        return m_InputValue;
     }
     
     /**
-     * @brief Get the input device that triggered the action
+     * @brief Set the input value
+     * @param value The new input value
+     */
+    void SetInputValue(float value)
+    {
+        m_InputValue = value;
+    }
+    
+    /**
+     * @brief Get the input device
      * @return The input device
      */
-    InputDevice GetInputDevice()
+    int GetInputDevice()
     {
         return m_InputDevice;
     }
     
     /**
-     * @brief Set the input device that triggered the action
-     * @param device The input device
+     * @brief Set the input device
+     * @param device The new input device
      */
-    void SetInputDevice(InputDevice device)
+    void SetInputDevice(int device)
     {
         m_InputDevice = device;
     }
     
     /**
-     * @brief Get the analog value of the action
-     * @return The value
+     * @brief Get the flags
+     * @return The flags
      */
-    float GetValue()
+    int GetFlags()
     {
-        return m_Value;
+        return m_Flags;
     }
     
     /**
-     * @brief Set the analog value of the action
-     * @param value The value
+     * @brief Set the flags
+     * @param flags The new flags
      */
-    void SetValue(float value)
+    void SetFlags(int flags)
     {
-        m_Value = value;
+        m_Flags = flags;
     }
     
     /**
-     * @brief Check if the action was pressed (button down event)
-     * @return True if pressed, false otherwise
+     * @brief Get the entity ID
+     * @return The entity ID
      */
-    bool IsPressed()
+    EntityID GetEntityID()
     {
-        return m_IsPressed;
+        return m_EntityID;
     }
     
     /**
-     * @brief Set the pressed state
-     * @param isPressed The pressed state
+     * @brief Set the entity ID
+     * @param entityID The new entity ID
      */
-    void SetPressed(bool isPressed)
+    void SetEntityID(EntityID entityID)
     {
-        m_IsPressed = isPressed;
+        m_EntityID = entityID;
     }
     
     /**
-     * @brief Check if the action is down (button held)
-     * @return True if down, false otherwise
+     * @brief Get the entity associated with the action
+     * @return The entity, or null if not found
      */
-    bool IsDown()
+    IEntity GetEntity()
     {
-        return m_IsDown;
-    }
-    
-    /**
-     * @brief Set the down state
-     * @param isDown The down state
-     */
-    void SetDown(bool isDown)
-    {
-        m_IsDown = isDown;
-    }
-    
-    /**
-     * @brief Check if the action was released (button up event)
-     * @return True if released, false otherwise
-     */
-    bool IsReleased()
-    {
-        return m_IsReleased;
-    }
-    
-    /**
-     * @brief Set the released state
-     * @param isReleased The released state
-     */
-    void SetReleased(bool isReleased)
-    {
-        m_IsReleased = isReleased;
+        if (m_EntityID != EntityID.Invalid())
+        {
+            return GetGame().GetWorld().FindEntityByID(m_EntityID);
+        }
+        return null;
     }
 }

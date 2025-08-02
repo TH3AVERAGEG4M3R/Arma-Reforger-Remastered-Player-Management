@@ -1,45 +1,140 @@
-// Rpc.c - RPC handling for ARMA Reforger
-// This class defines the RPC functionality for network communication
+// Rpc.c - RPC utility classes for ARMA Reforger
+// This file contains the ScriptRPC class which is used for remote procedure calls
 
+#include "../../Core/Game.c"
 #include "../ScriptCallContext.c"
 
 /**
- * @brief Class representing an RPC call
+ * @brief Enumeration of RPC execution modes
+ */
+enum ERpcExecType
+{
+    SERVER,     // Execute on server
+    CLIENT,     // Execute on client
+    BROADCAST,  // Execute on all clients
+    TARGET      // Execute on a specific client
+}
+
+/**
+ * @brief Utility class for handling Remote Procedure Calls in the Reforger scripting environment
  */
 class ScriptRPC
 {
-    // RPC function name
-    protected string m_FunctionName;
+    // RPC name
+    protected string m_Function;
     
-    // Call context for parameters
+    // Execution mode
+    protected ERpcExecType m_Type;
+    
+    // Target player ID for TARGET execution mode
+    protected string m_TargetId;
+    
+    // Call context for parameter passing
     protected ref ScriptCallContext m_Context;
     
-    // Sender entity ID (for server to client RPCs)
-    protected int m_SenderID;
-    
-    // Target entity ID (for client to server RPCs)
-    protected int m_TargetID;
-    
-    // Whether this is a reliable RPC (guaranteed delivery)
-    protected bool m_IsReliable;
-    
-    // Constructor
-    void ScriptRPC(string functionName = "")
+    /**
+     * @brief Constructor
+     * @param function The name of the RPC function to call
+     * @param type The execution mode for this RPC
+     */
+    void ScriptRPC(string function = "", ERpcExecType type = ERpcExecType.SERVER)
     {
-        m_FunctionName = functionName;
+        m_Function = function;
+        m_Type = type;
         m_Context = new ScriptCallContext();
-        m_SenderID = 0;
-        m_TargetID = 0;
-        m_IsReliable = true;
     }
     
-    //------------------------------------------
-    // Parameter writing methods (forwards to context)
-    //------------------------------------------
+    /**
+     * @brief Set the RPC function name
+     * @param function The function name
+     */
+    void SetFunction(string function)
+    {
+        m_Function = function;
+    }
     
     /**
-     * @brief Write an integer parameter
-     * @param value The integer value
+     * @brief Set the execution mode
+     * @param type The execution mode
+     */
+    void SetType(ERpcExecType type)
+    {
+        m_Type = type;
+    }
+    
+    /**
+     * @brief Set the target player ID for TARGET execution mode
+     * @param targetId The target player's ID
+     */
+    void SetTarget(string targetId)
+    {
+        m_TargetId = targetId;
+        m_Type = ERpcExecType.TARGET;
+    }
+    
+    /**
+     * @brief Send the RPC
+     * @return True if the RPC was sent successfully, false otherwise
+     */
+    bool Send()
+    {
+        // Check if valid function name provided
+        if (m_Function.Length() == 0)
+            return false;
+        
+        // Get the RPC component
+        RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
+        if (!rpl)
+            return false;
+        
+        // Send based on execution mode
+        switch (m_Type)
+        {
+            case ERpcExecType.SERVER:
+                rpl.SendRPC(m_Function, m_Context);
+                break;
+                
+            case ERpcExecType.CLIENT:
+                // Client-only execution not directly supported
+                // Handled via the target system
+                return false;
+                
+            case ERpcExecType.BROADCAST:
+                // Server broadcasts to all clients
+                if (GetGame().IsServer())
+                {
+                    rpl.BroadcastRPC(m_Function, m_Context);
+                }
+                else
+                {
+                    // Clients can't broadcast
+                    return false;
+                }
+                break;
+                
+            case ERpcExecType.TARGET:
+                // Server targets a specific client
+                if (GetGame().IsServer() && m_TargetId.Length() > 0)
+                {
+                    rpl.SendRPCToPlayer(m_Function, m_Context, m_TargetId);
+                }
+                else
+                {
+                    // Invalid for clients or missing target ID
+                    return false;
+                }
+                break;
+                
+            default:
+                return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * @brief Write an integer value to the RPC parameters
+     * @param value The value to write
      */
     void WriteInt(int value)
     {
@@ -47,8 +142,8 @@ class ScriptRPC
     }
     
     /**
-     * @brief Write a boolean parameter
-     * @param value The boolean value
+     * @brief Write a boolean value to the RPC parameters
+     * @param value The value to write
      */
     void WriteBool(bool value)
     {
@@ -56,8 +151,8 @@ class ScriptRPC
     }
     
     /**
-     * @brief Write a float parameter
-     * @param value The float value
+     * @brief Write a float value to the RPC parameters
+     * @param value The value to write
      */
     void WriteFloat(float value)
     {
@@ -65,8 +160,8 @@ class ScriptRPC
     }
     
     /**
-     * @brief Write a string parameter
-     * @param value The string value
+     * @brief Write a string value to the RPC parameters
+     * @param value The value to write
      */
     void WriteString(string value)
     {
@@ -74,8 +169,8 @@ class ScriptRPC
     }
     
     /**
-     * @brief Write an entity parameter
-     * @param entity The entity
+     * @brief Write an entity to the RPC parameters
+     * @param entity The entity to write
      */
     void Write(IEntity entity)
     {
@@ -83,247 +178,31 @@ class ScriptRPC
     }
     
     /**
-     * @brief Write a vector parameter
-     * @param value The vector value
+     * @brief Write a vector value to the RPC parameters
+     * @param value The value to write
      */
     void WriteVector(vector value)
     {
         m_Context.WriteVector(value);
     }
-    
-    //------------------------------------------
-    // Parameter reading methods (forwards to context)
-    //------------------------------------------
-    
-    /**
-     * @brief Read an integer parameter
-     * @return The integer value
-     */
-    int ReadInt()
-    {
-        return m_Context.ReadInt();
-    }
-    
-    /**
-     * @brief Read a boolean parameter
-     * @return The boolean value
-     */
-    bool ReadBool()
-    {
-        return m_Context.ReadBool();
-    }
-    
-    /**
-     * @brief Read a float parameter
-     * @return The float value
-     */
-    float ReadFloat()
-    {
-        return m_Context.ReadFloat();
-    }
-    
-    /**
-     * @brief Read a string parameter
-     * @return The string value
-     */
-    string ReadString()
-    {
-        return m_Context.ReadString();
-    }
-    
-    /**
-     * @brief Read an entity parameter
-     * @return The entity, or null if not found
-     */
-    IEntity ReadEntity()
-    {
-        return m_Context.ReadEntity();
-    }
-    
-    /**
-     * @brief Read a vector parameter
-     * @return The vector value
-     */
-    vector ReadVector()
-    {
-        return m_Context.ReadVector();
-    }
-    
-    //------------------------------------------
-    // Getters and setters
-    //------------------------------------------
-    
-    /**
-     * @brief Get the function name
-     * @return The function name
-     */
-    string GetFunctionName()
-    {
-        return m_FunctionName;
-    }
-    
-    /**
-     * @brief Set the function name
-     * @param name The function name
-     */
-    void SetFunctionName(string name)
-    {
-        m_FunctionName = name;
-    }
-    
-    /**
-     * @brief Get the sender ID
-     * @return The sender ID
-     */
-    int GetSenderID()
-    {
-        return m_SenderID;
-    }
-    
-    /**
-     * @brief Set the sender ID
-     * @param id The sender ID
-     */
-    void SetSenderID(int id)
-    {
-        m_SenderID = id;
-    }
-    
-    /**
-     * @brief Get the target ID
-     * @return The target ID
-     */
-    int GetTargetID()
-    {
-        return m_TargetID;
-    }
-    
-    /**
-     * @brief Set the target ID
-     * @param id The target ID
-     */
-    void SetTargetID(int id)
-    {
-        m_TargetID = id;
-    }
-    
-    /**
-     * @brief Check if this RPC is reliable
-     * @return True if reliable, false otherwise
-     */
-    bool IsReliable()
-    {
-        return m_IsReliable;
-    }
-    
-    /**
-     * @brief Set whether this RPC is reliable
-     * @param reliable The reliability flag
-     */
-    void SetReliable(bool reliable)
-    {
-        m_IsReliable = reliable;
-    }
-    
-    /**
-     * @brief Get the call context
-     * @return The call context
-     */
-    ScriptCallContext GetContext()
-    {
-        return m_Context;
-    }
-    
-    /**
-     * @brief Reset the RPC for reuse
-     */
-    void Reset()
-    {
-        m_FunctionName = "";
-        m_Context.Reset();
-        m_SenderID = 0;
-        m_TargetID = 0;
-        m_IsReliable = true;
-    }
 }
 
 /**
- * @brief RPC component for handling network messages
+ * @brief Utility function to register an RPC handler
+ * @param functionName The name of the RPC function
+ * @param handlerMethod The method to call when the RPC is received
+ * @param instance The instance object for the handler method
  */
-class RplComponent
+void RPC_RegisterHandler(string functionName, func handlerMethod, Class instance = null)
 {
-    // The entity that owns this component
-    protected IEntity m_Owner;
+    if (functionName.Length() == 0 || !handlerMethod)
+        return;
     
-    // Component ID
-    protected int m_ID;
+    // Get the RPC component
+    RplComponent rpl = RplComponent.Cast(GetGame().GetRplComponent());
+    if (!rpl)
+        return;
     
-    // Constructor
-    void RplComponent(IEntity owner = null)
-    {
-        m_Owner = owner;
-        m_ID = 0;
-    }
-    
-    /**
-     * @brief Send an RPC to clients or server
-     * @param functionName The RPC function name
-     * @param context The call context with parameters
-     * @param targetID The target entity ID (0 for broadcast)
-     * @param isReliable Whether the RPC is reliable
-     * @return True if successful, false otherwise
-     */
-    bool SendRPC(string functionName, ScriptCallContext context, int targetID = 0, bool isReliable = true)
-    {
-        // In a real implementation, this would send data over the network
-        // For our implementation, we'll just log
-        Print(string.Format("Sending RPC: %1 to %2", functionName, targetID));
-        return true;
-    }
-    
-    /**
-     * @brief Get the entity that owns this component
-     * @return The owner entity
-     */
-    IEntity GetOwner()
-    {
-        return m_Owner;
-    }
-    
-    /**
-     * @brief Set the entity that owns this component
-     * @param owner The owner entity
-     */
-    void SetOwner(IEntity owner)
-    {
-        m_Owner = owner;
-    }
-    
-    /**
-     * @brief Get the component ID
-     * @return The component ID
-     */
-    int GetID()
-    {
-        return m_ID;
-    }
-    
-    /**
-     * @brief Set the component ID
-     * @param id The component ID
-     */
-    void SetID(int id)
-    {
-        m_ID = id;
-    }
-    
-    /**
-     * @brief Cast a component to RplComponent
-     * @param component The component to cast
-     * @return The RplComponent, or null if the component is not an RplComponent
-     */
-    static RplComponent Cast(IComponent component)
-    {
-        return RplComponent.Cast(component);
-    }
+    // Register the handler
+    rpl.RegisterRPC(functionName, handlerMethod, instance);
 }

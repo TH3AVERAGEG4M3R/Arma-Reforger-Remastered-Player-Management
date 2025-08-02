@@ -1,232 +1,159 @@
 // InputActions.c - Input action definitions for ARMA Reforger
-// This class defines the input actions available in the game
+// This file contains constants and classes for input actions
 
-// Required includes
 #include "ActionContext.c"
-#include "InputDevice.c"
+
+// Input action IDs
+enum EInputActionID
+{
+    // Basic movement
+    MOVE_FORWARD = 1,
+    MOVE_BACKWARD = 2,
+    MOVE_LEFT = 3,
+    MOVE_RIGHT = 4,
+    
+    // Basic interaction
+    INTERACT = 10,
+    USE = 11,
+    
+    // Stance
+    STANCE_STANDING = 20,
+    STANCE_CROUCHING = 21,
+    STANCE_PRONE = 22,
+    
+    // Weapons
+    FIRE = 30,
+    AIM = 31,
+    RELOAD = 32,
+    CHANGE_FIREMODE = 33,
+    
+    // UI actions
+    OPEN_MAP = 40,
+    OPEN_INVENTORY = 41,
+    OPEN_MENU = 42,
+    OPEN_CHAT = 43,
+    
+    // Team-specific actions
+    OPEN_TEAM_MENU = 50,
+    OPEN_TEAM_CHAT = 51,
+    
+    // Vehicle actions
+    VEHICLE_ENTER = 60,
+    VEHICLE_EXIT = 61,
+    VEHICLE_DRIVER = 62,
+    VEHICLE_GUNNER = 63,
+    VEHICLE_PASSENGER = 64
+}
+
+// Input device types
+enum EInputDeviceType
+{
+    KEYBOARD = 1,
+    MOUSE = 2,
+    GAMEPAD = 3
+}
 
 /**
- * @brief Base class for input actions
+ * @brief Basic move forward action
  */
-class ActionBase
+class InputAction_MoveForward : ActionBase
 {
-    // Action name
-    protected string m_Name;
-    
-    // Action ID
-    protected int m_ID;
-    
-    // Constructor
-    void ActionBase(string name = "", int id = -1)
+    /**
+     * @brief Constructor
+     */
+    void InputAction_MoveForward()
     {
-        m_Name = name;
-        m_ID = id;
+        m_ActionID = EInputActionID.MOVE_FORWARD;
+        m_ActionName = "Move Forward";
     }
-    
-    //------------------------------------------
-    // Virtual methods
-    //------------------------------------------
     
     /**
      * @brief Execute the action
-     * @param context The action context
-     * @return True if the action was handled, false otherwise
+     * @param ctx The action context
+     * @return True if the action was executed successfully, false otherwise
      */
-    bool Execute(ActionContext context)
+    override bool Execute(ActionContext ctx)
     {
-        return false;
-    }
-    
-    //------------------------------------------
-    // Getters and setters
-    //------------------------------------------
-    
-    /**
-     * @brief Get the action name
-     * @return The action name
-     */
-    string GetName()
-    {
-        return m_Name;
-    }
-    
-    /**
-     * @brief Set the action name
-     * @param name The action name
-     */
-    void SetName(string name)
-    {
-        m_Name = name;
-    }
-    
-    /**
-     * @brief Get the action ID
-     * @return The action ID
-     */
-    int GetID()
-    {
-        return m_ID;
-    }
-    
-    /**
-     * @brief Set the action ID
-     * @param id The action ID
-     */
-    void SetID(int id)
-    {
-        m_ID = id;
+        if (!ctx)
+            return false;
+        
+        // Get the entity
+        IEntity entity = ctx.GetEntity();
+        if (!entity)
+            return false;
+        
+        // Here would be the logic to move the entity forward
+        
+        return true;
     }
 }
 
 /**
- * @brief Registry for all input actions
+ * @brief Team menu action
  */
-class InputActions
+class InputAction_OpenTeamMenu : ActionBase
 {
-    // Singleton instance
-    private static ref InputActions s_Instance;
-    
-    // Registered actions
-    private ref map<int, ref ActionBase> m_ActionMap;
-    
-    // Next available action ID
-    private int m_NextActionID = 1;
-    
-    // Constructor
-    private void InputActions()
+    /**
+     * @brief Constructor
+     */
+    void InputAction_OpenTeamMenu()
     {
-        m_ActionMap = new map<int, ref ActionBase>();
-        RegisterDefaultActions();
+        m_ActionID = EInputActionID.OPEN_TEAM_MENU;
+        m_ActionName = "Open Team Menu";
     }
     
     /**
-     * @brief Get the singleton instance
-     * @return The singleton instance
+     * @brief Execute the action
+     * @param ctx The action context
+     * @return True if the action was executed successfully, false otherwise
      */
-    static InputActions GetInstance()
+    override bool Execute(ActionContext ctx)
     {
-        if (!s_Instance)
-            s_Instance = new InputActions();
-            
-        return s_Instance;
-    }
-    
-    /**
-     * @brief Register default game actions
-     */
-    private void RegisterDefaultActions()
-    {
-        // Examples of common actions - these would be filled in by the game
-        RegisterAction(new ActionBase("MoveForward", m_NextActionID++));
-        RegisterAction(new ActionBase("MoveBackward", m_NextActionID++));
-        RegisterAction(new ActionBase("MoveLeft", m_NextActionID++));
-        RegisterAction(new ActionBase("MoveRight", m_NextActionID++));
-        RegisterAction(new ActionBase("Jump", m_NextActionID++));
-        RegisterAction(new ActionBase("Crouch", m_NextActionID++));
-        RegisterAction(new ActionBase("Prone", m_NextActionID++));
-        RegisterAction(new ActionBase("Fire", m_NextActionID++));
-        RegisterAction(new ActionBase("AimDown", m_NextActionID++));
-        RegisterAction(new ActionBase("Reload", m_NextActionID++));
-        RegisterAction(new ActionBase("Use", m_NextActionID++));
-        RegisterAction(new ActionBase("SwitchWeapon", m_NextActionID++));
-        RegisterAction(new ActionBase("NextFireMode", m_NextActionID++));
-        RegisterAction(new ActionBase("ThrowGrenade", m_NextActionID++));
-        RegisterAction(new ActionBase("OpenInventory", m_NextActionID++));
-        RegisterAction(new ActionBase("OpenMap", m_NextActionID++));
-        
-        // Team management specific actions
-        RegisterAction(new ActionBase("TeamMenu", m_NextActionID++));
-        RegisterAction(new ActionBase("TeamChat", m_NextActionID++));
-    }
-    
-    /**
-     * @brief Register an action
-     * @param action The action to register
-     * @return True if registration succeeded, false otherwise
-     */
-    bool RegisterAction(ActionBase action)
-    {
-        if (!action)
+        if (!ctx)
             return false;
-            
-        int id = action.GetID();
-        if (id < 0)
-        {
-            id = m_NextActionID++;
-            action.SetID(id);
-        }
         
-        m_ActionMap[id] = action;
+        // Get the entity
+        IEntity entity = ctx.GetEntity();
+        if (!entity)
+            return false;
+        
+        // Here would be the logic to open the team menu
+        
         return true;
     }
+}
+
+/**
+ * @brief Team chat action
+ */
+class InputAction_OpenTeamChat : ActionBase
+{
+    /**
+     * @brief Constructor
+     */
+    void InputAction_OpenTeamChat()
+    {
+        m_ActionID = EInputActionID.OPEN_TEAM_CHAT;
+        m_ActionName = "Open Team Chat";
+    }
     
     /**
-     * @brief Unregister an action
-     * @param id The action ID
-     * @return True if unregistration succeeded, false otherwise
+     * @brief Execute the action
+     * @param ctx The action context
+     * @return True if the action was executed successfully, false otherwise
      */
-    bool UnregisterAction(int id)
+    override bool Execute(ActionContext ctx)
     {
-        if (!m_ActionMap.Contains(id))
+        if (!ctx)
             return false;
-            
-        m_ActionMap.Remove(id);
-        return true;
-    }
-    
-    /**
-     * @brief Get an action by ID
-     * @param id The action ID
-     * @return The action, or null if not found
-     */
-    ActionBase GetAction(int id)
-    {
-        return m_ActionMap.Get(id);
-    }
-    
-    /**
-     * @brief Get an action by name
-     * @param name The action name
-     * @return The action, or null if not found
-     */
-    ActionBase GetActionByName(string name)
-    {
-        foreach (int id, ref ActionBase action : m_ActionMap)
-        {
-            if (action.GetName() == name)
-                return action;
-        }
         
-        return null;
-    }
-    
-    /**
-     * @brief Execute an action
-     * @param id The action ID
-     * @param context The action context
-     * @return True if the action was handled, false otherwise
-     */
-    bool ExecuteAction(int id, ActionContext context)
-    {
-        ActionBase action = GetAction(id);
-        if (!action)
+        // Get the entity
+        IEntity entity = ctx.GetEntity();
+        if (!entity)
             return false;
-            
-        return action.Execute(context);
-    }
-    
-    /**
-     * @brief Execute an action by name
-     * @param name The action name
-     * @param context The action context
-     * @return True if the action was handled, false otherwise
-     */
-    bool ExecuteActionByName(string name, ActionContext context)
-    {
-        ActionBase action = GetActionByName(name);
-        if (!action)
-            return false;
-            
-        return action.Execute(context);
+        
+        // Here would be the logic to open the team chat
+        
+        return true;
     }
 }

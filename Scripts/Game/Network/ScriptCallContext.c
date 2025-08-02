@@ -1,6 +1,8 @@
 // ScriptCallContext.c - Network call context for ARMA Reforger
 // This class handles serialization and deserialization of RPC data
 
+#include "ScriptBitIO.c"
+
 class ScriptCallContext
 {
     // Binary data for reading/writing
